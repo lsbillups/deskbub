@@ -4,46 +4,53 @@ import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface DropZoneProps {
-  onFileSelected: (file: File) => void;
+  onFilesSelected: (files: File[]) => void;
+  maxFiles?: number;
 }
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
-export default function DropZone({ onFileSelected }: DropZoneProps) {
+export default function DropZone({ onFilesSelected, maxFiles = 5 }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const validateFile = (file: File): boolean => {
+  const validateFiles = (files: File[]): File[] => {
     setError(null);
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      setError('Please upload a JPG, PNG, or WebP image.');
-      return false;
+    const valid: File[] = [];
+    for (const f of files) {
+      if (!ACCEPTED_TYPES.includes(f.type)) {
+        setError(`"${f.name}" is not a JPG, PNG, or WebP.`);
+        continue;
+      }
+      if (f.size > MAX_SIZE) {
+        setError(`"${f.name}" is too large (max 10MB).`);
+        continue;
+      }
+      valid.push(f);
     }
-    if (file.size > MAX_SIZE) {
-      setError('File is too large. Maximum size is 10MB.');
-      return false;
+    if (valid.length > maxFiles) {
+      setError(`Max ${maxFiles} photos allowed. Only the first ${maxFiles} will be used.`);
+      return valid.slice(0, maxFiles);
     }
-    return true;
+    return valid;
   };
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
-      const file = e.dataTransfer.files[0];
-      if (file && validateFile(file)) {
-        onFileSelected(file);
-      }
+      const files = Array.from(e.dataTransfer.files);
+      const valid = validateFiles(files);
+      if (valid.length > 0) onFilesSelected(valid);
     },
-    [onFileSelected]
+    [onFilesSelected]
   );
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file && validateFile(file)) {
-      onFileSelected(file);
-    }
+    const files = Array.from(e.target.files || []);
+    const valid = validateFiles(files);
+    if (valid.length > 0) onFilesSelected(valid);
   };
 
   return (
@@ -68,10 +75,10 @@ export default function DropZone({ onFileSelected }: DropZoneProps) {
           }
         `}
       >
-        {/* Hidden file input */}
         <input
           type="file"
           accept=".jpg,.jpeg,.png,.webp"
+          multiple
           onChange={handleFileInput}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
@@ -79,11 +86,17 @@ export default function DropZone({ onFileSelected }: DropZoneProps) {
         <div className="pointer-events-none">
           <div className="text-5xl mb-4">📸</div>
           <h3 className="text-xl font-display font-bold text-text-primary mb-2">
-            Drop your pet photo here
+            Drop 3-5 photos of your pet
           </h3>
-          <p className="text-text-secondary text-sm">
-            or click to browse — JPG, PNG, WebP up to 10MB
+          <p className="text-text-secondary text-sm mb-3">
+            or click to browse — JPG, PNG, WebP up to 10MB each
           </p>
+          <div className="flex justify-center gap-6 text-xs text-text-secondary/60">
+            <span>📷 Front</span>
+            <span>↩️ Side</span>
+            <span>↪️ Other side</span>
+            <span>🔽 Back</span>
+          </div>
         </div>
       </motion.div>
 

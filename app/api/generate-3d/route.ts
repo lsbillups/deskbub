@@ -11,9 +11,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }
 
-    const { imageUrl } = await request.json();
-    if (!imageUrl) {
-      return NextResponse.json({ error: 'No image URL provided.' }, { status: 400 });
+    const { imageUrls, imageUrl } = await request.json();
+    // Support both single imageUrl and multiple imageUrls
+    const images = imageUrls || (imageUrl ? [imageUrl] : null);
+    if (!images || images.length === 0) {
+      return NextResponse.json({ error: 'No image URLs provided.' }, { status: 400 });
     }
 
     if (!process.env.REPLICATE_API_TOKEN) {
@@ -26,7 +28,7 @@ export async function POST(request: NextRequest) {
     const prediction = await replicate.predictions.create({
       version: TRELLIS_VERSION,
       input: {
-        images: [imageUrl],
+        images: images,
         generate_model: true,
         generate_color: true,
         texture_size: 1024,
