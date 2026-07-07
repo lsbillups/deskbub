@@ -1,243 +1,154 @@
-// ============================================================
-// DeskBub — Pet Animation Engine
-// ============================================================
+// DeskBub — Desktop Pet Core
 
-const canvas = document.getElementById('petCanvas');
-const ctx = canvas.getContext('2d');
+const pet = document.getElementById('pet');
+const bubble = document.getElementById('bubble');
 
-let petImage = null;
-let useImage = false;
-let config = { petSize: 1.0, opacity: 0.9 };
-
-// Animation state
-let currentAnimation = 'idle';
-let animationTimer = 0;
-let animationDuration = 0;
-let idleTimer = 0;
-let nextIdleSwitch = 8000;
-
-// Position & movement
-let petX = 0;
-let petY = 0;
-let velocityX = 0;
-let velocityY = 0;
-let walkDirection = 1;
-
-// Animation helpers
-let breathPhase = 0;
-let sitPhase = 0;
-let sleepZzzAlpha = 0;
-let eyeBlinkTimer = 0;
-let isBlinking = false;
+let anim = 'idle';
+let animT = 0;
+let animDur = Infinity;
+let idleT = 0;
+let nextIdle = 6000;
+let px = 100, py = 100;
+let vx = 0, vy = 0;
+let lastTS = 0;
+let bubbleTimer = null;
 
 // ============================================================
-// INIT
+// ANIMATION
 // ============================================================
-function init() {
-  resizeCanvas();
-  petX = canvas.width * 0.3;
-  petY = canvas.height * 0.25;
-
-  // Try loading pet image
-  petImage = new Image();
-  petImage.onload = () => { useImage = true; };
-  petImage.onerror = () => { useImage = false; };
-  petImage.src = '../assets/default-pet.png';
-
-  // Listen for config updates
-  if (window.deskBub) {
-    window.deskBub.onConfigUpdated((newConfig) => {
-      config = { ...config, ...newConfig };
-    });
-    window.deskBub.getConfig().then((cfg) => {
-      config = { ...config, ...cfg };
-    });
+function setAnim(name) {
+  anim = name; animT = 0;
+  switch (name) {
+    case 'idle': animDur = Infinity; break;
+    case 'walk':
+      animDur = 5000 + Math.random() * 3000;
+      vx = (0.4 + Math.random() * 0.6) * (Math.random() > 0.5 ? 1 : -1);
+      vy = (Math.random() - 0.5) * 0.3;
+      break;
+    case 'sit': animDur = 1000; break;
+    case 'sleep': animDur = 8000; break;
+    case 'stretch': animDur = 1500; break;
+    case 'excited': animDur = 2000; break;
   }
-
-  startAnimationLoop();
-  setupDrag();
 }
 
-function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-
-// ============================================================
-// ANIMATION LOOP
-// ============================================================
-function startAnimationLoop() {
-  let lastTS = 0;
-  function loop(ts) {
-    if (!lastTS) lastTS = ts;
-    const dt = Math.min(ts - lastTS, 100);
-    lastTS = ts;
-    update(dt);
-    draw();
-    requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
+function triggerRandom() {
+  const list = ['walk', 'sit', 'sleep', 'stretch', 'excited'];
+  setAnim(list[Math.floor(Math.random() * list.length)]);
 }
 
-function update(dt) {
-  animationTimer += dt;
-  idleTimer += dt;
+function showBubble(msg) {
+  bubble.textContent = msg;
+  bubble.style.left = (px + 60) + 'px';
+  bubble.style.top = Math.max(0, py - 35) + 'px';
+  bubble.classList.add('show');
+  clearTimeout(bubbleTimer);
+  bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 8000);
+}
 
-  if (currentAnimation === 'idle' && idleTimer > nextIdleSwitch) {
-    idleTimer = 0;
-    nextIdleSwitch = 8000 + Math.random() * 12000;
-    triggerRandomAnimation();
+// ============================================================
+// LOOP
+// ============================================================
+function loop(ts) {
+  if (!lastTS) lastTS = ts;
+  const dt = Math.min(ts - lastTS, 100);
+  lastTS = ts;
+  animT += dt;
+  idleT += dt;
+
+  // Auto switch from idle
+  if (anim === 'idle' && idleT > nextIdle) {
+    idleT = 0; nextIdle = 6000 + Math.random() * 10000;
+    triggerRandom();
   }
 
-  switch (currentAnimation) {
+  // Update
+  let scale = 1, bounce = 0, rotate = 0;
+  switch (anim) {
     case 'idle':
-      breathPhase += dt * 0.002;
+      scale = 1 + Math.sin(animT * 0.003) * 0.03;
       break;
     case 'walk':
-      petX += velocityX * (dt / 16);
-      petY += velocityY * (dt / 16);
-      if (petX < 10 || petX > canvas.width - 140) { velocityX *= -1; walkDirection = velocityX > 0 ? 1 : -1; }
-      if (petY < 10 || petY > canvas.height - 200) velocityY *= -1;
-      if (animationTimer > animationDuration) setAnimation('idle');
+      px += vx * (dt / 16);
+      py += vy * (dt / 16);
+      const ww = window.innerWidth, wh = window.innerHeight;
+      if (px < 0 || px > ww - 120) { vx *= -1; }
+      if (py < 0 || py > wh - 150) { vy *= -1; }
+      bounce = Math.abs(Math.sin(animT * 0.01)) * 8;
+      rotate = vx > 0 ? 3 : -3;
+      if (animT > animDur) setAnim('idle');
       break;
     case 'sit':
-      sitPhase = Math.min(1, animationTimer / animationDuration);
-      if (animationTimer > animationDuration + 3500) setAnimation('idle');
+      scale = 1 - Math.min(1, animT / animDur) * 0.1;
+      if (animT > animDur + 3500) setAnim('idle');
       break;
     case 'sleep':
-      sleepZzzAlpha = Math.min(1, animationTimer / 1000);
-      if (animationTimer > animationDuration + 6000) setAnimation('idle');
-      break;
-    case 'excited':
-      if (animationTimer > animationDuration) setAnimation('idle');
+      scale = 0.78;
+      if (animT > animDur + 6000) setAnim('idle');
       break;
     case 'stretch':
-      if (animationTimer > animationDuration) setAnimation('idle');
+      scale = 1 + Math.sin(Math.min(1, animT / animDur) * Math.PI) * 0.12;
+      if (animT > animDur) setAnim('idle');
+      break;
+    case 'excited':
+      bounce = Math.abs(Math.sin(animT * 0.02)) * 12;
+      if (animT > animDur) setAnim('idle');
       break;
   }
 
-  eyeBlinkTimer += dt;
-  if (eyeBlinkTimer > 2500 + Math.random() * 2000) {
-    eyeBlinkTimer = 0;
-    isBlinking = true;
-    setTimeout(() => { isBlinking = false; }, 150);
-  }
-}
+  // Flip when walking left
+  const flip = (anim === 'walk' && vx < 0) ? 'scaleX(-1)' : 'scaleX(1)';
 
-function triggerRandomAnimation() {
-  const anims = ['walk', 'sit', 'sleep', 'stretch', 'excited'];
-  setAnimation(anims[Math.floor(Math.random() * anims.length)]);
-}
-
-function setAnimation(name) {
-  currentAnimation = name;
-  animationTimer = 0;
-  switch (name) {
-    case 'idle': animationDuration = Infinity; break;
-    case 'walk':
-      animationDuration = 4000 + Math.random() * 3000;
-      velocityX = (0.3 + Math.random() * 0.7) * (Math.random() > 0.5 ? 1 : -1);
-      velocityY = (Math.random() - 0.5) * 0.4;
-      walkDirection = velocityX > 0 ? 1 : -1;
-      break;
-    case 'sit': animationDuration = 800; break;
-    case 'sleep': animationDuration = 7000; break;
-    case 'stretch': animationDuration = 1500; break;
-    case 'excited': animationDuration = 2000; break;
-  }
-}
-
-// ============================================================
-// DRAW
-// ============================================================
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const baseScale = config.petSize || 1.0;
-  let scale = baseScale;
-  let bounceY = 0;
-
-  if (currentAnimation === 'idle') {
-    scale *= 1 + Math.sin(breathPhase) * 0.03;
-  } else if (currentAnimation === 'walk') {
-    bounceY = Math.abs(Math.sin(animationTimer * 0.008)) * 6;
-  } else if (currentAnimation === 'sit') {
-    scale *= 1 - sitPhase * 0.1;
-  } else if (currentAnimation === 'sleep') {
-    scale *= 0.78;
-  } else if (currentAnimation === 'excited') {
-    scale *= 1 + Math.abs(Math.sin(animationTimer * 0.012)) * 0.08;
-  } else if (currentAnimation === 'stretch') {
-    const t = animationTimer / animationDuration;
-    scale *= t < 0.4 ? 1 - t * 0.2 : 0.92 + 0.15 * Math.sin((t - 0.4) * Math.PI / 0.6);
-  }
-
-  ctx.save();
-  const cx = petX + 75;
-  const cy = petY + 100 + bounceY;
-  ctx.translate(cx, cy);
-  ctx.scale(scale, scale);
-
-  // Flip for walk direction
-  if (currentAnimation === 'walk' && walkDirection === -1) {
-    ctx.scale(-1, 1);
-  }
-  ctx.translate(-75, -100);
-
-  if (useImage && petImage) {
-    ctx.drawImage(petImage, 0, 20, 150, 180);
-  } else {
-    drawEmojiPet();
-  }
+  // Apply
+  pet.style.transform = `${flip} scale(${scale}) rotate(${rotate}deg)`;
+  pet.style.left = px + 'px';
+  pet.style.top = (py + bounce) + 'px';
 
   // Sleep Zzz
-  if (currentAnimation === 'sleep') {
-    ctx.globalAlpha = sleepZzzAlpha;
-    ctx.fillStyle = '#636E72';
-    ctx.font = 'bold 16px sans-serif';
-    ['z', 'Z', 'Z'].forEach((z, i) => {
-      ctx.fillText(z, 80 + i * 14, 20 - i * 14);
-    });
-    ctx.globalAlpha = 1;
+  if (anim === 'sleep' && animT > 1000) {
+    pet.textContent = '😴';
+  } else {
+    pet.textContent = '🐱';
   }
 
-  ctx.restore();
-}
-
-function drawEmojiPet() {
-  // Draw a cute cat emoji at large size
-  ctx.font = '80px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🐱', 75, 80);
+  requestAnimationFrame(loop);
 }
 
 // ============================================================
 // DRAG
 // ============================================================
-function setupDrag() {
-  let isDragging = false;
-  let startX = 0, startY = 0;
+let dragging = false, sx = 0, sy = 0;
+pet.addEventListener('mousedown', (e) => {
+  dragging = true; sx = e.screenX; sy = e.screenY;
+  e.preventDefault();
+});
+window.addEventListener('mousemove', (e) => {
+  if (!dragging) return;
+  window.moveBy(e.screenX - sx, e.screenY - sy);
+  sx = e.screenX; sy = e.screenY;
+});
+window.addEventListener('mouseup', () => { dragging = false; });
 
-  canvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.screenX;
-    startY = e.screenY;
-    if (window.deskBub) window.deskBub.setIgnoreMouse(false);
-  });
+// ============================================================
+// START
+// ============================================================
+setAnim('idle');
+px = window.innerWidth * 0.3;
+py = window.innerHeight * 0.3;
+pet.style.left = px + 'px';
+pet.style.top = py + 'px';
+requestAnimationFrame(loop);
 
-  window.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    window.moveBy(e.screenX - startX, e.screenY - startY);
-    startX = e.screenX;
-    startY = e.screenY;
-  });
-
-  window.addEventListener('mouseup', () => {
-    isDragging = false;
-    if (window.deskBub) window.deskBub.setIgnoreMouse(true, { forward: true });
-  });
-}
-
-init();
+// Auto reminder every 30s
+setTimeout(() => showBubble('Hey! Time to stretch! 🧘'), 15000);
+setInterval(() => {
+  if (Math.random() < 0.3) {
+    const msgs = [
+      'Time for a water break! 💧',
+      'Look away from the screen! 👀',
+      'Stand up and stretch! 🧘',
+      'Your pet says hi! 👋',
+    ];
+    showBubble(msgs[Math.floor(Math.random() * msgs.length)]);
+  }
+}, 30000);
