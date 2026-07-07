@@ -28,11 +28,18 @@
     #bubble.show { opacity: 1; }
     #url-bar {
       position: absolute; bottom: 12px; left: 12px; right: 12px;
-      display: flex; gap: 6px; z-index: 20; opacity: 1;
+      display: flex; gap: 6px; z-index: 20;
       background: rgba(255,255,255,0.92);
       padding: 8px; border-radius: 12px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       border: 2px solid #FF6B6B;
+      transition: opacity 0.4s, pointer-events 0s;
+    }
+    #hint-text {
+      position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+      font-family: 'Segoe UI', sans-serif; font-size: 11px;
+      color: rgba(0,0,0,0.4); pointer-events: none; z-index: 5;
+      transition: opacity 1s;
     }
     #url-bar:hover { opacity: 1; }
     #url-bar input {
@@ -51,9 +58,10 @@
   <canvas id="petCanvas"></canvas>
   <div id="bubble"></div>
   <div id="url-bar">
-    <input type="text" id="imgUrl" placeholder="1. Upload on website  2. Right-click processed image → Copy URL  3. Paste here" />
+    <input type="text" id="imgUrl" placeholder="Paste your pet image URL here, then click Load Pet" />
     <button onclick="loadPetImage()">Load Pet</button>
   </div>
+  <div id="hint-text">Double-click to enter pet URL  ·  Esc to hide this bar</div>
   <script src="pet.js"></script>
   <script src="reminders.js"></script>
 </body>

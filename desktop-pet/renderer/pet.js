@@ -1,90 +1,105 @@
-// DeskBub — Desktop Pet Engine (Canvas-based with real pet photo)
+// DeskBub — Desktop Pet Engine
 
 const canvas = document.getElementById('petCanvas');
 const ctx = canvas.getContext('2d');
 const bubble = document.getElementById('bubble');
+const urlBar = document.getElementById('url-bar');
 
-let petImage = null;       // The user's real pet photo (Image element)
-let useRealPet = false;    // Whether we have a real pet loaded
+let petImage = null;
+let useRealPet = false;
 
-// Animation state
+// Animation
 let anim = 'idle';
 let animT = 0;
 let animDur = Infinity;
 let idleT = 0;
-let nextIdle = 6000;
-let px = 120, py = 120;
+let nextIdle = 5000;
+let px = 100, py = 80;
 let vx = 0, vy = 0, dir = 1;
 let breathP = 0;
 let blinkT = 0, blinking = false;
 let lastTS = 0;
-
-// Reminder bubble
 let bubbleTimer = null;
 
-// ============================================================
-// ANIMATION
-// ============================================================
+// Pet base size — BIGGER
+const PET_W = 180;
+const PET_H = 240;
+
 function setAnim(name) {
   anim = name; animT = 0;
   switch (name) {
     case 'idle': animDur = Infinity; break;
     case 'walk':
-      animDur = 5000 + Math.random() * 3000;
-      vx = (0.5 + Math.random() * 0.6) * (Math.random() > 0.5 ? 1 : -1);
-      vy = (Math.random() - 0.5) * 0.3;
+      animDur = 6000 + Math.random() * 4000;
+      vx = (0.8 + Math.random() * 1.0) * (Math.random() > 0.5 ? 1 : -1);
+      vy = (Math.random() - 0.5) * 0.5;
       dir = vx > 0 ? 1 : -1;
       break;
     case 'sit': animDur = 1000; break;
-    case 'sleep': animDur = 8000; break;
-    case 'stretch': animDur = 1500; break;
-    case 'excited': animDur = 2000; break;
+    case 'sleep': animDur = 10000; break;
+    case 'stretch': animDur = 2000; break;
+    case 'excited': animDur = 2500; break;
+    case 'hop':
+      animDur = 1800;
+      vx = 0; vy = -3;
+      break;
+    case 'shake':
+      animDur = 800;
+      break;
   }
 }
 
 function triggerRandom() {
-  const list = ['walk', 'sit', 'sleep', 'stretch', 'excited'];
+  const list = ['walk', 'sit', 'sleep', 'stretch', 'excited', 'hop', 'shake'];
   setAnim(list[Math.floor(Math.random() * list.length)]);
 }
 
 function showBubble(msg) {
   bubble.textContent = msg;
-  bubble.style.left = '60px';
-  bubble.style.top = Math.max(0, py - 30) + 'px';
+  bubble.style.left = (px + PET_W / 2 - 60) + 'px';
+  bubble.style.top = Math.max(0, py - 25) + 'px';
   bubble.classList.add('show');
   clearTimeout(bubbleTimer);
   bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 8000);
 }
 
-// ============================================================
-// LOAD PET IMAGE
-// ============================================================
+// Load pet image
 window.loadPetImage = function () {
-  const url = document.getElementById('imgUrl').value.trim();
+  const input = document.getElementById('imgUrl');
+  const url = input.value.trim();
   if (!url) return;
   const img = new Image();
   img.crossOrigin = 'anonymous';
   img.onload = () => {
     petImage = img;
     useRealPet = true;
-    document.getElementById('imgUrl').style.borderColor = '#4ECDC4';
+    input.style.borderColor = '#4ECDC4';
+    // Hide URL bar after successful load
+    urlBar.style.opacity = '0';
+    urlBar.style.pointerEvents = 'none';
   };
   img.onerror = () => {
-    document.getElementById('imgUrl').style.borderColor = '#FF6B6B';
+    input.style.borderColor = '#FF6B6B';
   };
   img.src = url;
 };
 
-window.resetPet = function () {
-  petImage = null;
-  useRealPet = false;
-  document.getElementById('imgUrl').value = '';
-  document.getElementById('imgUrl').style.borderColor = '#ddd';
-};
+// Show URL bar on double-click
+window.addEventListener('dblclick', () => {
+  urlBar.style.opacity = '1';
+  urlBar.style.pointerEvents = 'auto';
+});
 
-// ============================================================
-// CANVAS RENDER LOOP
-// ============================================================
+// Hide URL bar on escape
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    urlBar.style.opacity = '0';
+    urlBar.style.pointerEvents = 'none';
+    document.getElementById('imgUrl').blur();
+  }
+});
+
+// Canvas
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -99,107 +114,115 @@ function loop(ts) {
   animT += dt;
   idleT += dt;
 
-  // Auto switch from idle
   if (anim === 'idle' && idleT > nextIdle) {
-    idleT = 0; nextIdle = 6000 + Math.random() * 10000;
+    idleT = 0; nextIdle = 5000 + Math.random() * 12000;
     triggerRandom();
   }
 
-  // Update
   let scale = 1, bounce = 0, rotate = 0;
+  let shadowScale = 1;
+
   switch (anim) {
     case 'idle':
-      breathP += dt * 0.002;
-      scale = 1 + Math.sin(breathP) * 0.03;
+      breathP += dt * 0.003;
+      scale = 1 + Math.sin(breathP) * 0.04;
       break;
     case 'walk':
       px += vx * (dt / 16); py += vy * (dt / 16);
-      const ww = canvas.width, wh = canvas.height;
-      if (px < -20 || px > ww - 100) vx *= -1;
-      if (py < -20 || py > wh - 140) vy *= -1;
-      dir = vx > 0 ? 1 : -1;
-      bounce = Math.abs(Math.sin(animT * 0.01)) * 8;
+      if (px < -30 || px > canvas.width - PET_W + 30) { vx *= -1; dir = vx > 0 ? 1 : -1; }
+      if (py < -10 || py > canvas.height - PET_H + 20) vy *= -1;
+      bounce = Math.abs(Math.sin(animT * 0.012)) * 10;
+      rotate = dir * 3;
       if (animT > animDur) setAnim('idle');
       break;
     case 'sit':
       scale = 1 - Math.min(1, animT / animDur) * 0.08;
-      if (animT > animDur + 3500) setAnim('idle');
+      py = Math.min(py, canvas.height - PET_H + 20);
+      if (animT > animDur + 4000) setAnim('idle');
       break;
     case 'sleep':
       scale = 0.78;
-      if (animT > animDur + 6000) setAnim('idle');
+      if (animT > animDur + 7000) setAnim('idle');
       break;
-    case 'stretch':
+    case 'stretch': {
       const t = Math.min(1, animT / animDur);
-      scale = 1 + Math.sin(t * Math.PI) * 0.12;
+      scale = 1 + Math.sin(t * Math.PI) * 0.18;
       if (animT > animDur) setAnim('idle');
       break;
+    }
     case 'excited':
-      bounce = Math.abs(Math.sin(animT * 0.02)) * 12;
+      bounce = Math.abs(Math.sin(animT * 0.025)) * 16;
+      rotate = Math.sin(animT * 0.03) * 5;
+      if (animT > animDur) setAnim('idle');
+      break;
+    case 'hop':
+      py += vy * (dt / 16);
+      vy += 0.15; // gravity
+      if (py > canvas.height - PET_H) { py = canvas.height - PET_H; vy = -2.5; }
+      bounce = 0;
+      scale = 1 + Math.sin(animT * 0.01) * 0.06;
+      if (animT > animDur) { py = Math.max(0, py); setAnim('idle'); }
+      break;
+    case 'shake':
+      rotate = Math.sin(animT * 0.06) * 12;
       if (animT > animDur) setAnim('idle');
       break;
   }
 
-  // Blink
   blinkT += dt;
-  if (blinkT > 2500) { blinkT = 0; blinking = true; setTimeout(() => blinking = false, 120); }
+  if (blinkT > 2500) { blinkT = 0; blinking = true; setTimeout(() => blinking = false, 130); }
 
   // Draw
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.save();
 
-  const cx = px + 65, cy = py + 85 + bounce;
+  const cx = px + PET_W / 2;
+  const cy = py + PET_H * 0.65 + bounce;
+
+  ctx.save();
   ctx.translate(cx, cy);
   ctx.scale(scale, scale);
+  ctx.rotate((rotate * Math.PI) / 180);
   if (anim === 'walk' && dir === -1) ctx.scale(-1, 1);
-  ctx.translate(-65, -85);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.beginPath();
+  ctx.ellipse(0, PET_H * 0.32, PET_W * 0.35 * shadowScale, 10, 0, 0, Math.PI * 2);
+  ctx.fill();
 
   if (useRealPet && petImage) {
-    // Draw real pet photo
-    const iw = 130, ih = 160;
-    // Oval soft clip for a polished look
+    const iw = PET_W, ih = PET_H;
     ctx.save();
     ctx.beginPath();
-    ctx.ellipse(65, 85, 55, 72, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, PET_W * 0.38, PET_H * 0.40, 0, 0, Math.PI * 2);
     ctx.clip();
-    ctx.drawImage(petImage, 5, 15, iw, ih);
+    ctx.drawImage(petImage, -iw / 2, -ih * 0.55, iw, ih);
     ctx.restore();
-
-    // Subtle shadow under pet
-    ctx.fillStyle = 'rgba(0,0,0,0.08)';
-    ctx.beginPath();
-    ctx.ellipse(65, 148, 35, 8, 0, 0, Math.PI * 2);
-    ctx.fill();
   } else {
-    // Placeholder emoji cat
-    ctx.font = '90px sans-serif';
+    ctx.font = `${PET_W * 0.6}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🐱', 65, 85);
+    ctx.fillText('🐱', 0, 0);
   }
 
   // Sleep Zzz
-  if (anim === 'sleep' && animT > 1000) {
-    ctx.font = 'bold 18px sans-serif';
+  if (anim === 'sleep' && animT > 1500) {
+    ctx.font = `bold ${PET_W * 0.13}px sans-serif`;
     ctx.fillStyle = '#636E72';
-    ctx.globalAlpha = Math.min(1, (animT - 1000) / 1000);
+    ctx.globalAlpha = Math.min(1, (animT - 1500) / 1000);
     ['z', 'Z', 'Z'].forEach((z, i) => {
-      ctx.fillText(z, 70 + i * 14, 10 - i * 14);
+      ctx.fillText(z, PET_W * 0.3 + i * 16, -PET_H * 0.35 - i * 16);
     });
     ctx.globalAlpha = 1;
   }
 
   ctx.restore();
-
   requestAnimationFrame(loop);
 }
 
-// ============================================================
-// DRAG
-// ============================================================
+// Drag
 let dragging = false, sx = 0, sy = 0;
 document.addEventListener('mousedown', (e) => {
-  // Only drag from the pet canvas area, not from input bar
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
   dragging = true; sx = e.screenX; sy = e.screenY;
 });
@@ -210,16 +233,14 @@ window.addEventListener('mousemove', (e) => {
 });
 window.addEventListener('mouseup', () => { dragging = false; });
 
-// ============================================================
-// START
-// ============================================================
+// Start
 setAnim('idle');
 requestAnimationFrame(loop);
 
-// Auto reminder
-setTimeout(() => showBubble('Hey! Time to stretch! 🧘'), 20000);
+// Reminders
+setTimeout(() => showBubble('Hey! Time to stretch! 🧘'), 25000);
 setInterval(() => {
   if (Math.random() < 0.25) {
-    showBubble(['Water break! 💧', 'Look away from the screen! 👀', 'Stand up and stretch! 🧘'][Math.floor(Math.random() * 3)]);
+    showBubble(['Water break! 💧', 'Rest your eyes! 👀', 'Stand up & stretch! 🧘', 'Your pet missed you! 🐾'][Math.floor(Math.random() * 4)]);
   }
-}, 45000);
+}, 50000);
