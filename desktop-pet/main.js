@@ -75,13 +75,14 @@ function createPetWindow() {
   petWindow = new BrowserWindow({
     width: 350,
     height: 400,
-    transparent: true,
-    frame: false,
+    transparent: false,
+    frame: true,
     alwaysOnTop: true,
-    hasShadow: false,
+    hasShadow: true,
     resizable: true,
     skipTaskbar: false,
-    opacity: config.opacity,
+    backgroundColor: '#FFFBF5',
+    opacity: 1.0,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
