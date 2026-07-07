@@ -43,6 +43,12 @@ export default function Navbar() {
                 Dashboard
               </Link>
               <Link
+                href="/download"
+                className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Download
+              </Link>
+              <Link
                 href="/upload"
                 className="px-5 py-2 text-sm font-semibold bg-coral text-white rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25"
               >
