@@ -6,15 +6,11 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
-      width: 100%; height: 100%;
-      background: transparent;
-      overflow: hidden;
-      user-select: none;
+      width: 100%; height: 100%; background: transparent; overflow: hidden; user-select: none;
     }
-    canvas { display: block; position: absolute; top: 0; left: 0; }
+    canvas { display: block; }
     #bubble {
-      position: absolute;
-      background: white; border-radius: 14px;
+      position: absolute; background: white; border-radius: 14px;
       padding: 10px 14px; font-family: 'Segoe UI', system-ui, sans-serif;
       font-size: 13px; color: #2D3436; max-width: 220px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.12); opacity: 0;
@@ -29,19 +25,10 @@
     #url-bar {
       position: absolute; bottom: 12px; left: 12px; right: 12px;
       display: flex; gap: 6px; z-index: 20;
-      background: rgba(255,255,255,0.92);
-      padding: 8px; border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-      border: 2px solid #FF6B6B;
-      transition: opacity 0.4s, pointer-events 0s;
+      background: rgba(255,255,255,0.92); padding: 8px; border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15); border: 2px solid #FF6B6B;
+      transition: opacity 0.4s;
     }
-    #hint-text {
-      position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
-      font-family: 'Segoe UI', sans-serif; font-size: 11px;
-      color: rgba(0,0,0,0.4); pointer-events: none; z-index: 5;
-      transition: opacity 1s;
-    }
-    #url-bar:hover { opacity: 1; }
     #url-bar input {
       flex: 1; padding: 8px 12px; border: 2px solid #ddd; border-radius: 10px;
       font-size: 12px; background: rgba(255,255,255,0.98); outline: none;
@@ -52,17 +39,23 @@
       background: #FF6B6B; color: white; white-space: nowrap;
     }
     #url-bar button:hover { background: #E55A5A; }
+    #hint {
+      position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+      font-family: 'Segoe UI', sans-serif; font-size: 11px;
+      color: rgba(0,0,0,0.4); pointer-events: none; z-index: 5;
+    }
   </style>
 </head>
 <body>
-  <canvas id="petCanvas"></canvas>
   <div id="bubble"></div>
   <div id="url-bar">
-    <input type="text" id="imgUrl" placeholder="Paste your pet image URL here, then click Load Pet" />
-    <button onclick="loadPetImage()">Load Pet</button>
+    <input type="text" id="glbUrl" placeholder="Paste .glb 3D model URL here, then click Load" />
+    <button onclick="loadGLB()">Load 3D Pet</button>
   </div>
-  <div id="hint-text">Double-click to enter pet URL  ·  Esc to hide this bar</div>
-  <script src="pet.js"></script>
-  <script src="reminders.js"></script>
+  <div id="hint">Double-click to enter model URL · Esc to hide</div>
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+  </script>
+  <script type="module" src="pet3d.js"></script>
 </body>
 </html>
