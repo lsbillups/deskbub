@@ -10,47 +10,46 @@
       background: transparent;
       overflow: hidden;
       user-select: none;
-      cursor: grab;
     }
-    body:active { cursor: grabbing; }
-    #pet {
-      position: absolute;
-      font-size: 100px;
-      transition: none;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.25));
-    }
+    canvas { display: block; position: absolute; top: 0; left: 0; }
     #bubble {
       position: absolute;
-      background: white;
-      border-radius: 14px;
-      padding: 10px 14px;
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      font-size: 13px;
-      color: #2D3436;
-      max-width: 220px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s;
-      z-index: 10;
+      background: white; border-radius: 14px;
+      padding: 10px 14px; font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px; color: #2D3436; max-width: 220px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12); opacity: 0;
+      pointer-events: none; transition: opacity 0.4s; z-index: 10;
     }
     #bubble::after {
-      content: '';
-      position: absolute;
-      bottom: -7px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 7px solid transparent;
-      border-right: 7px solid transparent;
-      border-top: 7px solid white;
+      content: ''; position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
+      width: 0; height: 0; border-left: 7px solid transparent;
+      border-right: 7px solid transparent; border-top: 7px solid white;
     }
     #bubble.show { opacity: 1; }
+    #url-bar {
+      position: absolute; bottom: 5px; left: 5px; right: 5px;
+      display: flex; gap: 4px; z-index: 20; opacity: 0.7; transition: opacity 0.3s;
+    }
+    #url-bar:hover { opacity: 1; }
+    #url-bar input {
+      flex: 1; padding: 4px 8px; border: 1px solid #ddd; border-radius: 8px;
+      font-size: 10px; background: rgba(255,255,255,0.95); outline: none;
+    }
+    #url-bar button {
+      padding: 4px 10px; border: none; border-radius: 8px;
+      font-size: 10px; font-weight: 600; cursor: pointer;
+      background: #FF6B6B; color: white; white-space: nowrap;
+    }
   </style>
 </head>
 <body>
-  <div id="pet">🐱</div>
+  <canvas id="petCanvas"></canvas>
   <div id="bubble"></div>
+  <div id="url-bar">
+    <input type="text" id="imgUrl" placeholder="Paste processed pet image URL..." />
+    <button onclick="loadPetImage()">Load</button>
+    <button onclick="resetPet()" style="background:#636E72;">🔄</button>
+  </div>
   <script src="pet.js"></script>
   <script src="reminders.js"></script>
 </body>
