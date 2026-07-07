@@ -22,6 +22,12 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {!isSignedIn ? (
             <>
+              <Link
+                href="/pricing"
+                className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Pricing
+              </Link>
               <SignInButton mode="modal">
                 <button className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors cursor-pointer">
                   Sign In
@@ -36,6 +42,12 @@ export default function Navbar() {
             </>
           ) : (
             <>
+              <Link
+                href="/pricing"
+                className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
+              >
+                Pricing
+              </Link>
               <Link
                 href="/dashboard"
                 className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
