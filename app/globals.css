@@ -1,0 +1,29 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-poppins);
+
+  /* PetPal brand colors */
+  --color-warm-cream: #FFFBF5;
+  --color-coral: #FF6B6B;
+  --color-coral-dark: #E55A5A;
+  --color-mint: #4ECDC4;
+  --color-mint-dark: #3DBDB5;
+  --color-soft-gray: #F5F5F5;
+  --color-text-primary: #2D3436;
+  --color-text-secondary: #636E72;
+}
+
+:root {
+  --background: #FFFBF5;
+  --foreground: #2D3436;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}

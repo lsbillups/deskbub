@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeskBub — Desktop Pet Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+}
+#desktop {
+  width: 90vw; max-width: 900px; height: 500px;
+  background: #FFFBF5; border-radius: 24px; position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+/* Fake desktop elements */
+.desktop-icon {
+  position: absolute; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; font-size: 11px; color: #636E72; cursor: default;
+}
+#pet-area { position: absolute; inset: 0; pointer-events: none; }
+#pet-area canvas { display: block; }
+
+#bubble {
+  position: absolute; background: white; border-radius: 14px;
+  padding: 10px 14px; font-size: 13px; color: #2D3436; max-width: 220px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); opacity: 0;
+  pointer-events: none; transition: opacity 0.4s; z-index: 10;
+}
+#bubble::after {
+  content: ''; position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 7px solid transparent; border-right: 7px solid transparent;
+  border-top: 7px solid white;
+}
+#bubble.visible { opacity: 1; }
+
+/* Controls */
+#controls {
+  margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+}
+#controls button {
+  padding: 10px 20px; border: 2px solid white; border-radius: 12px;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+  color: white; font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s;
+}
+#controls button:hover { background: rgba(255,255,255,0.3); }
+#controls button.active { background: white; color: #764ba2; }
+#info {
+  margin-top: 12px; color: rgba(255,255,255,0.7); font-size: 12px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div id="desktop">
+  <!-- Fake desktop icons -->
+  <div class="desktop-icon" style="top:20px;left:20px"><span style="font-size:36px">📁</span> Documents</div>
+  <div class="desktop-icon" style="top:20px;left:120px"><span style="font-size:36px">🌐</span> Browser</div>
+  <div class="desktop-icon" style="top:120px;left:20px"><span style="font-size:36px">📧</span> Mail</div>
+  <div class="desktop-icon" style="top:120px;left:120px"><span style="font-size:36px">💬</span> Chat</div>
+
+  <!-- Pet area -->
+  <div id="pet-area">
+    <canvas id="petCanvas"></canvas>
+  </div>
+  <div id="bubble"></div>
+</div>
+
+<div id="controls">
+  <button onclick="triggerAnim('walk')">🚶 Walk</button>
+  <button onclick="triggerAnim('sit')">🧘 Sit</button>
+  <button onclick="triggerAnim('sleep')">😴 Sleep</button>
+  <button onclick="triggerAnim('stretch')">🙆 Stretch</button>
+  <button onclick="triggerAnim('excited')">🎉 Excited</button>
+  <button onclick="triggerReminder()">💬 Test Reminder</button>
+</div>
+<div id="info">⬆ Click buttons to trigger animations  |  Tank top shape is a placeholder — replace with your own pet photo</div>
+
+<script>
+// ============================================================
+// PET ANIMATION ENGINE (same code as Electron renderer)
+// ============================================================
+
+const canvas = document.getElementById('petCanvas');
+const ctx = canvas.getContext('2d');
+const petArea = document.getElementById('petArea');
+const bubble = document.getElementById('bubble');
+
+canvas.width = petArea.clientWidth;
+canvas.height = petArea.clientHeight;
+window.addEventListener('resize', () => {
+  canvas.width = petArea.clientWidth;
+  canvas.height = petArea.clientHeight;
+});
+
+let currentAnim = 'idle';
+let animTimer = 0;
+let animDuration = 0;
+let idleTimer = 0;
+let nextIdle = 5000;
+let petX = canvas.width * 0.4, petY = canvas.height * 0.3;
+let vx = 0, vy = 0, walkDir = 1;
+let breathP = 0, stretchP = 0, sitP = 0, sleepZ = 0;
+let blinkT = 0, blinking = false;
+let remindTimeout = null;
+let lastTS = 0;
+
+function triggerAnim(name) {
+  currentAnim = name; animTimer = 0;
+  switch (name) {
+    case 'idle': animDuration = Infinity; break;
+    case 'walk': animDuration = 5000; vx = (0.5 + Math.random() * 0.8) * (Math.random() > 0.5 ? 1 : -1); vy = (Math.random() - 0.5) * 0.5; walkDir = vx > 0 ? 1 : -1; break;
+    case 'sit': animDuration = 1000; break;
+    case 'sleep': animDuration = 8000; break;
+    case 'stretch': animDuration = 1500; break;
+    case 'excited': animDuration = 2000; break;
+  }
+}
+
+function triggerReminder() {
+  const msgs = [
+    "Hey! Time to stretch! 🧘",
+    "Water break! Go hydrate! 💧",
+    "Look away from the screen, your eyes need rest 👀",
+    "You've been sitting a while. Walk around! 🚶",
+  ];
+  showBubble(msgs[Math.floor(Math.random() * msgs.length)]);
+}
+
+function showBubble(text) {
+  bubble.textContent = text;
+  bubble.classList.add('visible');
+  bubble.style.top = (petY - 50) + 'px';
+  bubble.style.left = (petX + 40) + 'px';
+  bubble.style.transform = 'translateX(-50%)';
+  clearTimeout(remindTimeout);
+  remindTimeout = setTimeout(() => bubble.classList.remove('visible'), 8000);
+}
+
+function loop(ts) {
+  const dt = Math.min(ts - lastTS, 100); lastTS = ts;
+  animTimer += dt; idleTimer += dt;
+
+  // Auto switch
+  if (currentAnim === 'idle' && idleTimer > nextIdle) {
+    idleTimer = 0; nextIdle = 5000 + Math.random() * 10000;
+    const r = ['walk','sit','sleep','stretch'][Math.floor(Math.random()*4)];
+    triggerAnim(r);
+  }
+
+  // Update
+  switch (currentAnim) {
+    case 'idle': breathP += dt * 0.002; break;
+    case 'walk':
+      petX += vx * (dt/16); petY += vy * (dt/16);
+      if (petX < 20 || petX > canvas.width - 180) { vx *= -1; walkDir = vx > 0 ? 1 : -1; }
+      if (petY < 20 || petY > canvas.height - 250) vy *= -1;
+      if (animTimer > animDuration) triggerAnim('idle');
+      break;
+    case 'sit': sitP = Math.min(1, animTimer/animDuration); if (animTimer > animDuration + 3500) triggerAnim('idle'); break;
+    case 'sleep': sleepZ = Math.min(1, animTimer/1000); if (animTimer > animDuration + 6000) triggerAnim('idle'); break;
+    case 'stretch': stretchP = animTimer/animDuration; if (animTimer > animDuration) triggerAnim('idle'); break;
+    case 'excited': if (animTimer > animDuration) triggerAnim('idle'); break;
+  }
+
+  blinkT += dt;
+  if (blinkT > 2500) { blinkT = 0; blinking = true; setTimeout(() => blinking = false, 120); }
+
+  // Draw
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  let scale = 1.0;
+  if (currentAnim === 'idle') scale *= 1 + Math.sin(breathP) * 0.03;
+  else if (currentAnim === 'stretch') { const t = stretchP; scale *= t < 0.4 ? 1 - t * 0.2 : 0.92 + 0.15 * Math.sin((t-0.4)*Math.PI/0.6); }
+  else if (currentAnim === 'sit') scale *= 1 - sitP * 0.1;
+  else if (currentAnim === 'sleep') scale *= 0.78;
+  else if (currentAnim === 'excited') scale *= 1 + Math.abs(Math.sin(animTimer * 0.012)) * 0.08;
+
+  let bounceY = 0;
+  if (currentAnim === 'walk') bounceY = Math.abs(Math.sin(animTimer * 0.008)) * 6;
+
+  ctx.save();
+  ctx.translate(petX + 90, petY + 130 + bounceY);
+  ctx.scale(scale, scale);
+  ctx.translate(-90, -130);
+
+  // === Draw cute cat (tank top shape) ===
+  const s = 1.2;
+
+  // Tail
+  ctx.save();
+  ctx.translate(135, 115);
+  ctx.rotate(-0.3 + Math.sin(animTimer * 0.005) * 0.15);
+  ctx.fillStyle = '#D35400';
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(30,-15,25,30); ctx.quadraticCurveTo(20,45,10,50);
+  ctx.quadraticCurveTo(5,45,8,30); ctx.quadraticCurveTo(15,10,0,0); ctx.fill();
+  ctx.restore();
+
+  // Body
+  ctx.fillStyle = '#E67E22';
+  ctx.beginPath(); ctx.ellipse(75, 110, 50*s, 55*s, 0, 0, Math.PI*2); ctx.fill();
+
+  // Belly patch
+  ctx.fillStyle = '#FAD7A1';
+  ctx.beginPath(); ctx.ellipse(75, 115, 30*s, 35*s, 0, 0, Math.PI*2); ctx.fill();
+
+  // Front paws
+  ctx.fillStyle = '#E67E22';
+  ctx.beginPath(); ctx.ellipse(38, 155, 14*s, 8*s, -0.2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(112, 155, 14*s, 8*s, 0.2, 0, Math.PI*2); ctx.fill();
+  // Paw tips
+  ctx.fillStyle = '#FFF';
+  ctx.beginPath(); ctx.ellipse(38, 160, 10*s, 5*s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(112, 160, 10*s, 5*s, 0, 0, Math.PI*2); ctx.fill();
+
+  // Head
+  ctx.fillStyle = '#E67E22';
+  ctx.beginPath(); ctx.arc(75, 55, 35*s, 0, Math.PI*2); ctx.fill();
+
+  // Ears
+  ctx.beginPath(); ctx.moveTo(47, 36); ctx.lineTo(35, 5); ctx.lineTo(62, 28); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(103, 36); ctx.lineTo(115, 5); ctx.lineTo(88, 28); ctx.fill();
+  // Inner ears
+  ctx.fillStyle = '#FAD7A1';
+  ctx.beginPath(); ctx.moveTo(50, 34); ctx.lineTo(40, 12); ctx.lineTo(60, 29); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(100, 34); ctx.lineTo(110, 12); ctx.lineTo(90, 29); ctx.fill();
+
+  // Face
+  ctx.fillStyle = '#E67E22';
+  // Eyes
+  ctx.fillStyle = '#FFF';
+  ctx.beginPath(); ctx.ellipse(63, 52, 9, 10, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(87, 52, 9, 10, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#2D3436';
+  ctx.beginPath(); ctx.arc(65, 54, 5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(89, 54, 5, 0, Math.PI*2); ctx.fill();
+  // Eye sparkle
+  ctx.fillStyle = '#FFF';
+  ctx.beginPath(); ctx.arc(67, 52, 2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(91, 52, 2, 0, Math.PI*2); ctx.fill();
+
+  // Nose & mouth
+  ctx.fillStyle = '#FF6B6B';
+  ctx.beginPath(); ctx.moveTo(75, 62); ctx.lineTo(72, 67); ctx.lineTo(78, 67); ctx.fill();
+  ctx.strokeStyle = '#2D3436'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(75, 67); ctx.quadraticCurveTo(65, 74, 60, 70); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(75, 67); ctx.quadraticCurveTo(85, 74, 90, 70); ctx.stroke();
+
+  // Whiskers
+  ctx.strokeStyle = '#888'; ctx.lineWidth = 1;
+  [62,65,85,88].forEach((x,i) => {
+    const dir = i < 2 ? -1 : 1;
+    ctx.beginPath(); ctx.moveTo(x, 65); ctx.lineTo(x + dir*18, 62 + (i%2)*4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x, 68); ctx.lineTo(x + dir*18, 68 + (i%2)*2); ctx.stroke();
+  });
+
+  // Sleep Zzz
+  if (currentAnim === 'sleep') {
+    ctx.save(); ctx.globalAlpha = sleepZ;
+    ctx.fillStyle = '#636E72'; ctx.font = 'bold 20px system-ui';
+    ['z','Z','Z'].forEach((z,i) => {
+      ctx.save(); ctx.translate(80 + i*16, 10 - i*18); ctx.scale(0.7+i*0.3, 0.7+i*0.3); ctx.fillText(z, 0, 0); ctx.restore();
+    });
+    ctx.restore();
+  }
+
+  // Blink
+  if (blinking && currentAnim !== 'sleep') { ctx.fillStyle = '#E67E22'; ctx.fillRect(60, 47, 30, 10); }
+
+  ctx.restore();
+
+  requestAnimationFrame(loop);
+}
+
+// Start
+triggerAnim('idle');
+requestAnimationFrame(loop);
+
+// Auto walk every ~15s
+setInterval(() => {
+  if (currentAnim === 'idle' && Math.random() < 0.4) triggerAnim('walk');
+}, 15000);
+
+// Auto reminder every ~30s (demo speed)
+setInterval(() => {
+  if (Math.random() < 0.4) triggerReminder();
+}, 30000);
+
+// Initial reminder after 8s
+setTimeout(triggerReminder, 8000);
+</script>
+</body>
+</html>

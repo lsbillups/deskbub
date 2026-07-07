@@ -1,0 +1,8 @@
+node_modules/
+.next/
+electron-bin/
+electron-dist/
+electron28/
+electron31/
+.env.local
+*.zip

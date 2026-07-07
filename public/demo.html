@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeskBub — Desktop Pet Demo</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  padding: 20px;
+}
+#desktop {
+  width: 900px; max-width: 95vw; height: 500px;
+  background: #FFFBF5; border-radius: 24px; position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  overflow: hidden;
+}
+canvas { display: block; width: 100%; height: 100%; }
+#bubble {
+  position: absolute; background: white; border-radius: 14px;
+  padding: 10px 14px; font-size: 13px; color: #2D3436; max-width: 220px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12); opacity: 0;
+  pointer-events: none; transition: opacity 0.4s; z-index: 10;
+}
+#bubble::after {
+  content: ''; position: absolute; bottom: -7px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 7px solid transparent; border-right: 7px solid transparent;
+  border-top: 7px solid white;
+}
+#bubble.show { opacity: 1; }
+#controls {
+  margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+}
+#controls button {
+  padding: 10px 18px; border: 2px solid white; border-radius: 12px;
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+  color: white; font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s;
+}
+#controls button:hover { background: rgba(255,255,255,0.3); }
+#info {
+  margin-top: 10px; color: rgba(255,255,255,0.65); font-size: 12px; text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div id="desktop">
+  <canvas id="c"></canvas>
+  <div id="bubble"></div>
+</div>
+
+<div id="controls">
+  <button onclick="setAnim('walk')">🚶 Walk</button>
+  <button onclick="setAnim('sit')">🧘 Sit</button>
+  <button onclick="setAnim('sleep')">😴 Sleep</button>
+  <button onclick="setAnim('stretch')">🙆 Stretch</button>
+  <button onclick="setAnim('excited')">🎉 Excited</button>
+  <button onclick="showReminder()">💬 Reminder</button>
+  <button onclick="togglePhoto()" id="btnPhoto" style="background:rgba(255,255,255,0.25)">📸 Switch to Real Photo</button>
+</div>
+<div id="info">🐱 Current: placeholder cat  |  Click "Switch to Real Photo" to see how YOUR pet would look</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const bubble = document.getElementById('bubble');
+  const desktop = document.getElementById('desktop');
+
+  // Match canvas resolution to display size
+  function resize() {
+    canvas.width = desktop.clientWidth;
+    canvas.height = desktop.clientHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // State
+  let anim = 'idle', animT = 0, animDur = Infinity;
+  let idleT = 0, nextIdle = 6000;
+  let px = canvas.width * 0.35, py = canvas.height * 0.25;
+  let vx = 0, vy = 0, dir = 1;
+  let breath = 0, stretch = 0, sit = 0, sleep = 0;
+  let blinkT = 0, blinking = false;
+  let lastTS = 0;
+  let bubbleTimer = null;
+
+  window.setAnim = function(name) {
+    anim = name; animT = 0;
+    if (name === 'idle') animDur = Infinity;
+    else if (name === 'walk') { animDur = 5000; vx = (0.6+Math.random()*0.8)*(Math.random()>0.5?1:-1); vy = (Math.random()-0.5)*0.4; dir = vx>0?1:-1; }
+    else if (name === 'sit') animDur = 1000;
+    else if (name === 'sleep') animDur = 8000;
+    else if (name === 'stretch') animDur = 1500;
+    else if (name === 'excited') animDur = 2000;
+  };
+
+  let useRealPhoto = false;
+  const realPhotoImg = new Image();
+  realPhotoImg.crossOrigin = 'anonymous';
+  // Cute orange tabby cat with transparent background (from Unsplash)
+  realPhotoImg.src = 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=300&h=300&fit=crop&crop=center';
+
+  window.togglePhoto = function() {
+    useRealPhoto = !useRealPhoto;
+    const btn = document.getElementById('btnPhoto');
+    const info = document.getElementById('info');
+    if (useRealPhoto) {
+      btn.textContent = '🐱 Switch to Placeholder';
+      btn.style.background = 'rgba(255,255,255,0.35)';
+      info.innerHTML = '📸 <b>Real Photo Mode</b> — this is how YOUR pet will look after AI processing!';
+    } else {
+      btn.textContent = '📸 Switch to Real Photo';
+      btn.style.background = 'rgba(255,255,255,0.25)';
+      info.innerHTML = '🐱 Current: placeholder cat  |  Click "Switch to Real Photo" to see how YOUR pet would look';
+    }
+  };
+
+  window.showReminder = function() {
+    const msgs = ["Hey! Time to stretch! 🧘","Water break! Go hydrate! 💧","Look away from the screen — eye break! 👀","You've been sitting a while. Walk around! 🚶"];
+    const msg = msgs[Math.floor(Math.random()*msgs.length)];
+    bubble.textContent = msg;
+    bubble.style.top = Math.max(0, py - 45) + 'px';
+    bubble.style.left = Math.max(20, px + 50) + 'px';
+    bubble.classList.add('show');
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => bubble.classList.remove('show'), 8000);
+  };
+
+  function drawCat(x, y, s) {
+    s = s || 1;
+    // Tail
+    ctx.save(); ctx.translate(x+70, y+70); ctx.rotate(-0.3+Math.sin(animT*0.004)*0.12);
+    ctx.fillStyle = '#C0392B'; ctx.beginPath(); ctx.moveTo(0,0); ctx.quadraticCurveTo(25,-12,20,28); ctx.quadraticCurveTo(16,40,8,44); ctx.quadraticCurveTo(4,40,6,26); ctx.quadraticCurveTo(12,8,0,0); ctx.fill(); ctx.restore();
+
+    // Body
+    ctx.fillStyle = '#E67E22'; ctx.beginPath(); ctx.ellipse(x+35, y+70, 40*s, 44*s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#FDEBD0'; ctx.beginPath(); ctx.ellipse(x+35, y+75, 24*s, 28*s, 0, 0, Math.PI*2); ctx.fill();
+
+    // Paws
+    ctx.fillStyle = '#E67E22';
+    ctx.beginPath(); ctx.ellipse(x+5, y+108, 11, 7, -0.2, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x+65, y+108, 11, 7, 0.2, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#FFF';
+    ctx.beginPath(); ctx.ellipse(x+5, y+112, 8, 4, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x+65, y+112, 8, 4, 0, 0, Math.PI*2); ctx.fill();
+
+    // Head
+    ctx.fillStyle = '#E67E22'; ctx.beginPath(); ctx.arc(x+35, y+30, 28*s, 0, Math.PI*2); ctx.fill();
+    // Ears
+    ctx.beginPath(); ctx.moveTo(x+12, y+18); ctx.lineTo(x+3, y-8); ctx.lineTo(x+24, y+8); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x+58, y+18); ctx.lineTo(x+67, y-8); ctx.lineTo(x+46, y+8); ctx.fill();
+    ctx.fillStyle = '#FDEBD0';
+    ctx.beginPath(); ctx.moveTo(x+14, y+16); ctx.lineTo(x+7, y+0); ctx.lineTo(x+23, y+10); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x+56, y+16); ctx.lineTo(x+63, y+0); ctx.lineTo(x+47, y+10); ctx.fill();
+
+    // Eyes
+    ctx.fillStyle = '#FFF'; ctx.beginPath(); ctx.ellipse(x+24, y+26, 8, 9, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x+46, y+26, 8, 9, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#2D3436'; ctx.beginPath(); ctx.arc(x+26, y+28, 4.5, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+48, y+28, 4.5, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#FFF'; ctx.beginPath(); ctx.arc(x+28, y+26, 1.8, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+50, y+26, 1.8, 0, Math.PI*2); ctx.fill();
+
+    // Nose & mouth
+    ctx.fillStyle = '#FF6B6B'; ctx.beginPath(); ctx.moveTo(x+35, y+36); ctx.lineTo(x+32, y+40); ctx.lineTo(x+38, y+40); ctx.fill();
+    ctx.strokeStyle = '#2D3436'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(x+35, y+40); ctx.quadraticCurveTo(x+27, y+46, x+23, y+43); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+35, y+40); ctx.quadraticCurveTo(x+43, y+46, x+47, y+43); ctx.stroke();
+
+    // Whiskers
+    ctx.strokeStyle = '#BBB'; ctx.lineWidth = 0.8;
+    [22,25,45,48].forEach((wx, i) => { const d = i<2?-1:1;
+      ctx.beginPath(); ctx.moveTo(x+wx, y+39); ctx.lineTo(x+wx+d*14, y+37+(i%2)*3); ctx.stroke();
+    });
+  }
+
+  function loop(ts) {
+    if (!lastTS) lastTS = ts;
+    const dt = Math.min(ts - lastTS, 100); lastTS = ts;
+    animT += dt; idleT += dt;
+
+    // Auto idle → random animation
+    if (anim === 'idle' && idleT > nextIdle) {
+      idleT = 0; nextIdle = 5000 + Math.random()*10000;
+      const r = ['walk','sit','sleep','stretch'][Math.floor(Math.random()*4)];
+      setAnim(r);
+    }
+
+    // Update animation
+    let sc = 1.2, bx = 0;
+    if (anim === 'idle') { breath += dt*0.002; sc *= 1+Math.sin(breath)*0.03; }
+    else if (anim === 'walk') {
+      px += vx*(dt/16); py += vy*(dt/16);
+      if (px<10 || px>canvas.width-140) { vx*=-1; dir=vx>0?1:-1; }
+      if (py<10 || py>canvas.height-200) vy*=-1;
+      bx = Math.abs(Math.sin(animT*0.008))*6;
+      if (animT > animDur) setAnim('idle');
+    }
+    else if (anim === 'sit') { sit = Math.min(1,animT/animDur); sc *= 1-sit*0.1; if (animT>animDur+3500) setAnim('idle'); }
+    else if (anim === 'sleep') { sleep = Math.min(1,animT/1000); sc *= 0.78; if (animT>animDur+6000) setAnim('idle'); }
+    else if (anim === 'stretch') { stretch = animT/animDur; sc *= stretch<0.4 ? 1-stretch*0.2 : 0.92+0.15*Math.sin((stretch-0.4)*Math.PI/0.6); if (animT>animDur) setAnim('idle'); }
+    else if (anim === 'excited') { sc *= 1+Math.abs(Math.sin(animT*0.012))*0.08; if (animT>animDur) setAnim('idle'); }
+
+    blinkT += dt;
+    if (blinkT > 2500) { blinkT = 0; blinking = true; setTimeout(()=>blinking=false, 120); }
+
+    // Draw
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Flip horizontally if walking left
+    ctx.save();
+    const cx = px + 50, cy = py + 75 + bx;
+    ctx.translate(cx, cy);
+    ctx.scale(sc, sc);
+    // Flip for walking direction (affects emoji placeholder too)
+    if (anim === 'walk' && dir === -1) {
+      ctx.scale(-1, 1);
+      ctx.translate(-100, 0); // compensate for flip
+    }
+    ctx.translate(-50, -75);
+
+    // Draw pet (real photo or placeholder)
+    if (useRealPhoto && realPhotoImg.complete && realPhotoImg.naturalWidth > 0) {
+      // Real pet photo with oval soft-edge mask
+      ctx.save();
+      ctx.beginPath();
+      ctx.ellipse(35, 70, 35, 42, 0, 0, Math.PI * 2);
+      ctx.clip();
+      ctx.drawImage(realPhotoImg, -5, 15, 80, 80);
+      ctx.restore();
+    } else {
+      // Cute emoji placeholder
+      ctx.font = '64px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🐱', 35, 75);
+    }
+
+    // Sleep Zzz
+    if (anim === 'sleep') {
+      ctx.globalAlpha = sleep;
+      ctx.fillStyle = '#636E72'; ctx.font = 'bold 18px sans-serif';
+      ['z','Z','Z'].forEach((z,i)=>{ ctx.save(); ctx.translate(85+i*14, 20-i*16); ctx.scale(0.7+i*0.3,0.7+i*0.3); ctx.fillText(z,0,0); ctx.restore(); });
+      ctx.globalAlpha = 1;
+    }
+
+    // Blink overlay
+    if (blinking && anim !== 'sleep') { ctx.fillStyle = '#E67E22'; ctx.fillRect(16, 22, 48, 10); }
+
+    ctx.restore();
+
+    requestAnimationFrame(loop);
+  }
+
+  // Kick off!
+  setAnim('idle');
+  requestAnimationFrame(loop);
+
+  // Auto reminder after 10s, then every ~30s
+  setTimeout(showReminder, 10000);
+  setInterval(() => { if (Math.random()<0.35) showReminder(); }, 30000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Test</title>
+<style>body{background:#FFFBF5;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;flex-direction:column;gap:20px}</style>
+</head>
+<body>
+<h1 style="color:#FF6B6B;font-size:40px">🐱 DeskBub Pet Test</h1>
+<p>If you see this text, the server is working!</p>
+<canvas id="c" width="300" height="300" style="border:2px solid #FF6B6B;border-radius:12px"></canvas>
+<button onclick="drawCat()" style="padding:12px 24px;background:#FF6B6B;color:white;border:none;border-radius:12px;font-size:16px;cursor:pointer">Click to Draw Cat</button>
+<script>
+function drawCat(){
+var c=document.getElementById('c'),x=c.getContext('2d');
+x.clearRect(0,0,300,300);
+x.fillStyle='#E67E22';x.beginPath();x.ellipse(150,180,60,70,0,0,Math.PI*2);x.fill();
+x.beginPath();x.arc(150,80,45,0,Math.PI*2);x.fill();
+x.fillStyle='#FFF';x.beginPath();x.ellipse(130,75,12,14,0,0,Math.PI*2);x.fill();
+x.beginPath();x.ellipse(170,75,12,14,0,0,Math.PI*2);x.fill();
+x.fillStyle='#2D3436';x.beginPath();x.arc(133,78,6,0,Math.PI*2);x.fill();
+x.beginPath();x.arc(173,78,6,0,Math.PI*2);x.fill();
+x.fillStyle='#FF6B6B';x.beginPath();x.moveTo(150,85);x.lineTo(146,92);x.lineTo(154,92);x.fill();
+x.fillStyle='#636E72';x.font='bold 16px sans-serif';x.fillText('Meow!',120,260);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeskBub</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: transparent;
+      overflow: hidden;
+      user-select: none;
+    }
+    canvas { display: block; }
+    #bubble {
+      position: absolute;
+      background: white;
+      border-radius: 16px;
+      padding: 10px 14px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px;
+      color: #2D3436;
+      max-width: 220px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 10;
+    }
+    #bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid white;
+    }
+    #bubble.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+  <canvas id="petCanvas"></canvas>
+  <div id="bubble"></div>
+  <script src="pet.js"></script>
+  <script src="reminders.js"></script>
+</body>
+</html>
