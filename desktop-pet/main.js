@@ -24,8 +24,8 @@ function loadConfig() {
     }
   } catch (e) { /* ignore */ }
   return {
-    sitReminder: 50,    // minutes
-    waterReminder: 90,  // minutes
+    sitReminder: 50,
+    waterReminder: 90,
     opacity: 0.9,
     petSize: 1.0,
     remindersPaused: false,
@@ -34,6 +34,39 @@ function loadConfig() {
 
 function saveConfig(config) {
   fs.writeFileSync(getConfigPath(), JSON.stringify(config, null, 2));
+}
+
+// Create a simple visible tray icon (16x16 paw-colored square)
+function createTrayIcon() {
+  // 16x16 PNG with a coral-colored paw-like shape
+  const size = 16;
+  const buf = Buffer.alloc(size * size * 4);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const idx = (y * size + x) * 4;
+      // Draw a simple paw-like shape: circle at top, bigger circle below
+      const cx = size / 2, cy = size / 2;
+      const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+      // Main pad
+      const inPad = dist < 5;
+      // Toe dots
+      const toes = [
+        Math.sqrt((x - cx + 4) ** 2 + (y - cy + 4) ** 2) < 3,
+        Math.sqrt((x - cx - 4) ** 2 + (y - cy + 4) ** 2) < 3,
+        Math.sqrt((x - cx + 3) ** 2 + (y - cy + 5) ** 2) < 3,
+        Math.sqrt((x - cx - 3) ** 2 + (y - cy + 5) ** 2) < 3,
+      ];
+      if (inPad || toes.some(t => t)) {
+        buf[idx] = 0xFF;     // R
+        buf[idx + 1] = 0x6B; // G
+        buf[idx + 2] = 0x6B; // B
+        buf[idx + 3] = 0xFF; // A
+      } else {
+        buf[idx + 3] = 0x00; // transparent
+      }
+    }
+  }
+  return nativeImage.createFromBuffer(buf, { width: size, height: size });
 }
 
 function createPetWindow() {
@@ -54,27 +87,15 @@ function createPetWindow() {
       contextIsolation: true,
       nodeIntegration: false,
     },
-    // Position at bottom-right of screen
-    x: undefined,
-    y: undefined,
   });
 
   petWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 
-  // Make window click-through except for the pet body area
-  petWindow.setIgnoreMouseEvents(false);
-
-  // Position at bottom right initially
+  // Position at bottom right
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
   petWindow.setPosition(width - 380, height - 450);
-
-  // Save position on move
-  petWindow.on('moved', () => {
-    const [x, y] = petWindow.getPosition();
-    // store position? not needed for now
-  });
 
   petWindow.on('closed', () => {
     petWindow = null;
@@ -82,15 +103,7 @@ function createPetWindow() {
 }
 
 function createTray() {
-  // Create a simple 16x16 tray icon
-  const iconPath = path.join(__dirname, 'assets', 'tray-icon.png');
-  if (fs.existsSync(iconPath)) {
-    tray = new Tray(iconPath);
-  } else {
-    // Fallback: create a tiny transparent image
-    const img = nativeImage.createEmpty();
-    tray = new Tray(img);
-  }
+  tray = new Tray(createTrayIcon());
 
   const contextMenu = Menu.buildFromTemplate([
     {
@@ -190,7 +203,7 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
-  // Don't quit on window close — tray keeps running
+  // Don't quit — tray keeps running
 });
 
 app.on('before-quit', () => {
