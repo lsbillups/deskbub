@@ -16,6 +16,10 @@ export default function UploadPage() {
   const [error, setError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDemo, setIsDemo] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
+  const [modelUrl, setModelUrl] = useState<string | null>(null);
+  const [isGenerating3D, setIsGenerating3D] = useState(false);
 
   const handleFileSelected = (selectedFile: File) => {
     setFile(selectedFile);
@@ -87,6 +91,52 @@ export default function UploadPage() {
     }
   };
 
+  const handleGenerateVideo = async () => {
+    if (!processedUrl) return;
+    setIsGeneratingVideo(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: processedUrl }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Video generation failed.');
+      }
+
+      setVideoUrl(result.videoUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Video generation failed.');
+    } finally {
+      setIsGeneratingVideo(false);
+    }
+  };
+
+  const handleGenerate3D = async () => {
+    if (!processedUrl) return;
+    setIsGenerating3D(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/generate-3d', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: processedUrl }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || '3D generation failed.');
+      setModelUrl(result.modelUrl);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '3D generation failed.');
+    } finally {
+      setIsGenerating3D(false);
+    }
+  };
+
   const handleDemo = async () => {
     if (!previewUrl) return;
     setError(null);
@@ -113,6 +163,8 @@ export default function UploadPage() {
     setFile(null);
     setPreviewUrl(null);
     setProcessedUrl(null);
+    setVideoUrl(null);
+    setModelUrl(null);
     setError(null);
     setUploadProgress(0);
     setStage('select');
@@ -137,7 +189,13 @@ export default function UploadPage() {
               key="done"
               originalUrl={previewUrl}
               processedUrl={processedUrl}
+              videoUrl={videoUrl}
+              modelUrl={modelUrl}
               isDemo={isDemo}
+              isGeneratingVideo={isGeneratingVideo}
+              isGenerating3D={isGenerating3D}
+              onGenerateVideo={handleGenerateVideo}
+              onGenerate3D={handleGenerate3D}
               onReset={handleReset}
             />
           ) : (

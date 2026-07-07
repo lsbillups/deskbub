@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     });
 
     const output = await replicate.run(
-      'cjwbw/rembg:fb8af171cfa1616dd8f5f78d0e604d8a3e2b4c27d8105b9e0e2e0e0e0e0e0e0e',
+      'cjwbw/rembg:fb8af171cfa1616ddcf1242c093f9c46bcada5ad4cf6f2fbe8b81b330ec5c003',
       {
         input: {
           image: imageUrl,
@@ -41,12 +41,51 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // Replicate returns the output as an array or string
-    const processedImageUrl = Array.isArray(output) ? output[0] : output;
+    // Replicate v1 may return a URL string directly
+    let processedImageUrl: string | null = null;
+    const outputAny = output as any;
 
-    if (!processedImageUrl || typeof processedImageUrl !== 'string') {
+    if (outputAny && outputAny.url) {
+      // Replicate hosted URL
+      processedImageUrl = outputAny.url();
+    } else if (typeof outputAny === 'string') {
+      processedImageUrl = outputAny;
+    } else if (Array.isArray(outputAny) && typeof outputAny[0] === 'string') {
+      processedImageUrl = outputAny[0];
+    } else if (outputAny && outputAny.image) {
+      processedImageUrl = outputAny.image;
+    } else if (outputAny && typeof outputAny.pipe === 'function') {
+      // Node.js Readable stream
+      const chunks: Buffer[] = [];
+      for await (const chunk of outputAny) {
+        chunks.push(Buffer.from(chunk));
+      }
+      const buffer = Buffer.concat(chunks);
+
+      const supabase = await createClient();
+      const uploadResult = await supabase.storage
+        .from('pet-photos')
+        .upload(`processed/${Date.now()}.png`, buffer, {
+          contentType: 'image/png',
+          upsert: false,
+        });
+
+      if (uploadResult.error) {
+        console.error('Upload error:', uploadResult.error);
+        throw new Error('Failed to save processed image.');
+      }
+
+      const { data: urlData } = supabase.storage
+        .from('pet-photos')
+        .getPublicUrl(uploadResult.data.path);
+      processedImageUrl = urlData.publicUrl;
+    }
+
+    // Fallback: log the output to debug
+    if (!processedImageUrl) {
+      console.error('Unknown Replicate output type:', typeof outputAny, JSON.stringify(outputAny).slice(0, 200));
       return NextResponse.json(
-        { error: 'AI processing failed. Please try again.' },
+        { error: 'AI processing returned unexpected format. Please try again.' },
         { status: 500 }
       );
     }
