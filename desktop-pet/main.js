@@ -79,8 +79,8 @@ function createPetWindow() {
     frame: false,
     alwaysOnTop: true,
     hasShadow: false,
-    resizable: false,
-    skipTaskbar: true,
+    resizable: true,
+    skipTaskbar: false,
     opacity: config.opacity,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -91,11 +91,12 @@ function createPetWindow() {
 
   petWindow.loadFile(path.join(__dirname, 'renderer', 'index.html'));
 
-  // Position at bottom right
+  // Position at center of screen so it's easy to spot
   const { screen } = require('electron');
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width, height } = primaryDisplay.workAreaSize;
-  petWindow.setPosition(width - 380, height - 450);
+  petWindow.setPosition(Math.round((width - 350) / 2), Math.round((height - 400) / 2));
+  petWindow.setTitle('DeskBub Pet');
 
   petWindow.on('closed', () => {
     petWindow = null;
