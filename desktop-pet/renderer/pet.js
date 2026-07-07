@@ -198,20 +198,17 @@ function loop(ts) {
 // DRAG
 // ============================================================
 let dragging = false, sx = 0, sy = 0;
-canvas.addEventListener('mousedown', (e) => {
+document.addEventListener('mousedown', (e) => {
+  // Only drag from the pet canvas area, not from input bar
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
   dragging = true; sx = e.screenX; sy = e.screenY;
-  if (window.deskBub) window.deskBub.setIgnoreMouse(false);
-  e.preventDefault();
 });
 window.addEventListener('mousemove', (e) => {
   if (!dragging) return;
   window.moveBy(e.screenX - sx, e.screenY - sy);
   sx = e.screenX; sy = e.screenY;
 });
-window.addEventListener('mouseup', () => {
-  dragging = false;
-  if (window.deskBub) window.deskBub.setIgnoreMouse(true, { forward: true });
-});
+window.addEventListener('mouseup', () => { dragging = false; });
 
 // ============================================================
 // START
