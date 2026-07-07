@@ -38,9 +38,9 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Poll until complete (can take 30-120 seconds)
+    // Poll until complete (TRELLIS with multi-image can take 3-6 minutes)
     let result = prediction;
-    const maxAttempts = 60;
+    const maxAttempts = 120; // 120 * 5s = 10 minutes max
     for (let i = 0; i < maxAttempts; i++) {
       if (result.status === 'succeeded') break;
       if (result.status === 'failed' || result.status === 'canceled') {
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-      await new Promise((r) => setTimeout(r, 3000));
+      await new Promise((r) => setTimeout(r, 5000));
       result = await replicate.predictions.get(prediction.id);
     }
 
