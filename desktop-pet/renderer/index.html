@@ -28,7 +28,11 @@
     #bubble.show { opacity: 1; }
     #url-bar {
       position: absolute; bottom: 12px; left: 12px; right: 12px;
-      display: flex; gap: 6px; z-index: 20; opacity: 0.85; transition: opacity 0.3s;
+      display: flex; gap: 6px; z-index: 20; opacity: 1;
+      background: rgba(255,255,255,0.92);
+      padding: 8px; border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      border: 2px solid #FF6B6B;
     }
     #url-bar:hover { opacity: 1; }
     #url-bar input {
@@ -47,9 +51,8 @@
   <canvas id="petCanvas"></canvas>
   <div id="bubble"></div>
   <div id="url-bar">
-    <input type="text" id="imgUrl" placeholder="Paste processed pet image URL..." />
-    <button onclick="loadPetImage()">Load</button>
-    <button onclick="resetPet()" style="background:#636E72;">🔄</button>
+    <input type="text" id="imgUrl" placeholder="1. Upload on website  2. Right-click processed image → Copy URL  3. Paste here" />
+    <button onclick="loadPetImage()">Load Pet</button>
   </div>
   <script src="pet.js"></script>
   <script src="reminders.js"></script>
