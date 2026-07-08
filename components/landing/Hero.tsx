@@ -43,27 +43,6 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Right: How it works */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="flex flex-col gap-6"
-        >
-          {[
-            { emoji: '📸', title: 'Upload', desc: 'Take or choose a photo of your pet' },
-            { emoji: '✨', title: 'AI Magic', desc: 'Our AI brings your pet to life' },
-            { emoji: '💻', title: 'Enjoy', desc: 'Your pet lives on your desktop' },
-          ].map((step, i) => (
-            <div key={step.title} className="flex items-center gap-5 bg-white/60 backdrop-blur rounded-2xl p-5 border border-gray-100">
-              <div className="text-4xl shrink-0">{step.emoji}</div>
-              <div>
-                <p className="font-display font-bold text-text-primary">{step.title}</p>
-                <p className="text-sm text-text-secondary">{step.desc}</p>
-              </div>
-            </div>
-          ))}
-        </motion.div>
 
       </div>
     </section>
