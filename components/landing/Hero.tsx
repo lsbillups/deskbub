@@ -44,26 +44,22 @@ export default function Hero() {
           </div>
         </motion.div>
 
-        {/* Right: Visual Placeholder */}
+        {/* Right: Simple illustration */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, delay: 0.2 }}
           className="relative"
         >
-          <div className="aspect-square rounded-3xl bg-gradient-to-br from-coral/10 via-mint/10 to-coral/5 border border-coral/20 flex items-center justify-center overflow-hidden shadow-2xl shadow-coral/10">
-            <div className="text-center p-8">
-              <div className="text-8xl mb-4">🐶</div>
-              <p className="text-sm text-text-secondary font-medium">
-                Your pet lives here
-              </p>
-              <p className="text-xs text-text-secondary/60 mt-1">
-                Demo GIF coming soon
-              </p>
+          <div className="aspect-square rounded-3xl bg-gradient-to-br from-coral/5 via-cream to-mint/5 flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-7xl">📸</div>
+              <div className="text-2xl my-3">→</div>
+              <div className="text-7xl">✨</div>
+              <div className="text-2xl my-3">→</div>
+              <div className="text-7xl">💻</div>
             </div>
           </div>
-          {/* Decorative glow */}
-          <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-coral/5 via-mint/5 to-coral/5 blur-2xl -z-10" />
         </motion.div>
       </div>
     </section>
