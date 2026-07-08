@@ -1,5 +1,5 @@
-// DeskBub — Video pet with foolproof transparency
-var video = document.getElementById('petVideo');
+// DeskBub — zero-flash video pet
+var video = null;           // Created fresh each time
 var canvas = document.getElementById('pet3d');
 var ctx = canvas.getContext('2d');
 var bubble = document.getElementById('bubble');
@@ -8,11 +8,10 @@ var hint = document.getElementById('hint');
 var statusEl = document.getElementById('status');
 var input = document.getElementById('mediaUrl');
 
-canvas.style.display = 'block';
-canvas.style.opacity = '0'; // Start invisible
-video.style.display = 'none';
+// Start with canvas completely hidden
+canvas.style.display = 'none';
+canvas.style.opacity = '0';
 
-// Enable right-click paste on the input
 input.addEventListener('contextmenu', function(e) { e.stopPropagation(); });
 
 window.addEventListener('dblclick', function(e) {
@@ -33,37 +32,40 @@ var videoReady = false;
 
 window.loadMedia = function() {
   var url = input.value.trim(); if (!url) return;
+
+  // Destroy old video element completely
+  if (video) { video.pause(); video.removeAttribute('src'); video.load(); if (video.parentNode) video.parentNode.removeChild(video); }
   videoReady = false;
-  canvas.style.opacity = '0'; // Hide until first clean frame
+  canvas.style.display = 'none'; // HIDE until first clean frame
+
+  // Create FRESH video element
+  video = document.createElement('video');
+  video.loop = true; video.muted = true; video.playsInline = true;
+  video.style.display = 'none';
+  document.body.appendChild(video);
+
   status('Loading...', 0);
-
-  // Reload video element to clear old state
-  video.pause();
-  video.removeAttribute('src');
+  video.addEventListener('canplay', function() {
+    video.play().then(function() {
+      setTimeout(function() { videoReady = true; }, 200);
+    }).catch(function(e) { status('Play error: ' + e.message, 5000); });
+  });
+  video.addEventListener('playing', function() {
+    status('✅', 2000); urlBar.classList.add('hidden'); hint.style.opacity = '0';
+    input.style.borderColor = '#4ECDC4';
+  });
+  video.addEventListener('error', function() { status('❌ Cannot load video', 5000); });
+  video.src = url;
   video.load();
-
-  video.src = url; video.loop = true; video.muted = true; video.playsInline = true;
-  video.load();
-  var p = video.play();
-  if (p && p.then) {
-    p.then(function() {
-      setTimeout(function() {
-        videoReady = true;
-        status('✅', 2000);
-        urlBar.classList.add('hidden'); hint.style.opacity = '0';
-        input.style.borderColor = '#4ECDC4';
-      }, 300);
-    }).catch(function(e) { status('❌ ' + e.message, 5000); });
-  }
 };
+
 window.toggleMode = function(){};
 
 // Chroma key
-function isGreen(r,g,b) {
-  if (g < 60) return false;
-  if (g <= r || g <= b) return false;
-  var avg = (r + b) / 2;
-  return avg < 1 ? (g > 80) : (g / avg > 1.12);
+function isGreen(r, g, b) {
+  if (g < 50) return false;        // Too dark
+  if (g <= r || g <= b) return false; // Green not dominant
+  return g > (r + b) * 0.54;       // Green > 54% of sum
 }
 
 function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -71,11 +73,25 @@ window.addEventListener('resize', resize); resize();
 
 var offscreen = document.createElement('canvas');
 var offCtx = offscreen.getContext('2d');
-var firstCleanFrameShown = false;
+var shown = false;
+
+function showCanvas() {
+  if (shown) return;
+  shown = true;
+  canvas.style.display = 'block';
+  canvas.style.opacity = '1';
+}
+
+function hideCanvas() {
+  shown = false;
+  canvas.style.display = 'none';
+  canvas.style.opacity = '0';
+}
 
 function renderFrame() {
   requestAnimationFrame(renderFrame);
-  if (!videoReady || !video.videoWidth || video.paused) return;
+  if (!video || !videoReady || !video.videoWidth || video.paused) return;
+  if (video.readyState < 2) return; // Haven't decoded first frame yet
 
   var pad = 15;
   var aw = canvas.width - pad * 2, ah = canvas.height - pad * 2;
@@ -83,28 +99,29 @@ function renderFrame() {
   var dw = video.videoWidth * s, dh = video.videoHeight * s;
   var dx = (canvas.width - dw) / 2, dy = (canvas.height - dh) / 2;
 
-  // Process on offscreen canvas
   offscreen.width = canvas.width; offscreen.height = canvas.height;
   offCtx.clearRect(0, 0, offscreen.width, offscreen.height);
   offCtx.drawImage(video, dx, dy, dw, dh);
 
   var imgData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
   var d = imgData.data;
+
+  // Also detect overall green frame - if video is mostly green, it's still transitioning
+  var greenCount = 0;
   for (var i = 0; i < d.length; i += 4) {
     if (isGreen(d[i], d[i+1], d[i+2])) {
       var dom = d[i+1] / Math.max((d[i] + d[i+2]) / 2, 1);
-      d[i+3] = dom > 1.35 ? 0 : Math.max(0, Math.round((1.35 - dom) * 510));
+      d[i+3] = dom > 1.3 ? 0 : Math.max(0, Math.round((1.3 - dom) * 510));
+      if (d[i+3] < 10) greenCount++;
     }
   }
 
-  // Draw clean frame
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.putImageData(imgData, 0, 0);
-
-  // SHOW canvas only after first clean frame is rendered
-  if (!firstCleanFrameShown) {
-    firstCleanFrameShown = true;
-    canvas.style.opacity = '1';
+  // Only show if frame has substantial non-green content (pet is visible)
+  var totalPixels = d.length / 4;
+  if (greenCount / totalPixels < 0.85) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.putImageData(imgData, 0, 0);
+    if (!shown) showCanvas();
   }
 }
 renderFrame();
