@@ -9,7 +9,22 @@ var statusEl = document.getElementById('status');
 var input = document.getElementById('mediaUrl');
 
 canvas.style.display = 'none';
-input.addEventListener('contextmenu', function(e) { e.stopPropagation(); });
+// Custom right-click paste
+input.addEventListener('contextmenu', function(e) {
+  e.preventDefault(); e.stopPropagation();
+  // Read from clipboard and paste
+  navigator.clipboard.readText().then(function(text) {
+    if (text) {
+      var start = input.selectionStart, end = input.selectionEnd;
+      input.value = input.value.slice(0, start) + text + input.value.slice(end);
+      input.focus();
+      input.setSelectionRange(start + text.length, start + text.length);
+      status('📋 Pasted!', 1500);
+    }
+  }).catch(function() {
+    status('⚠ Right-click to paste — make sure clipboard has content', 3000);
+  });
+});
 
 window.addEventListener('dblclick', function(e) {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
