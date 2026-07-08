@@ -29,7 +29,9 @@ export async function POST(request: NextRequest) {
         image: imageUrl,
         prompt: petType === 'cat'
           ? 'A cute cat gently licking its paw, soft breathing, subtle ear twitches. Calm, natural behavior. The cat stays centered and in frame. Natural lighting, photorealistic, smooth subtle motion.'
-          : 'A cute dog panting happily with tongue out, gentle head tilt, soft breathing, subtle ear movements. The dog stays centered and in frame. Natural lighting, photorealistic, smooth subtle motion.',
+          : petType === 'dog'
+            ? 'A cute dog panting happily with tongue out, gentle head tilt, soft breathing, subtle ear movements. The dog stays centered and in frame. Natural lighting, photorealistic, smooth subtle motion.'
+            : 'A cute pet looking around curiously, gentle head tilt, soft breathing, subtle ear and nose movements. The pet stays centered and in frame. Photorealistic, smooth motion.',
         negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing, unrealistic, green background',
         duration: 5,
         aspect_ratio: '1:1',
