@@ -9,10 +9,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 type Stage = 'select' | 'preview' | 'uploading' | 'processing' | 'done';
 type PetType = 'dog' | 'cat' | 'other';
 
-const petPrompts: Record<PetType, { label: string }> = {
-  dog: { label: '🐶 Dog' },
-  cat: { label: '🐱 Cat' },
-  other: { label: '🐾 Other Pet' },
+const petActions: Record<PetType, { label: string; actions: string[] }> = {
+  dog: { label: '🐶 Dog', actions: ['Panting & tongue out', 'Head tilting curiously', 'Tail wagging excitedly', 'Lying down relaxed', 'Sitting looking up', 'Playful light jog'] },
+  cat: { label: '🐱 Cat', actions: ['Licking paw & grooming', 'Stretching & arching back', 'Curling up sleepy', 'Tail swishing slowly', 'Pouncing playfully', 'Sitting & washing face'] },
+  other: { label: '🐾 Other Pet', actions: ['Casual walk exploring', 'Looking around curiously', 'Sitting calmly', 'Head tilting cute', 'Nibbling delicately', 'Stretching relaxing'] },
 };
 
 export default function UploadPage() {
@@ -30,6 +30,7 @@ export default function UploadPage() {
   const [processedUrls, setProcessedUrls] = useState<string[]>([]);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [petType, setPetType] = useState<PetType>('dog');
+  const [selectedActions, setSelectedActions] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -96,25 +97,48 @@ export default function UploadPage() {
         <AnimatePresence mode="wait">
           {stage === 'done' && processedUrls.length > 0 ? (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl mx-auto">
-              <p className="text-sm text-text-secondary mb-3 text-center">{processedUrls.length} photo{processedUrls.length > 1 ? 's' : ''} processed</p>
-              <div className={`grid gap-4 mb-8 ${processedUrls.length === 1 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-3'}`}>
+              {/* Pet type selector */}
+              <div className="flex justify-center gap-3 mb-6">
+                {(Object.keys(petActions) as PetType[]).map((t) => (
+                  <button key={t} onClick={() => setPetType(t)} className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>
+                    {petActions[t].label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Per-image action selector */}
+              <p className="text-sm text-text-secondary mb-3 text-center">{processedUrls.length} photo{processedUrls.length > 1 ? 's' : ''} processed — pick an action for each</p>
+              <div className="grid gap-4 mb-8 grid-cols-1 sm:grid-cols-2">
                 {processedUrls.map((url, i) => (
-                  <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-3">
-                    <p className="text-xs text-mint mb-2">#{i + 1} ✨</p>
-                    <div className="aspect-square rounded-lg overflow-hidden" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'20px 20px',backgroundPosition:'0 0,10px 10px'}}>
-                      <img src={url} alt={`Processed ${i + 1}`} className="w-full h-full object-contain" />
+                  <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-4 flex gap-4 items-start">
+                    <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'16px 16px',backgroundPosition:'0 0,8px 8px'}}>
+                      <img src={url} alt={`Pet ${i + 1}`} className="w-full h-full object-contain" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-mint mb-2">Photo #{i + 1}</p>
+                      <select
+                        value={selectedActions[i] ?? 0}
+                        onChange={(e) => {
+                          const v = [...selectedActions];
+                          v[i] = parseInt(e.target.value);
+                          setSelectedActions(v);
+                        }}
+                        className="w-full text-sm border border-gray-200 rounded-lg p-2 outline-none focus:border-coral"
+                      >
+                        {petActions[petType].actions.map((a, ai) => (
+                          <option key={ai} value={ai}>{a}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                 ))}
               </div>
 
               {!videoUrl && (
-                <div className="flex justify-center gap-3 mb-6">
-                  {(Object.keys(petPrompts) as PetType[]).map((t) => (
-                    <button key={t} onClick={() => setPetType(t)} className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>
-                      {petPrompts[t].label}
-                    </button>
-                  ))}
+                <div className="text-center">
+                  <button onClick={handleGenerateVideo} disabled={isGenerating} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
+                    {isGenerating ? '🎬 Generating...' : `🎬 Generate ${petActions[petType].label} Video`}
+                  </button>
                 </div>
               )}
 
@@ -135,14 +159,6 @@ export default function UploadPage() {
                     </div>
                   )}
                 </motion.div>
-              )}
-
-              {!videoUrl && (
-                <div className="text-center">
-                  <button onClick={handleGenerateVideo} disabled={isGenerating} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
-                    {isGenerating ? '🎬 Generating...' : `🎬 Generate ${petPrompts[petType].label} Video`}
-                  </button>
-                </div>
               )}
 
               {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-sm text-red-500 text-center">{error}</motion.p>}
