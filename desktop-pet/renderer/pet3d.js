@@ -1,10 +1,58 @@
-// DeskBub 3D — Three.js rendering for desktop pet
+// DeskBub — Video + 3D desktop pet
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const bubble = document.getElementById('bubble');
 const urlBar = document.getElementById('url-bar');
 const hint = document.getElementById('hint');
+const video = document.getElementById('petVideo');
+const canvas3d = document.getElementById('pet3d');
+
+let mode = 'video'; // 'video' | '3d'
+let model = null; // 3D model
+let use3d = false;
+
+// ============================================================
+// MODE SWITCH
+// ============================================================
+window.toggleMode = () => {
+  mode = mode === 'video' ? '3d' : 'video';
+  if (mode === 'video') {
+    video.style.display = 'block';
+    canvas3d.style.display = 'none';
+    document.getElementById('mediaUrl').placeholder = 'Paste video URL here';
+  } else {
+    video.style.display = 'none';
+    canvas3d.style.display = 'block';
+    document.getElementById('mediaUrl').placeholder = 'Paste .glb model URL here';
+  }
+};
+
+// ============================================================
+// LOAD MEDIA
+// ============================================================
+window.loadMedia = () => {
+  const url = document.getElementById('mediaUrl').value.trim();
+  if (!url) return;
+
+  if (url.endsWith('.glb') || url.includes('glb') || mode === '3d') {
+    mode = '3d';
+    video.style.display = 'none';
+    canvas3d.style.display = 'block';
+    loadGLB(url);
+  } else {
+    mode = 'video';
+    video.style.display = 'block';
+    canvas3d.style.display = 'none';
+    video.src = url;
+    video.load();
+    video.play().catch(() => {});
+    use3d = false;
+    urlBar.classList.add('hidden');
+    hint.style.opacity = '0';
+    document.getElementById('mediaUrl').style.borderColor = '#4ECDC4';
+  }
+};
 
 // Scene setup
 const scene = new THREE.Scene();
@@ -52,12 +100,7 @@ let px = 100, py = 80, vx = 0, vy = 0, dir = 1;
 // Bubble
 let bubbleTimer = null;
 
-// ============================================================
-// LOAD GLB
-// ============================================================
-window.loadGLB = async () => {
-  const url = document.getElementById('glbUrl').value.trim();
-  if (!url) return;
+async function loadGLB(url) {
 
   // Remove old model
   if (model) { scene.remove(model); model = null; }
@@ -83,27 +126,25 @@ window.loadGLB = async () => {
 
     scene.add(model);
 
-    // Hide URL bar
-    urlBar.style.opacity = '0';
-    urlBar.style.pointerEvents = 'none';
+    use3d = true;
+    urlBar.classList.add('hidden');
     hint.style.opacity = '0';
-    document.getElementById('glbUrl').style.borderColor = '#4ECDC4';
+    document.getElementById('mediaUrl').style.borderColor = '#4ECDC4';
   } catch (e) {
-    document.getElementById('glbUrl').style.borderColor = '#FF6B6B';
+    document.getElementById('mediaUrl').style.borderColor = '#FF6B6B';
   }
-};
+}
 
 // Show/hide URL bar
-window.addEventListener('dblclick', () => {
-  urlBar.style.opacity = '1';
-  urlBar.style.pointerEvents = 'auto';
+window.addEventListener('dblclick', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+  urlBar.classList.remove('hidden');
   hint.style.opacity = '1';
 });
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    urlBar.style.opacity = '0';
-    urlBar.style.pointerEvents = 'none';
-    hint.style.opacity = model ? '0' : '1';
+    urlBar.classList.add('hidden');
+    hint.style.opacity = '0';
   }
 });
 
