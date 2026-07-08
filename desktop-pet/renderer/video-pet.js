@@ -88,23 +88,8 @@ function startRender() {
     requestAnimationFrame(render);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Debug: draw a pink border so we can SEE if canvas is rendering
-    ctx.strokeStyle = 'rgba(255,107,107,0.5)';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
-
-    if (!video || video.paused || !video.videoWidth) {
-      // No video loaded yet — draw placeholder
-      ctx.fillStyle = 'rgba(255,107,107,0.15)';
-      ctx.fillRect(30, 50, canvas.width - 60, canvas.height - 100);
-      ctx.font = '14px sans-serif';
-      ctx.fillStyle = '#FF6B6B';
-      ctx.textAlign = 'center';
-      ctx.fillText('No pet loaded', canvas.width / 2, canvas.height / 2);
-      ctx.fillText('Double-click to add URL', canvas.width / 2, canvas.height / 2 + 22);
-      return;
-    }
-    var pad = 15;
+    if (!video || video.paused || !video.videoWidth) return;
+    var pad = 25;
     var aw = canvas.width - pad * 2, ah = canvas.height - pad * 2;
     var s = Math.min(aw / video.videoWidth, ah / video.videoHeight);
     var dw = video.videoWidth * s, dh = video.videoHeight * s;
