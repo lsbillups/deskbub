@@ -86,17 +86,11 @@ export default function DropZone({ onFilesSelected, maxFiles = 5 }: DropZoneProp
         <div className="pointer-events-none">
           <div className="text-5xl mb-4">📸</div>
           <h3 className="text-xl font-display font-bold text-text-primary mb-2">
-            Drop 3-5 photos of your pet
+            Drop a photo of your pet
           </h3>
-          <p className="text-text-secondary text-sm mb-3">
-            or click to browse — JPG, PNG, WebP up to 10MB each
+          <p className="text-text-secondary text-sm">
+            or click to browse — JPG, PNG, WebP up to 10MB
           </p>
-          <div className="flex justify-center gap-6 text-xs text-text-secondary/60">
-            <span>📷 Front</span>
-            <span>↩️ Side</span>
-            <span>↪️ Other side</span>
-            <span>🔽 Back</span>
-          </div>
         </div>
       </motion.div>
 

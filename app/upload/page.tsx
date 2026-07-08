@@ -132,7 +132,7 @@ export default function UploadPage() {
                 <div className="text-center">
                   <button onClick={handleGenerateVideo} disabled={isGenerating}
                     className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
-                    {isGenerating ? '🎬 Generating...' : `🎬 Generate ${petPrompts[petType].label} Video — ~$0.09`}
+                    {isGenerating ? '🎬 Generating...' : `🎬 Generate ${petPrompts[petType].label} Video`}
                   </button>
                   <p className="text-xs text-text-secondary/60 mt-2">{petPrompts[petType].action.slice(0, 80)}...</p>
                 </div>
