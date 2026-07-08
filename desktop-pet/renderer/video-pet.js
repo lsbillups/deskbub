@@ -51,17 +51,27 @@ function isGreen(r,g,b) {
 function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize); resize();
 
+// Offscreen canvas for chroma key — raw frame NEVER shown on screen
+var offscreen = document.createElement('canvas');
+var offCtx = offscreen.getContext('2d');
+
 function renderFrame() {
   requestAnimationFrame(renderFrame);
   if (!video.videoWidth || video.paused) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
   var pad = 15;
   var aw = canvas.width - pad*2, ah = canvas.height - pad*2;
   var s = Math.min(aw / video.videoWidth, ah / video.videoHeight);
   var dw = video.videoWidth * s, dh = video.videoHeight * s;
-  var dx = (canvas.width - dw)/2, dy = (canvas.height - dh)/2;
-  ctx.drawImage(video, dx, dy, dw, dh);
-  var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+  // 1. Draw raw video to OFFSCREEN canvas
+  offscreen.width = canvas.width;
+  offscreen.height = canvas.height;
+  offCtx.clearRect(0, 0, offscreen.width, offscreen.height);
+  offCtx.drawImage(video, (canvas.width - dw)/2, (canvas.height - dh)/2, dw, dh);
+
+  // 2. Chroma key on offscreen
+  var imgData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
   var d = imgData.data;
   for (var i = 0; i < d.length; i += 4) {
     if (isGreen(d[i], d[i+1], d[i+2])) {
@@ -69,6 +79,9 @@ function renderFrame() {
       d[i+3] = dom > 1.4 ? 0 : Math.max(0, Math.round((1.4 - dom) * 510));
     }
   }
+
+  // 3. Only now draw the CLEAN result to visible canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   ctx.putImageData(imgData, 0, 0);
 }
 renderFrame();
