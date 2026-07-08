@@ -96,17 +96,16 @@ export default function UploadPage() {
         <AnimatePresence mode="wait">
           {stage === 'done' && processedUrls.length > 0 ? (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl mx-auto">
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-white rounded-xl border p-3">
-                  <p className="text-xs text-text-secondary mb-2">Original</p>
-                  <div className="aspect-square rounded-lg bg-gray-100 overflow-hidden"><img src={previewUrls[0]} alt="Original" className="w-full h-full object-cover" /></div>
-                </div>
-                <div className="bg-white rounded-xl border-2 border-mint/40 p-3">
-                  <p className="text-xs text-mint mb-2">Background Removed ✨</p>
-                  <div className="aspect-square rounded-lg overflow-hidden" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'20px 20px',backgroundPosition:'0 0,10px 10px'}}>
-                    <img src={processedUrls[0]} alt="Processed" className="w-full h-full object-contain" />
+              <p className="text-sm text-text-secondary mb-3 text-center">{processedUrls.length} photo{processedUrls.length > 1 ? 's' : ''} processed</p>
+              <div className={`grid gap-4 mb-8 ${processedUrls.length === 1 ? 'grid-cols-2' : 'grid-cols-2 md:grid-cols-3'}`}>
+                {processedUrls.map((url, i) => (
+                  <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-3">
+                    <p className="text-xs text-mint mb-2">#{i + 1} ✨</p>
+                    <div className="aspect-square rounded-lg overflow-hidden" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'20px 20px',backgroundPosition:'0 0,10px 10px'}}>
+                      <img src={url} alt={`Processed ${i + 1}`} className="w-full h-full object-contain" />
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
 
               {!videoUrl && (
