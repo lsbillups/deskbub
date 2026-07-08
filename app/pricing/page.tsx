@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 
 const tiers = [
@@ -45,6 +46,24 @@ const tiers = [
 
 export default function PricingPage() {
   const { isSignedIn } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const handleUpgrade = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/create-checkout-session', { method: 'POST' });
+      const data = await res.json();
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else {
+        alert(data.error || 'Something went wrong');
+      }
+    } catch {
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 px-6">
@@ -108,14 +127,13 @@ export default function PricingPage() {
 
               {tier.primary ? (
                 isSignedIn ? (
-                  <form action="/api/create-checkout-session" method="POST">
-                    <button
-                      type="submit"
-                      className="w-full py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25"
-                    >
-                      {tier.cta}
-                    </button>
-                  </form>
+                  <button
+                    onClick={handleUpgrade}
+                    disabled={loading}
+                    className="w-full py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25 disabled:opacity-60 cursor-pointer"
+                  >
+                    {loading ? 'Redirecting...' : tier.cta}
+                  </button>
                 ) : (
                   <Link
                     href="/sign-up"

@@ -38,7 +38,7 @@ export async function POST() {
       return NextResponse.json({ error: 'Failed to create checkout session.' }, { status: 500 });
     }
 
-    return NextResponse.redirect(data.checkout_url);
+    return NextResponse.json({ success: true, checkoutUrl: data.checkout_url });
   } catch (error) {
     console.error('Checkout error:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
