@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
+import { createClient } from '@/lib/supabase/server';
 import Replicate from 'replicate';
 
 // ByteDance Seedance 1.0 Lite — affordable ($0.09/video)
@@ -91,9 +92,33 @@ export async function POST(request: NextRequest) {
     let transparentUrl = bgOutput?.video || bgOutput?.output || bgOutput;
     if (typeof transparentUrl === 'object' && transparentUrl.url) transparentUrl = transparentUrl.url;
 
+    const finalUrl = transparentUrl || videoUrl;
+
+    // Save pairing data to Supabase
+    try {
+      const supabase = await createClient();
+      // Generate pairing code from user ID hash
+      let hash = 0;
+      for (let i = 0; i < userId.length; i++) {
+        hash = ((hash << 5) - hash) + userId.charCodeAt(i);
+        hash |= 0;
+      }
+      const pairingCode = String(Math.abs(hash) % 1000000).padStart(6, '0');
+
+      await supabase.from('pet_data').upsert({
+        user_id: userId,
+        pairing_code: pairingCode,
+        video_url: finalUrl,
+        processed_url: '',
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
+    } catch (dbErr) {
+      console.warn('Failed to save pairing data:', dbErr);
+    }
+
     return NextResponse.json({
       success: true,
-      videoUrl: transparentUrl || videoUrl,
+      videoUrl: finalUrl,
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);

@@ -77,6 +77,42 @@ window.loadMedia = function() {
 
 window.toggleMode = function(){};
 
+// Pairing code lookup
+window.loadByCode = function() {
+  var code = document.getElementById('pairingCode').value.trim();
+  if (!code || code.length !== 6) { status('Enter 6-digit code from Dashboard', 3000); return; }
+
+  status('Pairing...', 0);
+  fetch('https://deskbub.vercel.app/api/pairing/' + code)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.videoUrl) {
+        document.getElementById('mediaUrl').value = data.videoUrl;
+        status('✅ Found! Loading...', 1500);
+        window.loadMedia();
+      } else {
+        status('❌ ' + (data.error || 'Not found'), 4000);
+      }
+    })
+    .catch(function() {
+      // Fallback: try localhost
+      fetch('http://localhost:3000/api/pairing/' + code)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.videoUrl) {
+            document.getElementById('mediaUrl').value = data.videoUrl;
+            status('✅ Found! Loading...', 1500);
+            window.loadMedia();
+          } else {
+            status('❌ No pet found for this code', 4000);
+          }
+        })
+        .catch(function() {
+          status('❌ Cannot connect. Check your internet.', 5000);
+        });
+    });
+};
+
 function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize); resize();
 

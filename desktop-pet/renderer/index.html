@@ -43,11 +43,12 @@
   <div id="bubble"></div>
   <div id="status"></div>
   <div id="url-bar">
-    <input type="text" id="mediaUrl" placeholder="Paste video URL or .glb model URL here" />
+    <input type="text" id="pairingCode" placeholder="6-digit code" style="width:80px;flex:none;" maxlength="6" />
+    <button class="load-btn" onclick="loadByCode()" style="background:#4ECDC4;">Pair</button>
+    <input type="text" id="mediaUrl" placeholder="Or paste video URL directly" />
     <button class="load-btn" onclick="loadMedia()">Load</button>
-    <button class="toggle-btn" onclick="toggleMode()">3D ⇄ Video</button>
   </div>
-  <div id="hint">Double-click for URL bar · Esc to hide · Paste video or .glb URL</div>
+  <div id="hint">Double-click for URL bar · Esc to hide · Enter pairing code from Dashboard → Pair</div>
 
   <script src="video-pet.js"></script>
 </body>
