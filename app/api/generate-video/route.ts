@@ -27,12 +27,12 @@ export async function POST(request: NextRequest) {
       version: SEEDANCE_VERSION,
       input: {
         image: imageUrl,
-        prompt: 'Solid bright green (#00FF00) background. ' + (petType === 'cat'
-          ? 'A cute cat gently licking its paw, soft breathing, subtle ear twitches. Calm, natural behavior. The cat stays centered and in frame.'
+        prompt: 'Chroma key green screen studio background. ' + (petType === 'cat'
+          ? 'A cute cat gently licking its paw, soft breathing, subtle ear twitches.'
           : petType === 'dog'
-            ? 'A cute dog panting happily with tongue out, gentle head tilt, soft breathing, subtle ear movements. The dog stays centered and in frame.'
-            : 'A cute pet looking around curiously, gentle head tilt, soft breathing, subtle movements. The pet stays centered and in frame.'),
-        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing, unrealistic, dark background, white background, room, floor',
+            ? 'A cute dog panting happily with tongue out, gentle head tilt, soft breathing.'
+            : 'A cute pet looking around curiously, gentle head tilt, soft breathing.'),
+        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing, room, floor, furniture, outdoor, nature',
         duration: 5,
         aspect_ratio: '1:1',
         fps: 24,
