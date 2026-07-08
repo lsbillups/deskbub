@@ -5,8 +5,16 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const bubble = document.getElementById('bubble');
 const urlBar = document.getElementById('url-bar');
 const hint = document.getElementById('hint');
+const statusEl = document.getElementById('status');
 const video = document.getElementById('petVideo');
 const canvas3d = document.getElementById('pet3d');
+
+function showStatus(msg, duration = 3000) {
+  statusEl.textContent = msg;
+  statusEl.style.display = 'block';
+  clearTimeout(showStatus.timer);
+  if (duration > 0) showStatus.timer = setTimeout(() => { statusEl.style.display = 'none'; }, duration);
+}
 
 let mode = 'video'; // 'video' | '3d'
 let model = null; // 3D model
@@ -35,21 +43,29 @@ window.loadMedia = () => {
   const url = document.getElementById('mediaUrl').value.trim();
   if (!url) return;
 
-  if (url.endsWith('.glb') || url.includes('glb') || mode === '3d') {
+  if (url.endsWith('.glb') || url.includes('.glb') || mode === '3d') {
     mode = '3d';
     video.style.display = 'none';
     canvas3d.style.display = 'block';
     loadGLB(url);
   } else {
+    showStatus('Loading video...', 0);
     mode = 'video';
     video.style.display = 'block';
     canvas3d.style.display = 'none';
     video.src = url;
     video.load();
-    video.play().catch(() => {});
+    const playPromise = video.play();
+    if (playPromise) {
+      playPromise.then(() => {
+        showStatus('✅ Playing', 2000);
+        urlBar.classList.add('hidden');
+        hint.style.opacity = '0';
+      }).catch((e) => {
+        showStatus('❌ Cannot play this video: ' + e.message, 5000);
+      });
+    }
     use3d = false;
-    urlBar.classList.add('hidden');
-    hint.style.opacity = '0';
     document.getElementById('mediaUrl').style.borderColor = '#4ECDC4';
   }
 };
