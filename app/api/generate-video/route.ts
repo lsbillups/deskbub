@@ -27,12 +27,12 @@ export async function POST(request: NextRequest) {
       version: SEEDANCE_VERSION,
       input: {
         image: imageUrl,
-        prompt: 'Chroma key green screen studio background. ' + (petType === 'cat'
+        prompt: (petType === 'cat'
           ? 'A cute cat gently licking its paw, soft breathing, subtle ear twitches.'
           : petType === 'dog'
             ? 'A cute dog panting happily with tongue out, gentle head tilt, soft breathing.'
             : 'A cute pet looking around curiously, gentle head tilt, soft breathing.'),
-        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing, room, floor, furniture, outdoor, nature',
+        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing',
         duration: 5,
         aspect_ratio: '1:1',
         fps: 24,
@@ -64,7 +64,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No video in output.' }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, videoUrl });
+    // Step 2: Remove background from video (makes it transparent)
+    const bgRemoval = await replicate.predictions.create({
+      version: 'bria/video-remove-background',
+      input: {
+        video_url: videoUrl,
+        background_color: 'Transparent',
+        output_container_and_codec: 'webm_vp9',
+        preserve_audio: false,
+      },
+    });
+
+    let bgResult = bgRemoval;
+    for (let i = 0; i < 40; i++) {
+      if (bgResult.status === 'succeeded') break;
+      if (bgResult.status === 'failed' || bgResult.status === 'canceled') {
+        // Return original video if BG removal fails
+        console.warn('BG removal failed, returning original video');
+        return NextResponse.json({ success: true, videoUrl, warning: 'Background removal skipped' });
+      }
+      await new Promise((r) => setTimeout(r, 3000));
+      bgResult = await replicate.predictions.get(bgRemoval.id);
+    }
+
+    const bgOutput = (bgResult as any).output;
+    let transparentUrl = bgOutput?.video || bgOutput?.output || bgOutput;
+    if (typeof transparentUrl === 'object' && transparentUrl.url) transparentUrl = transparentUrl.url;
+
+    return NextResponse.json({
+      success: true,
+      videoUrl: transparentUrl || videoUrl,
+    });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error('Video gen error:', msg);
