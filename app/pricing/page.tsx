@@ -129,7 +129,7 @@ export default function PricingPage() {
                   </Link>
                 )
               ) : (
-                <button onClick={() => handleCheckout(tier.productId)} disabled={loading === tier.productId}
+                <button onClick={() => handleCheckout(tier.productId!)} disabled={loading === tier.productId}
                   className={`w-full py-3 text-white font-semibold rounded-full transition-all text-sm shadow-lg cursor-pointer
                     ${tier.primary ? 'bg-coral hover:bg-coral-dark shadow-coral/25' : 'bg-text-primary hover:bg-black shadow-gray-200/50'}
                     disabled:opacity-60 disabled:cursor-wait`}>

@@ -6,12 +6,14 @@ import { motion } from 'framer-motion';
 interface DropZoneProps {
   onFilesSelected: (files: File[]) => void;
   maxFiles?: number;
+  title?: string;
+  subtitle?: string;
 }
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
-export default function DropZone({ onFilesSelected, maxFiles = 5 }: DropZoneProps) {
+export default function DropZone({ onFilesSelected, maxFiles = 5, title, subtitle }: DropZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,10 +88,10 @@ export default function DropZone({ onFilesSelected, maxFiles = 5 }: DropZoneProp
         <div className="pointer-events-none">
           <div className="text-5xl mb-4">📸</div>
           <h3 className="text-xl font-display font-bold text-text-primary mb-2">
-            Drop a photo of your pet
+            {title || 'Drop a photo of your pet'}
           </h3>
           <p className="text-text-secondary text-sm">
-            or click to browse — JPG, PNG, WebP up to 10MB
+            {subtitle || 'or click to browse — JPG, PNG, WebP up to 10MB'}
           </p>
         </div>
       </motion.div>
