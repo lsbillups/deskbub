@@ -1,8 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 
 const tiers = [
@@ -10,48 +10,67 @@ const tiers = [
     name: 'Free',
     emoji: '🐾',
     price: '$0',
-    period: 'forever',
-    desc: 'Perfect for trying out DeskBub with your furry friend.',
+    period: '',
+    desc: 'Share to unlock one free pet action per day.',
     features: [
-      '1 pet on your desktop',
-      '6 animation states',
-      'Health reminders (water, stretch, eyes)',
-      'Default reminder intervals',
-      'Windows & macOS',
+      'Share on social media to unlock',
+      '1 pet action per day',
+      'Basic animations',
+      '10 daily free spots',
     ],
-    cta: 'Get Started Free',
-    href: '/sign-up',
+    cta: 'Share to Unlock',
+    href: '/upload',
     primary: false,
   },
   {
-    name: 'DeskBub Plus',
+    name: 'Basic',
     emoji: '⭐',
-    price: '$4.99',
-    period: 'per month',
-    desc: 'For pet lovers who want the full experience.',
+    price: '$0.99',
+    period: 'one-time',
+    desc: 'One custom pet action. Simple and affordable.',
     features: [
-      'Everything in Free, plus:',
-      'Custom reminder messages',
-      'More animations & expressions',
-      'Adjustable pet size & opacity',
-      'Multi-device sync',
-      'Priority support',
+      '1 custom pet action',
+      'Full AI video generation',
+      'Transparent desktop pet',
+      'Download & keep forever',
     ],
-    cta: 'Upgrade to Plus',
-    href: '/api/create-checkout-session',
+    cta: 'Get Basic — $0.99',
+    href: null, // Will use Creem checkout
+    primary: false,
+    productId: 'prod_basic', // Placeholder
+  },
+  {
+    name: 'Plus',
+    emoji: '🌟',
+    price: '$4.99',
+    period: 'one-time',
+    desc: 'Six actions, eight generations. Best value.',
+    features: [
+      '6 custom pet actions',
+      '8 AI generations (re-dos included)',
+      'Cat, dog, or other pets',
+      'Transparent desktop pet',
+      'All Basic features',
+    ],
+    cta: 'Get Plus — $4.99',
+    href: null, // Will use Creem checkout
     primary: true,
-    yearlyPrice: '$39.99/year',
+    productId: 'prod_plus', // Placeholder
   },
 ];
 
 export default function PricingPage() {
   const { isSignedIn } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<string | null>(null);
 
-  const handleUpgrade = async () => {
-    setLoading(true);
+  const handleCheckout = async (productId: string) => {
+    setLoading(productId);
     try {
-      const res = await fetch('/api/create-checkout-session', { method: 'POST' });
+      const res = await fetch('/api/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId }),
+      });
       const data = await res.json();
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
@@ -59,109 +78,71 @@ export default function PricingPage() {
         alert(data.error || 'Something went wrong');
       }
     } catch {
-      alert('Failed to start checkout. Please try again.');
+      alert('Failed to start checkout.');
     } finally {
-      setLoading(false);
+      setLoading(null);
     }
   };
 
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 px-6">
-      <div className="max-w-4xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-14"
-        >
-          <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-coral bg-coral/10 rounded-full">
-            💰 Simple pricing
-          </span>
-          <h1 className="text-4xl sm:text-5xl font-display font-bold text-text-primary">
-            Free, then upgrade when you love it
-          </h1>
+      <div className="max-w-5xl mx-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
+          <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-coral bg-coral/10 rounded-full">💡 Simple pricing</span>
+          <h1 className="text-4xl sm:text-5xl font-display font-bold text-text-primary">Bring your pet to life</h1>
           <p className="mt-4 text-lg text-text-secondary max-w-xl mx-auto">
-            Start with a free pet. Upgrade to Plus for custom reminders, more animations, and multi-device sync.
+            Share to try for free, or unlock more actions for your desktop companion.
           </p>
         </motion.div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {tiers.map((tier, i) => (
-            <motion.div
-              key={tier.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.15 }}
-              className={`relative rounded-2xl p-8 ${
-                tier.primary
-                  ? 'bg-white border-2 border-coral shadow-xl shadow-coral/10'
-                  : 'bg-white border border-gray-100'
-              }`}
-            >
-              {tier.primary && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-coral text-white text-xs font-bold rounded-full">
-                  MOST POPULAR
-                </span>
-              )}
+            <motion.div key={tier.name} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+              className={`relative rounded-2xl p-7 flex flex-col ${tier.primary ? 'bg-white border-2 border-coral shadow-xl shadow-coral/10' : 'bg-white border border-gray-100'}`}>
+              {tier.primary && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-coral text-white text-xs font-bold rounded-full">BEST VALUE</span>}
 
-              <div className="text-4xl mb-4">{tier.emoji}</div>
+              <div className="text-4xl mb-3">{tier.emoji}</div>
               <h2 className="text-xl font-display font-bold text-text-primary">{tier.name}</h2>
-              <p className="text-sm text-text-secondary mt-1 mb-6">{tier.desc}</p>
+              <p className="text-sm text-text-secondary mt-1 mb-4">{tier.desc}</p>
 
-              <div className="mb-6">
+              <div className="mb-5">
                 <span className="text-4xl font-display font-extrabold text-text-primary">{tier.price}</span>
-                <span className="text-text-secondary text-sm ml-1">/{tier.period}</span>
-                {tier.yearlyPrice && (
-                  <p className="text-sm text-mint font-semibold mt-1">{tier.yearlyPrice}</p>
-                )}
+                {tier.period && <span className="text-text-secondary text-sm ml-1">/{tier.period}</span>}
               </div>
 
-              <ul className="space-y-3 mb-8">
+              <ul className="space-y-2.5 mb-6 flex-1">
                 {tier.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-sm text-text-secondary">
-                    <span className="text-mint mt-0.5">✓</span>
-                    {f}
+                    <span className="text-mint mt-0.5 shrink-0">✓</span> {f}
                   </li>
                 ))}
               </ul>
 
-              {tier.primary ? (
+              {tier.name === 'Free' ? (
                 isSignedIn ? (
-                  <button
-                    onClick={handleUpgrade}
-                    disabled={loading}
-                    className="w-full py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25 disabled:opacity-60 cursor-pointer"
-                  >
-                    {loading ? 'Redirecting...' : tier.cta}
-                  </button>
-                ) : (
-                  <Link
-                    href="/sign-up"
-                    className="block w-full py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25 text-center"
-                  >
+                  <Link href="/upload" className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center text-sm">
                     {tier.cta}
+                  </Link>
+                ) : (
+                  <Link href="/sign-up" className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center text-sm">
+                    Sign Up & Share
                   </Link>
                 )
               ) : (
-                <Link
-                  href={tier.href}
-                  className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center"
-                >
-                  {tier.cta}
-                </Link>
+                <button onClick={() => handleCheckout(tier.productId)} disabled={loading === tier.productId}
+                  className={`w-full py-3 text-white font-semibold rounded-full transition-all text-sm shadow-lg cursor-pointer
+                    ${tier.primary ? 'bg-coral hover:bg-coral-dark shadow-coral/25' : 'bg-text-primary hover:bg-black shadow-gray-200/50'}
+                    disabled:opacity-60 disabled:cursor-wait`}>
+                  {loading === tier.productId ? 'Redirecting...' : tier.cta}
+                </button>
               )}
             </motion.div>
           ))}
         </div>
 
-        {/* Bottom note */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-center text-text-secondary/60 text-sm mt-10"
-        >
-          Cancel anytime. No questions asked.
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+          className="text-center text-text-secondary/60 text-sm mt-10">
+          One-time payment. No subscription. Pet forever.
         </motion.p>
       </div>
     </main>
