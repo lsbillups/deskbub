@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { createClient } from '@/lib/supabase/client';
 import DropZone from '@/components/upload/DropZone';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +16,17 @@ const petPrompts: Record<PetType, { label: string; action: string }> = {
 };
 
 export default function UploadPage() {
+  const { user } = useUser();
+  const pairingCode = useMemo(() => {
+    if (!user) return null;
+    let hash = 0;
+    for (let i = 0; i < user.id.length; i++) {
+      hash = ((hash << 5) - hash) + user.id.charCodeAt(i);
+      hash |= 0;
+    }
+    return String(Math.abs(hash) % 1000000).padStart(6, '0');
+  }, [user]);
+
   const [stage, setStage] = useState<Stage>('select');
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -124,6 +136,14 @@ export default function UploadPage() {
                     <span className="text-text-secondary/40 text-sm mx-2">|</span>
                     <a href={videoUrl} className="text-coral underline text-sm" target="_blank" rel="noopener">Copy link for DeskBub</a>
                   </p>
+                  {/* Pairing code hint */}
+                  {pairingCode && (
+                    <div className="mt-4 p-4 bg-mint/5 rounded-xl border border-mint/20 text-center">
+                      <p className="text-sm font-semibold text-mint mb-1">🔗 Your Pairing Code</p>
+                      <code className="text-3xl font-mono font-bold tracking-[0.3em] text-coral select-all">{pairingCode}</code>
+                      <p className="text-xs text-text-secondary mt-1">Open DeskBub → enter this code → click Pair</p>
+                    </div>
+                  )}
                 </motion.div>
               )}
 
