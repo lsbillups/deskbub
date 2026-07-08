@@ -27,9 +27,9 @@ const tiers = [
     emoji: '⭐',
     price: '$0.99',
     period: 'one-time',
-    desc: 'One custom pet action. Simple and affordable.',
+    desc: 'One pet action. Simple and affordable.',
     features: [
-      '1 custom pet action',
+      '1 pet action',
       'Full AI video generation',
       'Transparent desktop pet',
       'Download & keep forever',
@@ -46,7 +46,7 @@ const tiers = [
     period: 'one-time',
     desc: 'Six actions, eight generations. Best value.',
     features: [
-      '6 custom pet actions',
+      '6 pet actions',
       '8 AI generations (re-dos included)',
       'Cat, dog, or other pets',
       'Transparent desktop pet',

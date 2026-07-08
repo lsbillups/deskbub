@@ -48,7 +48,7 @@ export default function DashboardPage() {
             <div className="text-3xl mb-3">📸</div>
             <h3 className="font-display font-bold text-text-primary">Your Pet</h3>
             <p className="text-sm text-text-secondary mt-1">
-              No custom pet yet. Upload a photo to see your real pet on your desktop!
+              No pet yet. Upload a photo to bring your pet to life!
             </p>
             <Link
               href="/upload"
