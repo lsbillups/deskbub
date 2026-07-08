@@ -71,7 +71,8 @@ export default function UploadPage() {
     if (processedUrls.length === 0) return;
     setIsGenerating(true); setError(null);
     try {
-      const res = await fetch('/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageUrl: processedUrls[0], petType }) });
+      const action = selectedActions[0] ?? 0;
+      const res = await fetch('/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageUrl: processedUrls[0], petType, action }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Generation failed.');
       setVideoUrl(data.videoUrl);

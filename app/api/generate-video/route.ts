@@ -6,6 +6,37 @@ import Replicate from 'replicate';
 // ByteDance Seedance 1.0 Lite — affordable ($0.09/video)
 const SEEDANCE_VERSION = '2ca0dadb1f64bb54f2d3da881d9a58e7ed0f5c9fe7db5c821293cdfed786cb32';
 
+function getActionPrompt(petType: string, action: number): string {
+  const prompts: Record<string, string[]> = {
+    dog: [
+      'A cute dog panting happily with tongue out, gentle head tilt, soft breathing.',
+      'A cute dog tilting its head curiously, ears perked up, gentle eye contact.',
+      'A cute dog wagging its tail excitedly, happy expression, gentle bouncing.',
+      'A cute dog lying down relaxed, soft breathing, eyes half closed, peaceful.',
+      'A cute dog sitting and looking up at owner, loyal expression, gentle tail wag.',
+      'A cute dog doing a light playful jog, circling around, happy energy.',
+    ],
+    cat: [
+      'A cute cat gently licking its paw, grooming, soft breathing, subtle ear twitches.',
+      'A cute cat stretching its body, arching back, yoga-like, slow relaxed movement.',
+      'A cute cat curling up into a ball, sleepy, tiny yawn, peaceful.',
+      'A cute cat with tail swishing slowly, relaxed, gentle gaze.',
+      'A cute cat pouncing playfully, batting paw at something, curious.',
+      'A cute cat sitting up and washing its face with paw, grooming ritual.',
+    ],
+    other: [
+      'A cute pet casually walking and exploring, gentle steps, curious.',
+      'A cute pet looking around curiously, alert eyes, gentle head movements.',
+      'A cute pet sitting calmly, gentle breathing, relaxed posture.',
+      'A cute pet tilting its head with cute expression, gentle blink.',
+      'A cute pet nibbling delicately, eating gently, small bites.',
+      'A cute pet stretching and relaxing, slow movement, comfortable.',
+    ],
+  };
+  const list = prompts[petType] || prompts.other;
+  return list[Math.min(action, list.length - 1)];
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
@@ -13,7 +44,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }
 
-    const { imageUrl, petType } = await request.json();
+    const { imageUrl, petType, action } = await request.json();
     if (!imageUrl) {
       return NextResponse.json({ error: 'No image URL provided.' }, { status: 400 });
     }
@@ -28,11 +59,7 @@ export async function POST(request: NextRequest) {
       version: SEEDANCE_VERSION,
       input: {
         image: imageUrl,
-        prompt: (petType === 'cat'
-          ? 'A cute cat gently licking its paw, soft breathing, subtle ear twitches.'
-          : petType === 'dog'
-            ? 'A cute dog panting happily with tongue out, gentle head tilt, soft breathing.'
-            : 'A cute pet looking around curiously, gentle head tilt, soft breathing.'),
+        prompt: getActionPrompt(petType, typeof action === 'number' ? action : 0),
         negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing',
         duration: 5,
         aspect_ratio: '1:1',
