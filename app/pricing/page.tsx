@@ -25,7 +25,7 @@ const tiers = [
   {
     name: 'Basic',
     emoji: '⭐',
-    price: '$0.99',
+    price: '$1.00',
     period: 'one-time',
     desc: 'One pet action. Simple and affordable.',
     features: [
@@ -34,10 +34,10 @@ const tiers = [
       'Transparent desktop pet',
       'Download & keep forever',
     ],
-    cta: 'Get Basic — $0.99',
+    cta: 'Get Basic — $1.00',
     href: null, // Will use Creem checkout
     primary: false,
-    productId: 'prod_basic', // Placeholder
+    productId: 'prod_60Egf7GJt88AU9bWJ8cKGz',
   },
   {
     name: 'Plus',
@@ -55,7 +55,7 @@ const tiers = [
     cta: 'Get Plus — $4.99',
     href: null, // Will use Creem checkout
     primary: true,
-    productId: 'prod_plus', // Placeholder
+    productId: 'prod_3iVWs9zbilzhQKD73DMYab',
   },
 ];
 
