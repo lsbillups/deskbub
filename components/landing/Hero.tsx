@@ -49,7 +49,7 @@ export default function Hero() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="relative"
         >
-          <div className="aspect-square rounded-3xl bg-gradient-to-br from-coral/10 via-mint/10 to-coral/5 border border-coral/20 flex items-center justify-center overflow-hidden shadow-2xl shadow-coral/10">
+          <div className="h-full min-h-[320px] rounded-3xl bg-gradient-to-br from-coral/10 via-mint/10 to-coral/5 border border-coral/20 flex items-center justify-center overflow-hidden shadow-2xl shadow-coral/10">
             <div className="text-center p-8">
               <div className="text-8xl mb-4">🐶</div>
               <p className="text-sm text-text-secondary font-medium">Your pet lives here</p>
