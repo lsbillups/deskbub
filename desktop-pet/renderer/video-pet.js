@@ -51,15 +51,27 @@ window.loadMedia = function() {
   document.body.appendChild(video);
   status('Loading...', 0);
 
-  video.addEventListener('loadeddata', function() {
+  var shown = false;
+  function tryShow() {
+    if (shown) return;
+    if (!video.videoWidth || video.paused) return;
+    shown = true;
     canvas.width = window.innerWidth; canvas.height = window.innerHeight;
     canvas.style.display = 'block';
     status('✅', 2000);
     urlBar.classList.add('hidden'); hint.style.opacity = '0';
     input.style.borderColor = '#4ECDC4';
     startRender();
+  }
+  video.addEventListener('playing', tryShow);
+  video.addEventListener('canplay', function() {
+    video.play().then(tryShow).catch(function(){});
   });
   video.addEventListener('error', function() { status('❌ Load error', 5000); });
+  // Fallback: force show after 3 seconds regardless
+  setTimeout(function() {
+    if (!shown) { canvas.style.display = 'block'; startRender(); status('⚠', 1000); }
+  }, 3000);
   video.src = url; video.load();
 };
 
