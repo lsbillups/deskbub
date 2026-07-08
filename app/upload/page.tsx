@@ -15,6 +15,7 @@ export default function UploadPage() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [genType, setGenType] = useState<'video' | '3d' | null>(null);
+  const [petType, setPetType] = useState<'dog' | 'cat'>('dog');
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
 
@@ -72,7 +73,7 @@ export default function UploadPage() {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageUrl: processedUrl }),
+        body: JSON.stringify({ imageUrl: processedUrl, petType }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Generation failed.');

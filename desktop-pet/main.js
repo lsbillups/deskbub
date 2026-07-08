@@ -73,8 +73,8 @@ function createPetWindow() {
   const config = loadConfig();
 
   petWindow = new BrowserWindow({
-    width: 450,
-    height: 500,
+    width: 320,
+    height: 380,
     transparent: true,
     frame: false,
     alwaysOnTop: true,

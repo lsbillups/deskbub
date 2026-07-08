@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import Replicate from 'replicate';
 
-// ByteDance Seedance 1.0 Lite — good quality, affordable ($0.09/video)
+// ByteDance Seedance 1.0 Lite — affordable ($0.09/video)
 const SEEDANCE_VERSION = '2ca0dadb1f64bb54f2d3da881d9a58e7ed0f5c9fe7db5c821293cdfed786cb32';
 
 export async function POST(request: NextRequest) {
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }
 
-    const { imageUrl } = await request.json();
+    const { imageUrl, petType } = await request.json();
     if (!imageUrl) {
       return NextResponse.json({ error: 'No image URL provided.' }, { status: 400 });
     }
@@ -27,8 +27,10 @@ export async function POST(request: NextRequest) {
       version: SEEDANCE_VERSION,
       input: {
         image: imageUrl,
-        prompt: 'A cute pet looking around naturally, gentle head tilts, soft breathing, subtle ear movements. The subject stays in frame and centered. Natural lighting, photorealistic, smooth motion.',
-        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing, unrealistic',
+        prompt: petType === 'cat'
+          ? 'A cute cat gently licking its paw, soft breathing, subtle ear twitches. Calm, natural behavior. The cat stays centered and in frame. Natural lighting, photorealistic, smooth subtle motion.'
+          : 'A cute dog panting happily with tongue out, gentle head tilt, soft breathing, subtle ear movements. The dog stays centered and in frame. Natural lighting, photorealistic, smooth subtle motion.',
+        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing, unrealistic, green background',
         duration: 5,
         aspect_ratio: '1:1',
         fps: 24,
