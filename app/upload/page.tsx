@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import DropZone from '@/components/upload/DropZone';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,6 +18,7 @@ const petActions: Record<PetType, { label: string; actions: string[] }> = {
 
 export default function UploadPage() {
   const { user } = useUser();
+  const router = useRouter();
   const pairingCode = useMemo(() => {
     if (!user) return null;
     let hash = 0;
@@ -44,6 +46,10 @@ export default function UploadPage() {
 
   const handleBGRemove = async () => {
     if (files.length === 0) return;
+    // Check subscription
+    const subRes = await fetch('/api/check-subscription');
+    const sub = await subRes.json();
+    if (!sub.canGenerate) { router.push('/pricing'); return; }
     setStage('uploading'); setProgress(0); setError(null);
     try {
       const supabase = createClient();
@@ -69,6 +75,9 @@ export default function UploadPage() {
 
   const handleGenerateVideo = async () => {
     if (processedUrls.length === 0) return;
+    const subRes = await fetch('/api/check-subscription');
+    const sub = await subRes.json();
+    if (!sub.canGenerate) { router.push('/pricing'); return; }
     setIsGenerating(true); setError(null);
     try {
       const action = selectedActions[0] ?? 0;
