@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import Replicate from 'replicate';
 
+// ByteDance Seedance 1.0 Lite — good quality, affordable ($0.09/video)
+const SEEDANCE_VERSION = '2ca0dadb1f64bb54f2d3da881d9a58e7ed0f5c9fe7db5c821293cdfed786cb32';
+
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
@@ -15,80 +18,52 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.REPLICATE_API_TOKEN) {
-      return NextResponse.json(
-        { error: 'AI is not configured yet.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'AI not configured.' }, { status: 500 });
     }
 
     const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
 
-    // Create prediction directly for better control
     const prediction = await replicate.predictions.create({
-      model: 'wan-video/wan-2.2-5b-fast',
+      version: SEEDANCE_VERSION,
       input: {
         image: imageUrl,
-        prompt:
-          'The pet animal breathes gently, makes subtle natural head movements, and blinks occasionally. Keep the subject perfectly centered with minimal motion. Realistic, gentle, cute.',
-        negative_prompt: 'distorted, blurry, fast movement, unnatural, deformed, text, watermark',
-        num_frames: 81,
-        fps: 16,
-        width: 480,
-        height: 480,
+        prompt: 'A cute pet looking around naturally, gentle head tilts, soft breathing, subtle ear movements. The subject stays in frame and centered. Natural lighting, photorealistic, smooth motion.',
+        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing, unrealistic',
+        duration: 5,
+        aspect_ratio: '1:1',
+        fps: 24,
       },
     });
 
-    // Poll until complete (up to 120 seconds)
+    // Poll (can take 30-90 seconds)
     let result = prediction;
-    const maxAttempts = 40;
-    for (let i = 0; i < maxAttempts; i++) {
+    for (let i = 0; i < 60; i++) {
       if (result.status === 'succeeded') break;
       if (result.status === 'failed' || result.status === 'canceled') {
-        const errMsg = (result as any).error || 'unknown error';
-        return NextResponse.json(
-          { error: `Video generation ${result.status}: ${errMsg}` },
-          { status: 500 }
-        );
+        return NextResponse.json({ error: `Video ${result.status}: ${(result as any).error || 'unknown'}` }, { status: 500 });
       }
-      // Wait 3 seconds between polls
       await new Promise((r) => setTimeout(r, 3000));
       result = await replicate.predictions.get(prediction.id);
     }
 
     if (result.status !== 'succeeded') {
-      return NextResponse.json(
-        { error: 'Video generation timed out. Please try again.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Video generation timed out.' }, { status: 500 });
     }
 
-    // Extract video URL
     const output = (result as any).output;
     let videoUrl: string | null = null;
-
-    if (typeof output === 'string') {
-      videoUrl = output;
-    } else if (output && output.url) {
-      videoUrl = output.url;
-    } else if (Array.isArray(output) && typeof output[0] === 'string') {
-      videoUrl = output[0];
-    }
+    if (typeof output === 'string') videoUrl = output;
+    else if (output?.video) videoUrl = output.video;
+    else if (Array.isArray(output) && output[0]) videoUrl = output[0];
 
     if (!videoUrl) {
-      console.error('Unknown output format:', JSON.stringify(output).slice(0, 200));
-      return NextResponse.json(
-        { error: 'Video output format unexpected.' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'No video in output.' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, videoUrl });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error('Video gen error:', msg);
-    return NextResponse.json(
-      { error: `Video generation failed: ${msg}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: `Video generation failed: ${msg}` }, { status: 500 });
   }
 }
