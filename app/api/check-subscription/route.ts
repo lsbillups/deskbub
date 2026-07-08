@@ -10,7 +10,18 @@ export async function GET() {
     }
 
     const supabase = createAdminClient();
-    const { data } = await supabase.from('subscriptions').select('*').eq('user_id', userId).single();
+    let { data } = await supabase.from('subscriptions').select('*').eq('user_id', userId).single();
+
+    // Auto-create free trial for dev/testing (8 generations)
+    if (!data) {
+      await supabase.from('subscriptions').upsert({
+        user_id: userId,
+        tier: 'plus',
+        generations_used: 0,
+        max_generations: 8,
+      });
+      data = { tier: 'plus', generations_used: 0, max_generations: 8 };
+    }
 
     if (!data || data.tier === 'free') {
       return NextResponse.json({ tier: 'free', canGenerate: false });
