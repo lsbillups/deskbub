@@ -71,6 +71,9 @@ function stopRotation() {
 function playIdx(idx) {
   if (idx < 0 || idx >= videos.length) return;
   currentIdx = idx;
+  videoReady = false;
+  canvas.style.display = 'block';
+  video.style.display = 'none';
   var v = videos[idx];
   video.src = v.url;
   video.load();
