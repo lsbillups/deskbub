@@ -160,7 +160,7 @@ export default function UploadPage() {
                 </div>
               )}
 
-              {videoUrls && (
+              {videoUrls.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
                   <p className="text-center text-mint font-semibold mb-3">🎬 Your Animated Pet!</p>
                   {videoUrls.map((url, i) => (
