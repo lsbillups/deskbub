@@ -11,7 +11,7 @@ var input = document.getElementById('mediaUrl');
 var pairingInput = document.getElementById('pairingCode');
 
 canvas.style.display = 'block';
-video.style.display = 'none';
+video.style.opacity = '0';
 
 // Multi-video support
 var videos = [];        // Array of {url, label}
@@ -94,8 +94,7 @@ video.addEventListener('playing', function() {
 });
 video.addEventListener('error', function() {
   status('❌ Video load error', 5000);
-  canvas.style.display = 'block';
-  video.style.display = 'none';
+  video.style.opacity = '0';
 });
 
 function playNext() {
@@ -164,8 +163,7 @@ window.addEventListener('resize', resize); resize();
 var videoReady = false;
 
 function showVideo() {
-  canvas.style.display = 'none';
-  video.style.display = 'block';
+  video.style.opacity = '1';
 }
 
 function renderFrame() {
