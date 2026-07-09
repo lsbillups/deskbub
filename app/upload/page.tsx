@@ -10,6 +10,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 type Stage = 'select' | 'preview' | 'uploading' | 'processing' | 'done';
 type PetType = 'dog' | 'cat' | 'other';
 
+const MAX_ACTIONS = 2; // Full version: 6
+
 const petActions: Record<PetType, { label: string; actions: string[] }> = {
   dog: { label: '🐶 Dog', actions: ['Panting & tongue out', 'Head tilting curiously', 'Tail wagging excitedly', 'Lying down relaxed', 'Sitting looking up', 'Playful light jog'] },
   cat: { label: '🐱 Cat', actions: ['Licking paw & grooming', 'Stretching & arching back', 'Curling up sleepy', 'Tail swishing slowly', 'Pouncing playfully', 'Sitting & washing face'] },
@@ -33,7 +35,7 @@ export default function UploadPage() {
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [petType, setPetType] = useState<PetType>('dog');
   // For each of the 6 actions, which photo index to use (default: 0)
-  const [actionPhotoMap, setActionPhotoMap] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [actionPhotoMap, setActionPhotoMap] = useState<number[]>(Array(MAX_ACTIONS).fill(0));
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -81,7 +83,7 @@ export default function UploadPage() {
     setIsGenerating(true); setError(null);
     try {
       const urls: string[] = [];
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < MAX_ACTIONS; i++) {
         const photoIdx = actionPhotoMap[i] ?? 0;
         const res = await fetch('/api/generate-video', {
           method: 'POST',
@@ -101,7 +103,7 @@ export default function UploadPage() {
   const handleReset = () => {
     previewUrls.forEach((u) => URL.revokeObjectURL(u));
     setFiles([]); setPreviewUrls([]); setProcessedUrls([]); setVideoUrls([]);
-    setActionPhotoMap([0, 0, 0, 0, 0, 0]);
+    setActionPhotoMap(Array(MAX_ACTIONS).fill(0));
     setError(null); setProgress(0); setStage('select');
   };
 
