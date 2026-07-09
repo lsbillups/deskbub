@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
       version: SEEDANCE_VERSION,
       input: {
         image: imageUrl,
-        prompt: getActionPrompt(petType, typeof action === 'number' ? action : 0),
-        negative_prompt: 'distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing',
+        prompt: getActionPrompt(petType, typeof action === 'number' ? action : 0) + ' The pet must be fully visible from head to paws, centered in the frame with space around it. Keep the pet small and cute like a desktop mascot. Chroma key green studio background filling the entire frame.',
+        negative_prompt: 'close-up, zoomed in, cropped, partial body, only head, distorted, blurry, deformed, fast movement, jumping, running, leaving frame, text, watermark, morphing',
         duration: 5,
         aspect_ratio: '1:1',
         fps: 24,
