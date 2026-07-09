@@ -34,7 +34,7 @@ export default function UploadPage() {
   const [processedUrls, setProcessedUrls] = useState<string[]>([]);
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [petType, setPetType] = useState<PetType>('dog');
-  // For each of the 6 actions, which photo index to use (default: 0)
+  // For each action, which photo index to use
   const [actionPhotoMap, setActionPhotoMap] = useState<number[]>(Array(MAX_ACTIONS).fill(0));
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,9 +122,9 @@ export default function UploadPage() {
               <p className="text-sm text-text-secondary mb-3 text-center">{processedUrls.length} photo{processedUrls.length > 1 ? 's' : ''} processed — assign actions below</p>
               <div className="flex gap-4 mb-6 justify-center flex-wrap">
                 {processedUrls.map((url, i) => (
-                  <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-2 w-40">
-                    <p className="text-xs text-mint mb-1 text-center">Photo #{i + 1}</p>
-                    <div className="w-36 h-44 rounded-lg overflow-hidden mx-auto" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'16px 16px',backgroundPosition:'0 0,8px 8px'}}>
+                  <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-3">
+                    <p className="text-xs text-mint mb-1 text-center font-semibold">Photo #{i + 1}</p>
+                    <div className="w-48 h-56 rounded-lg overflow-hidden mx-auto" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'20px 20px',backgroundPosition:'0 0,10px 10px'}}>
                       <img src={url} alt={`Pet ${i + 1}`} className="w-full h-full object-contain" />
                     </div>
                   </div>
@@ -144,7 +144,7 @@ export default function UploadPage() {
               {videoUrls.length === 0 && (
                 <div className="space-y-2 mb-6">
                   <p className="text-sm font-semibold text-text-primary text-center mb-2">Pick a photo for each action ({petActions[petType].label})</p>
-                  {petActions[petType].actions.map((action, ai) => (
+                  {petActions[petType].actions.slice(0, MAX_ACTIONS).map((action, ai) => (
                     <div key={ai} className="flex items-center gap-3 bg-white rounded-xl border border-gray-100 p-3">
                       <span className="text-xs font-mono text-text-secondary/60 w-5">{ai + 1}.</span>
                       <span className="text-sm text-text-primary flex-1">{action}</span>
@@ -171,7 +171,7 @@ export default function UploadPage() {
               {videoUrls.length === 0 && (
                 <div className="text-center mb-6">
                   <button onClick={handleGenerateVideo} disabled={isGenerating} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
-                    {isGenerating ? '🎬 Generating 6 videos...' : `🎬 Generate All 6 Actions`}
+                    {isGenerating ? `🎬 Generating ${MAX_ACTIONS} videos...` : `🎬 Generate ${MAX_ACTIONS} Actions`}
                   </button>
                   <p className="text-xs text-text-secondary/60 mt-2">This will generate {6} videos — one per action</p>
                 </div>
