@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }
 
-    const { imageUrl, petType, action } = await request.json();
+    const { imageUrl, petType, action, actionLabel } = await request.json();
     if (!imageUrl) {
       return NextResponse.json({ error: 'No image URL provided.' }, { status: 400 });
     }
@@ -132,13 +132,13 @@ export async function POST(request: NextRequest) {
       }
       const pairingCode = String(Math.abs(hash) % 1000000).padStart(6, '0');
 
-      await supabase.from('pet_data').upsert({
+      await supabase.from('pet_data').insert({
         user_id: userId,
         pairing_code: pairingCode,
         video_url: finalUrl,
+        action_label: actionLabel || '',
         processed_url: '',
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' });
+      });
     } catch (dbErr) {
       console.warn('Failed to save pairing data:', dbErr);
     }

@@ -14,19 +14,22 @@ export async function GET(
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('pet_data')
-      .select('video_url, processed_url')
+      .select('video_url, processed_url, action_label')
       .eq('pairing_code', code)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+      .order('created_at', { ascending: false });
 
-    if (error || !data) {
+    if (error || !data || data.length === 0) {
       return NextResponse.json({ error: 'No pet found for this code.' }, { status: 404 });
     }
 
+    const videos = data
+      .filter((d: any) => d.video_url)
+      .map((d: any) => ({ url: d.video_url, label: d.action_label || 'Pet action' }));
+
     return NextResponse.json({
-      videoUrl: data.video_url || null,
-      imageUrl: data.processed_url || null,
+      videos: videos.length > 0 ? videos : null,
+      videoUrl: videos.length > 0 ? videos[0].url : null, // backward compat
+      imageUrl: null,
     });
   } catch {
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
