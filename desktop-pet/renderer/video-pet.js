@@ -75,11 +75,28 @@ function playIdx(idx) {
   canvas.style.display = 'block';
   video.style.display = 'none';
   var v = videos[idx];
+  status(v.label || ('Video ' + (idx + 1)), 0);
   video.src = v.url;
   video.load();
-  video.play().catch(function(){});
-  status(v.label || ('Video ' + (idx + 1)), 2000);
+  var playP = video.play();
+  if (playP && playP.then) {
+    playP.then(function() {
+      // Video is playing — showVideo will be called by renderFrame
+    }).catch(function(e) {
+      status('❌ Cannot play video', 5000);
+    });
+  }
 }
+
+// Force show video when it's ready
+video.addEventListener('playing', function() {
+  if (!videoReady) { showVideo(); videoReady = true; }
+});
+video.addEventListener('error', function() {
+  status('❌ Video load error', 5000);
+  canvas.style.display = 'block';
+  video.style.display = 'none';
+});
 
 function playNext() {
   playIdx((currentIdx + 1) % videos.length);
