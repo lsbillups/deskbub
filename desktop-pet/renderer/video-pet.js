@@ -90,7 +90,7 @@ function playIdx(idx) {
 
 // Force show video when it's ready
 video.addEventListener('playing', function() {
-  if (!videoReady) { showVideo(); videoReady = true; }
+  if (!videoReady) { showVideo(); videoReady = true; statusEl.style.display = 'none'; }
 });
 video.addEventListener('error', function() {
   status('❌ Video load error', 5000);
