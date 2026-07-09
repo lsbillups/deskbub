@@ -121,9 +121,11 @@ export async function POST(request: NextRequest) {
 
     const finalUrl = transparentUrl || videoUrl;
 
-    // Save pairing data to Supabase
+    // Save pairing data to Supabase — first delete old entries for this user
     try {
       const supabase = createAdminClient();
+      // Delete previous entries for this user (clean slate for new generation)
+      await supabase.from('pet_data').delete().eq('user_id', userId);
       // Generate pairing code from user ID hash
       let hash = 0;
       for (let i = 0; i < userId.length; i++) {

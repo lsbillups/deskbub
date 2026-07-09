@@ -24,6 +24,7 @@ input.addEventListener('contextmenu', function(e) { e.stopPropagation(); });
 
 window.addEventListener('dblclick', function(e) {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
+  if (videos.length > 0) return; // Don't show URL bar while pet is playing
   urlBar.classList.remove('hidden'); hint.style.opacity = '1';
 });
 window.addEventListener('keydown', function(e) {
@@ -131,6 +132,7 @@ window.loadByCode = function() {
         startRotation();
         updateTray();
         urlBar.classList.add('hidden');
+        hint.style.display = 'none';
         hint.style.opacity = '0';
       } else if (data.videoUrl) {
         // Backward compat: single video
