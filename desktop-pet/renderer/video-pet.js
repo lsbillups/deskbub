@@ -39,18 +39,22 @@ function status(m, d) {
 // IPC: receive tray menu action from main process
 if (window.deskBub && window.deskBub.onTrayAction) {
   window.deskBub.onTrayAction(function(action) {
-    if (action === 'next') playNext();
-    else if (action === 'prev') playPrev();
-    else if (action === 'toggle-rotate') {
-      autoRotate = !autoRotate;
-      if (autoRotate) startRotation();
-      else stopRotation();
-    } else {
-      // action is index
-      var idx = parseInt(action);
-      if (idx >= 0 && idx < videos.length) playIdx(idx);
+    var idx = parseInt(action);
+    if (!isNaN(idx) && idx >= 0 && idx < videos.length) {
+      playIdx(idx);
+    } else if (action === 'next') {
+      playNext();
+    } else if (action === 'prev') {
+      playPrev();
     }
   });
+}
+
+// Send actions to main process for tray menu
+function updateTray() {
+  if (window.deskBub && window.deskBub.setActions) {
+    window.deskBub.setActions(videos);
+  }
 }
 
 // Rotation
@@ -88,6 +92,7 @@ function loadVideo(url) {
   currentIdx = 0;
   playIdx(0);
   stopRotation();
+  updateTray();
   if (autoRotate && videos.length > 1) startRotation();
 }
 
@@ -105,6 +110,7 @@ window.loadByCode = function() {
         currentIdx = 0;
         playIdx(0);
         startRotation();
+        updateTray();
         urlBar.classList.add('hidden');
         hint.style.opacity = '0';
       } else if (data.videoUrl) {
