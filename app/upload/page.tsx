@@ -152,7 +152,7 @@ export default function UploadPage() {
                 ))}
               </div>
 
-              {!videoUrls && (
+              {videoUrls.length === 0 && (
                 <div className="text-center">
                   <button onClick={handleGenerateVideo} disabled={isGenerating} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
                     {isGenerating ? '🎬 Generating...' : `🎬 Generate ${petActions[petType].label} Video`}
