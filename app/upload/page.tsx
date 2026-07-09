@@ -32,7 +32,8 @@ export default function UploadPage() {
   const [processedUrls, setProcessedUrls] = useState<string[]>([]);
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [petType, setPetType] = useState<PetType>('dog');
-  const [selectedActions, setSelectedActions] = useState<number[]>([]);
+  // For each of the 6 actions, which photo index to use (default: 0)
+  const [actionPhotoMap, setActionPhotoMap] = useState<number[]>([0, 0, 0, 0, 0, 0]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -46,7 +47,6 @@ export default function UploadPage() {
 
   const handleBGRemove = async () => {
     if (files.length === 0) return;
-    // Check subscription
     const subRes = await fetch('/api/check-subscription');
     const sub = await subRes.json();
     if (!sub.canGenerate) { router.push('/pricing'); return; }
@@ -81,16 +81,16 @@ export default function UploadPage() {
     setIsGenerating(true); setError(null);
     try {
       const urls: string[] = [];
-      for (let i = 0; i < processedUrls.length; i++) {
-        const action = selectedActions[i] ?? 0;
+      for (let i = 0; i < 6; i++) {
+        const photoIdx = actionPhotoMap[i] ?? 0;
         const res = await fetch('/api/generate-video', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageUrl: processedUrls[i], petType, action }),
+          body: JSON.stringify({ imageUrl: processedUrls[photoIdx], petType, action: i }),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || `Generation failed for photo ${i + 1}.`);
-        urls.push(data.videoUrls);
+        if (!res.ok) throw new Error(data.error || `Generation failed for action ${i + 1}.`);
+        urls.push(data.videoUrl);
       }
       setVideoUrls(urls);
     } catch (err) {
@@ -101,6 +101,7 @@ export default function UploadPage() {
   const handleReset = () => {
     previewUrls.forEach((u) => URL.revokeObjectURL(u));
     setFiles([]); setPreviewUrls([]); setProcessedUrls([]); setVideoUrls([]);
+    setActionPhotoMap([0, 0, 0, 0, 0, 0]);
     setError(null); setProgress(0); setStage('select');
   };
 
@@ -109,70 +110,86 @@ export default function UploadPage() {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">Create Your Desktop Pet</h1>
-          <p className="mt-2 text-text-secondary">Upload 1-5 photos — more photos = better results for Plus</p>
+          <p className="mt-2 text-text-secondary">Upload 1-5 photos — use each photo for multiple actions</p>
         </div>
 
         <AnimatePresence mode="wait">
           {stage === 'done' && processedUrls.length > 0 ? (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl mx-auto">
-              {/* Pet type selector */}
-              <div className="flex justify-center gap-3 mb-6">
-                {(Object.keys(petActions) as PetType[]).map((t) => (
-                  <button key={t} onClick={() => setPetType(t)} className={`px-5 py-2.5 rounded-full font-semibold text-sm transition-all cursor-pointer ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>
-                    {petActions[t].label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Per-image action selector */}
-              <p className="text-sm text-text-secondary mb-3 text-center">{processedUrls.length} photo{processedUrls.length > 1 ? 's' : ''} processed — pick an action for each</p>
-              <div className="grid gap-4 mb-8 grid-cols-1 sm:grid-cols-2">
+              {/* Bigger processed photos */}
+              <p className="text-sm text-text-secondary mb-3 text-center">{processedUrls.length} photo{processedUrls.length > 1 ? 's' : ''} processed — assign actions below</p>
+              <div className="flex gap-4 mb-6 justify-center flex-wrap">
                 {processedUrls.map((url, i) => (
-                  <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-4 flex gap-4 items-start">
-                    <div className="w-24 h-24 rounded-lg overflow-hidden shrink-0" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'16px 16px',backgroundPosition:'0 0,8px 8px'}}>
+                  <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-2 w-40">
+                    <p className="text-xs text-mint mb-1 text-center">Photo #{i + 1}</p>
+                    <div className="w-36 h-44 rounded-lg overflow-hidden mx-auto" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'16px 16px',backgroundPosition:'0 0,8px 8px'}}>
                       <img src={url} alt={`Pet ${i + 1}`} className="w-full h-full object-contain" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-mint mb-2">Photo #{i + 1}</p>
-                      <select
-                        value={selectedActions[i] ?? 0}
-                        onChange={(e) => {
-                          const v = [...selectedActions];
-                          v[i] = parseInt(e.target.value);
-                          setSelectedActions(v);
-                        }}
-                        className="w-full text-sm border border-gray-200 rounded-lg p-2 outline-none focus:border-coral"
-                      >
-                        {petActions[petType].actions.map((a, ai) => (
-                          <option key={ai} value={ai}>{a}</option>
-                        ))}
-                      </select>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {videoUrls.length === 0 && (
-                <div className="text-center">
-                  <button onClick={handleGenerateVideo} disabled={isGenerating} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
-                    {isGenerating ? '🎬 Generating...' : `🎬 Generate ${petActions[petType].label} Video`}
+              {/* Pet type selector */}
+              <div className="flex justify-center gap-3 mb-4">
+                {(Object.keys(petActions) as PetType[]).map((t) => (
+                  <button key={t} onClick={() => setPetType(t)} className={`px-4 py-2 rounded-full font-semibold text-xs transition-all cursor-pointer ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>
+                    {petActions[t].label}
                   </button>
+                ))}
+              </div>
+
+              {/* Action → Photo mapping */}
+              {videoUrls.length === 0 && (
+                <div className="space-y-2 mb-6">
+                  <p className="text-sm font-semibold text-text-primary text-center mb-2">Pick a photo for each action ({petActions[petType].label})</p>
+                  {petActions[petType].actions.map((action, ai) => (
+                    <div key={ai} className="flex items-center gap-3 bg-white rounded-xl border border-gray-100 p-3">
+                      <span className="text-xs font-mono text-text-secondary/60 w-5">{ai + 1}.</span>
+                      <span className="text-sm text-text-primary flex-1">{action}</span>
+                      <div className="flex gap-1">
+                        {processedUrls.map((_, pi) => (
+                          <button
+                            key={pi}
+                            onClick={() => { const m = [...actionPhotoMap]; m[ai] = pi; setActionPhotoMap(m); }}
+                            className={`w-8 h-8 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                              (actionPhotoMap[ai] ?? 0) === pi
+                                ? 'bg-coral text-white shadow'
+                                : 'bg-gray-100 text-text-secondary hover:bg-gray-200'
+                            }`}
+                          >
+                            {pi + 1}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {videoUrls.length === 0 && (
+                <div className="text-center mb-6">
+                  <button onClick={handleGenerateVideo} disabled={isGenerating} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
+                    {isGenerating ? '🎬 Generating 6 videos...' : `🎬 Generate All 6 Actions`}
+                  </button>
+                  <p className="text-xs text-text-secondary/60 mt-2">This will generate {6} videos — one per action</p>
                 </div>
               )}
 
               {videoUrls.length > 0 && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-                  <p className="text-center text-mint font-semibold mb-3">🎬 Your Animated Pet!</p>
-                  {videoUrls.map((url, i) => (
-                    <div key={i} className="bg-black rounded-2xl overflow-hidden shadow-xl">
-                      <p className="text-center text-xs text-white/60 py-1 bg-black/80">{petActions[petType]?.actions?.[selectedActions[i] ?? 0] || `Video ${i + 1}`}</p>
-                      <video src={url} autoPlay loop muted playsInline className="w-full" />
-                      <div className="flex justify-center gap-4 p-2 bg-black/80">
-                        <a href={url} download className="text-coral underline text-xs" target="_blank" rel="noopener">Download</a>
-                        <a href={url} className="text-coral underline text-xs" target="_blank" rel="noopener">Copy link</a>
+                  <p className="text-center text-mint font-semibold mb-3">🎬 {videoUrls.length} Videos Generated!</p>
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                    {videoUrls.map((url, i) => (
+                      <div key={i} className="bg-black rounded-2xl overflow-hidden shadow-xl">
+                        <p className="text-center text-xs text-white/60 py-1 bg-black/80">{petActions[petType].actions[i]}</p>
+                        <video src={url} autoPlay loop muted playsInline className="w-full" />
+                        <div className="flex justify-center gap-4 p-2 bg-black/80">
+                          <a href={url} download className="text-coral underline text-xs" target="_blank" rel="noopener">Download</a>
+                          <a href={url} className="text-coral underline text-xs" target="_blank" rel="noopener">Copy link</a>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                   {pairingCode && (
                     <div className="mt-4 p-4 bg-mint/5 rounded-xl border border-mint/20 text-center">
                       <p className="text-sm font-semibold text-mint mb-1">🔗 Your Pairing Code</p>
@@ -184,7 +201,7 @@ export default function UploadPage() {
               )}
 
               {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 text-sm text-red-500 text-center">{error}</motion.p>}
-              <button onClick={handleReset} className="block mx-auto mt-6 text-sm text-text-secondary hover:text-coral underline underline-offset-4 cursor-pointer">Upload different photo</button>
+              <button onClick={handleReset} className="block mx-auto mt-6 text-sm text-text-secondary hover:text-coral underline underline-offset-4 cursor-pointer">Upload different photos</button>
             </motion.div>
           ) : (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
