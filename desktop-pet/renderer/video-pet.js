@@ -173,7 +173,7 @@ function renderFrame() {
   if (!video.src || video.paused || !video.videoWidth) return;
   if (!videoReady) { showVideo(); videoReady = true; }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var pad = 25;
+  var pad = 10;
   var aw = canvas.width - pad * 2, ah = canvas.height - pad * 2;
   var s = Math.min(aw / video.videoWidth, ah / video.videoHeight);
   var dw = video.videoWidth * s, dh = video.videoHeight * s;
