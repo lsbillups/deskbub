@@ -30,7 +30,7 @@ export default function UploadPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [processedUrls, setProcessedUrls] = useState<string[]>([]);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [petType, setPetType] = useState<PetType>('dog');
   const [selectedActions, setSelectedActions] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -80,11 +80,19 @@ export default function UploadPage() {
     if (!sub.canGenerate) { router.push('/pricing'); return; }
     setIsGenerating(true); setError(null);
     try {
-      const action = selectedActions[0] ?? 0;
-      const res = await fetch('/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageUrl: processedUrls[0], petType, action }) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Generation failed.');
-      setVideoUrl(data.videoUrl);
+      const urls: string[] = [];
+      for (let i = 0; i < processedUrls.length; i++) {
+        const action = selectedActions[i] ?? 0;
+        const res = await fetch('/api/generate-video', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: processedUrls[i], petType, action }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `Generation failed for photo ${i + 1}.`);
+        urls.push(data.videoUrls);
+      }
+      setVideoUrls(urls);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Generation failed.');
     } finally { setIsGenerating(false); }
@@ -92,7 +100,7 @@ export default function UploadPage() {
 
   const handleReset = () => {
     previewUrls.forEach((u) => URL.revokeObjectURL(u));
-    setFiles([]); setPreviewUrls([]); setProcessedUrls([]); setVideoUrl(null);
+    setFiles([]); setPreviewUrls([]); setProcessedUrls([]); setVideoUrls([]);
     setError(null); setProgress(0); setStage('select');
   };
 
@@ -144,7 +152,7 @@ export default function UploadPage() {
                 ))}
               </div>
 
-              {!videoUrl && (
+              {!videoUrls && (
                 <div className="text-center">
                   <button onClick={handleGenerateVideo} disabled={isGenerating} className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
                     {isGenerating ? '🎬 Generating...' : `🎬 Generate ${petActions[petType].label} Video`}
@@ -152,15 +160,19 @@ export default function UploadPage() {
                 </div>
               )}
 
-              {videoUrl && (
+              {videoUrls && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
                   <p className="text-center text-mint font-semibold mb-3">🎬 Your Animated Pet!</p>
-                  <div className="max-w-sm mx-auto bg-black rounded-2xl overflow-hidden shadow-2xl"><video src={videoUrl} autoPlay loop muted playsInline className="w-full" /></div>
-                  <p className="text-center mt-2">
-                    <a href={videoUrl} download className="text-coral underline text-sm" target="_blank" rel="noopener">Download</a>
-                    <span className="text-text-secondary/40 text-sm mx-2">|</span>
-                    <a href={videoUrl} className="text-coral underline text-sm" target="_blank" rel="noopener">Copy link for DeskBub</a>
-                  </p>
+                  {videoUrls.map((url, i) => (
+                    <div key={i} className="bg-black rounded-2xl overflow-hidden shadow-xl">
+                      <p className="text-center text-xs text-white/60 py-1 bg-black/80">{petActions[petType]?.actions?.[selectedActions[i] ?? 0] || `Video ${i + 1}`}</p>
+                      <video src={url} autoPlay loop muted playsInline className="w-full" />
+                      <div className="flex justify-center gap-4 p-2 bg-black/80">
+                        <a href={url} download className="text-coral underline text-xs" target="_blank" rel="noopener">Download</a>
+                        <a href={url} className="text-coral underline text-xs" target="_blank" rel="noopener">Copy link</a>
+                      </div>
+                    </div>
+                  ))}
                   {pairingCode && (
                     <div className="mt-4 p-4 bg-mint/5 rounded-xl border border-mint/20 text-center">
                       <p className="text-sm font-semibold text-mint mb-1">🔗 Your Pairing Code</p>
