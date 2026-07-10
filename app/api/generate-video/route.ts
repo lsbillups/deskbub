@@ -125,8 +125,9 @@ export async function POST(request: NextRequest) {
     // Save pairing data to Supabase
     try {
       const supabase = createAdminClient();
-      // If clear_first is set, delete old entries before inserting new ones
-      if (body.clear_first) {
+      // Note: caller should clear old data first. This just inserts.
+      // If clear_first is set, clear old entries first
+      if (clear_first) {
         await supabase.from('pet_data').delete().eq('user_id', userId);
       }
       // Generate pairing code from user ID hash
