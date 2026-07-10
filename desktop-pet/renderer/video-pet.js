@@ -76,7 +76,7 @@ function playIdx(idx) {
   canvas.style.display = 'block';
   video.style.display = 'none';
   var v = videos[idx];
-  status('✅', 1500);
+  status('', 0);
   video.src = v.url;
   video.load();
   var playP = video.play();
