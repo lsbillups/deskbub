@@ -48,7 +48,18 @@ export default function UploadPage() {
       setTier(d.tier === 'plus' ? 'plus' : d.tier === 'basic' ? 'basic' : 'free');
       setGensUsed(d.used || 0); setGensMax(d.max || 0);
     });
-  }, []);
+    // Load existing videos if user has them
+    if (pairingCode) {
+      fetch(`/api/pairing/${pairingCode}`).then(r => r.json()).then(d => {
+        if (d.videos && d.videos.length > 0) {
+          setVideoUrls(d.videos.map((v: any) => v.url));
+          setVideoLabels(d.videos.map((v: any) => v.label));
+          setRedoFlags(Array(d.videos.length).fill(false));
+          setStage('done');
+        }
+      }).catch(() => {});
+    }
+  }, [pairingCode]);
 
   const maxActions = tier === 'plus' ? 5 : 1;
   const gensLeft = Math.max(0, gensMax - gensUsed);
