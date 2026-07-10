@@ -140,6 +140,13 @@ export default function UploadPage() {
       }
       setVideoUrls(urls); setVideoLabels(labels);
       setRedoFlags(Array(urls.length).fill(false));
+      // Sync all videos to database
+      try {
+        await fetch('/api/sync-pet-data', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pairingCode, videos: urls.map((u, i) => ({ url: u, label: labels[i] })) }),
+        });
+      } catch {}
       fetch('/api/check-subscription').then(r => r.json()).then(d => { setGensUsed(d.used || 0); setGensMax(d.max || 0); });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Generation failed.');
@@ -216,6 +223,13 @@ export default function UploadPage() {
       setVideoUrls(newUrls); setVideoLabels(newLabels);
       setRedoFlags(Array(newUrls.length).fill(false));
       setRedoIndices([]); setRedoPhotos([]); setFiles([]); setPreviewUrls([]); setProcessedUrls([]);
+      // Sync to database: delete old, insert all
+      try {
+        await fetch('/api/sync-pet-data', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pairingCode, videos: newUrls.map((url, i) => ({ url, label: newLabels[i] })) }),
+        });
+      } catch {}
       setStage('done');
       fetch('/api/check-subscription').then(r => r.json()).then(d => { setGensUsed(d.used || 0); setGensMax(d.max || 0); });
     } catch (err) {
