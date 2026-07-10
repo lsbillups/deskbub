@@ -212,7 +212,7 @@ export default function UploadPage() {
 
         <AnimatePresence mode="wait">
           {/* DONE STATE */}
-          {stage === 'done' && processedUrls.length > 0 ? (
+          {stage === 'done' ? (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-4xl mx-auto">
               {/* Photos */}
               <div className="flex gap-4 mb-4 justify-center flex-wrap">
