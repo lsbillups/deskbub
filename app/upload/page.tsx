@@ -59,7 +59,7 @@ export default function UploadPage() {
         }
       }).catch(() => {});
     }
-  }, [pairingCode]);
+  }, [user]);
 
   const maxActions = tier === 'plus' ? 5 : 1;
   const gensLeft = Math.max(0, gensMax - gensUsed);
