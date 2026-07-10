@@ -98,7 +98,7 @@ function buildTrayMenu() {
 function createPetWindow() {
   const config = loadConfig();
   petWindow = new BrowserWindow({
-    width: 240, height: 280,
+    width: 170, height: 210,
     transparent: true, frame: false, alwaysOnTop: true,
     hasShadow: false, resizable: false, skipTaskbar: true,
     opacity: config.opacity,
