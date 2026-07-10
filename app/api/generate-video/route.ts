@@ -119,32 +119,6 @@ export async function POST(request: NextRequest) {
 
     const finalUrl = transparentUrl || videoUrl;
 
-    // Save pairing data to Supabase
-    try {
-      const supabase = createAdminClient();
-      // Note: caller should clear old data first. This just inserts.
-      // If clear_first is set, clear old entries first
-      if (clear_first) {
-        await supabase.from('pet_data').delete().eq('user_id', userId);
-      }
-      // Generate pairing code from user ID hash
-      let hash = 0;
-      for (let i = 0; i < userId.length; i++) {
-        hash = ((hash << 5) - hash) + userId.charCodeAt(i);
-        hash |= 0;
-      }
-      const pairingCode = String(Math.abs(hash) % 1000000).padStart(6, '0');
-
-      await supabase.from('pet_data').insert({
-        user_id: userId,
-        pairing_code: pairingCode,
-        video_url: finalUrl,
-        action_label: actionLabel || '',
-        processed_url: imageUrl, // Store original image for redo
-      });
-    } catch (dbErr) {
-      console.warn('Failed to save pairing data:', dbErr);
-    }
 
     // Increment generation counter
     try {
