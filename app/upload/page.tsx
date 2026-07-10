@@ -271,10 +271,17 @@ export default function UploadPage() {
                   <DropZone onFilesSelected={handleRedoFileSelected} maxFiles={redoIndices.length}
                     title={`Drop ${redoIndices.length} new photo${redoIndices.length > 1 ? 's' : ''}`} subtitle="Upload replacement photos for the selected videos" />
                   {files.length > 0 && (
-                    <div className="mt-4 flex justify-center">
-                      <button onClick={handleRedoBGRemove} className="px-6 py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark shadow-lg cursor-pointer">
-                        Remove Background ✨
-                      </button>
+                    <div className="mt-6">
+                      <div className="grid grid-cols-3 gap-3 mb-4">
+                        {previewUrls.map((url, i) => (
+                          <div key={i} className="aspect-square rounded-xl bg-gray-100 overflow-hidden"><img src={url} className="w-full h-full object-cover" /></div>
+                        ))}
+                      </div>
+                      <div className="flex justify-center">
+                        <button onClick={handleRedoBGRemove} className="px-6 py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark shadow-lg cursor-pointer">
+                          Remove Background ✨
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
