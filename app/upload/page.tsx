@@ -313,14 +313,24 @@ export default function UploadPage() {
                   <DropZone onFilesSelected={handleFileSelected} maxFiles={tier === 'plus' ? 5 : 1}
                     title={tier === 'plus' ? 'Drop 1-5 photos of your pet' : 'Drop a photo of your pet'}
                     subtitle={tier === 'plus' ? 'Plus member — up to 5 photos, 5 actions, 3 redos · JPG, PNG, WebP up to 10MB' : 'Basic member — 1 photo · JPG, PNG, WebP up to 10MB'} />
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-6 bg-white rounded-2xl border border-gray-100 p-6">
-                    <h3 className="font-display font-bold text-text-primary mb-3">📸 Tips</h3>
-                    <ul className="space-y-2 text-sm text-text-secondary">
-                      <li>🐾 <strong>Front-facing</strong> photo works best</li>
-                      <li>🎨 Pet should <strong>contrast with background</strong></li>
-                      <li>☀️ Good <strong>lighting</strong> — natural daylight is ideal</li>
-                      <li>📷 Keep it <strong>sharp and clear</strong></li>
-                    </ul>
+                  <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-8 bg-white rounded-2xl border border-gray-100 p-6 sm:p-8 shadow-sm">
+                    <h3 className="font-display font-bold text-text-primary mb-5 text-lg">📸 Photo Tips</h3>
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {[
+                        { icon: '🐾', title: 'Front-facing', desc: 'Your pet looking at the camera works best' },
+                        { icon: '🎨', title: 'Contrasting bg', desc: 'Avoid same color pet & background' },
+                        { icon: '☀️', title: 'Good lighting', desc: 'Natural daylight gives the best results' },
+                        { icon: '📷', title: 'Sharp & clear', desc: 'Blurry photos produce poor quality' },
+                      ].map(tip => (
+                        <div key={tip.title} className="flex items-start gap-3">
+                          <span className="text-2xl shrink-0 mt-0.5">{tip.icon}</span>
+                          <div>
+                            <p className="text-sm font-semibold text-text-primary">{tip.title}</p>
+                            <p className="text-xs text-text-secondary mt-0.5">{tip.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </motion.div>
                 </div>
               )}
