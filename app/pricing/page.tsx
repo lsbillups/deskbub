@@ -44,10 +44,10 @@ const tiers = [
     emoji: '🌟',
     price: '$4.99',
     period: 'one-time',
-    desc: 'Six actions, eight generations. Best value.',
+    desc: 'Five actions, three redo slots. Best value.',
     features: [
-      '6 pet actions',
-      '8 AI generations (re-dos included)',
+      '5 pet actions',
+      '3 redo slots included',
       'Cat, dog, or other pets',
       'Transparent desktop pet',
       'All Basic features',

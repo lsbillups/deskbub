@@ -14,7 +14,6 @@ function getActionPrompt(petType: string, action: number): string {
       'A cute dog wagging its tail excitedly, happy expression, gentle bouncing.',
       'A cute dog lying down relaxed, soft breathing, eyes half closed, peaceful.',
       'A cute dog sitting and looking up at owner, loyal expression, gentle tail wag.',
-      'A cute dog doing a light playful jog, circling around, happy energy.',
     ],
     cat: [
       'A cute cat gently licking its paw, grooming, soft breathing, subtle ear twitches.',
@@ -22,7 +21,6 @@ function getActionPrompt(petType: string, action: number): string {
       'A cute cat curling up into a ball, sleepy, tiny yawn, peaceful.',
       'A cute cat with tail swishing slowly, relaxed, gentle gaze.',
       'A cute cat pouncing playfully, batting paw at something, curious.',
-      'A cute cat sitting up and washing its face with paw, grooming ritual.',
     ],
     other: [
       'A cute pet casually walking and exploring, gentle steps, curious.',
@@ -30,7 +28,6 @@ function getActionPrompt(petType: string, action: number): string {
       'A cute pet sitting calmly, gentle breathing, relaxed posture.',
       'A cute pet tilting its head with cute expression, gentle blink.',
       'A cute pet nibbling delicately, eating gently, small bites.',
-      'A cute pet stretching and relaxing, slow movement, comfortable.',
     ],
   };
   const list = prompts[petType] || prompts.other;
