@@ -257,6 +257,9 @@ export default function UploadPage() {
                     className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl shadow-purple-500/25 disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
                     {isGenerating ? '🎬 Generating...' : tier === 'plus' ? `🎬 Generate ${totalSelected} Videos` : '🎬 Generate Video'}
                   </button>
+                  {isGenerating && (
+                    <p className="text-xs text-text-secondary/60 mt-3">About 1 min per video — {tier === 'plus' ? totalSelected : 1} video{tier === 'plus' && totalSelected !== 1 ? 's' : ''} total. Please wait...</p>
+                  )}
                 </div>
               )}
 
@@ -291,6 +294,7 @@ export default function UploadPage() {
                         className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-all disabled:opacity-50 cursor-pointer text-sm">
                         {isGenerating ? 'Regenerating...' : `🔄 Regenerate Selected (${redoCount} — ${gensLeft} left)`}
                       </button>
+                      {isGenerating && <p className="text-xs text-text-secondary/60 mt-2">About 1 min per video. Please wait...</p>}
                     </div>
                   )}
 
@@ -304,7 +308,9 @@ export default function UploadPage() {
               )}
 
               {error && <p className="mt-4 text-sm text-red-500 text-center">{error}</p>}
-              <button onClick={handleReset} className="block mx-auto mt-6 text-sm text-text-secondary hover:text-coral underline underline-offset-4 cursor-pointer">Start over</button>
+              {videoUrls.length > 0 && (
+                <button onClick={handleReset} className="block mx-auto mt-6 text-sm text-text-secondary/50 hover:text-coral underline underline-offset-4 cursor-pointer">Upload new photos</button>
+              )}
             </motion.div>
           ) : (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
