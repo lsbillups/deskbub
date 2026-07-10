@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
         pairing_code: pairingCode,
         video_url: finalUrl,
         action_label: actionLabel || '',
-        processed_url: '',
+        processed_url: imageUrl, // Store original image for redo
       });
     } catch (dbErr) {
       console.warn('Failed to save pairing data:', dbErr);

@@ -14,7 +14,7 @@ export async function GET(
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('pet_data')
-      .select('video_url, processed_url, action_label')
+      .select('video_url, processed_url, action_label, processed_url')
       .eq('pairing_code', code)
       .order('created_at', { ascending: false });
 
@@ -24,7 +24,7 @@ export async function GET(
 
     const videos = data
       .filter((d: any) => d.video_url)
-      .map((d: any) => ({ url: d.video_url, label: d.action_label || 'Pet action' }));
+      .map((d: any) => ({ url: d.video_url, label: d.action_label || 'Pet action', imageUrl: d.processed_url || '' }));
 
     return NextResponse.json({
       videos: videos.length > 0 ? videos : null,

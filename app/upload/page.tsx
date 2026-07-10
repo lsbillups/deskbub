@@ -38,6 +38,7 @@ export default function UploadPage() {
   const [checked, setChecked] = useState<boolean[][]>([]);
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [videoLabels, setVideoLabels] = useState<string[]>([]);
+  const [videoImageUrls, setVideoImageUrls] = useState<string[]>([]);
   const [redoFlags, setRedoFlags] = useState<boolean[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +57,7 @@ export default function UploadPage() {
       if (d.videos && d.videos.length > 0) {
         setVideoUrls(d.videos.map((v: any) => v.url));
         setVideoLabels(d.videos.map((v: any) => v.label));
+        setVideoImageUrls(d.videos.map((v: any) => v.imageUrl || ''));
         setRedoFlags(Array(d.videos.length).fill(false));
         setStage('done');
       }
@@ -146,6 +148,7 @@ export default function UploadPage() {
         labels.push(petActions[petType].actions[ai]);
       }
       setVideoUrls(urls); setVideoLabels(labels);
+      setVideoImageUrls(pairs.map(({ pi }) => processedUrls[pi]));
       setRedoFlags(Array(urls.length).fill(false));
       // Refresh subscription count
       fetch('/api/check-subscription').then(r => r.json()).then(d => { setGensUsed(d.used || 0); setGensMax(d.max || 0); });
@@ -164,8 +167,8 @@ export default function UploadPage() {
     const newPairs = toRedo.map(i => {
       const label = videoLabels[i];
       const ai = petActions[petType].actions.indexOf(label);
-      const pi = 0; // Default to first photo for redo
-      return { ai: Math.max(0, ai), pi };
+      const imageUrl = videoImageUrls[i] || processedUrls[0] || '';
+      return { ai: Math.max(0, ai), pi: 0, imageUrl };
     });
 
     setIsGenerating(true); setError(null);
@@ -176,7 +179,7 @@ export default function UploadPage() {
         const { ai, pi } = newPairs[k];
         const res = await fetch('/api/generate-video', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageUrl: processedUrls[pi], petType, action: ai, actionLabel: petActions[petType].actions[ai], clear_first: false }),
+          body: JSON.stringify({ imageUrl: newPairs[k].imageUrl || processedUrls[0], petType, action: ai, actionLabel: petActions[petType].actions[ai], clear_first: false }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Redo failed.');
