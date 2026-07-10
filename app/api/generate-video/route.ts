@@ -44,7 +44,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }
 
-    const { imageUrl, petType, action, actionLabel } = await request.json();
+    const body = await request.json();
+    const { imageUrl, petType, action, actionLabel, clear_first } = body;
     if (!imageUrl) {
       return NextResponse.json({ error: 'No image URL provided.' }, { status: 400 });
     }
@@ -121,11 +122,13 @@ export async function POST(request: NextRequest) {
 
     const finalUrl = transparentUrl || videoUrl;
 
-    // Save pairing data to Supabase — first delete old entries for this user
+    // Save pairing data to Supabase
     try {
       const supabase = createAdminClient();
-      // Delete previous entries for this user (clean slate for new generation)
-      await supabase.from('pet_data').delete().eq('user_id', userId);
+      // If clear_first is set, delete old entries before inserting new ones
+      if (body.clear_first) {
+        await supabase.from('pet_data').delete().eq('user_id', userId);
+      }
       // Generate pairing code from user ID hash
       let hash = 0;
       for (let i = 0; i < userId.length; i++) {
