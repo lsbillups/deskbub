@@ -149,6 +149,15 @@ export async function POST(request: NextRequest) {
       console.warn('Failed to save pairing data:', dbErr);
     }
 
+    // Increment generation counter
+    try {
+      const adminSupabase = createAdminClient();
+      const { data: sub } = await adminSupabase.from('subscriptions').select('generations_used').eq('user_id', userId).single();
+      if (sub) {
+        await adminSupabase.from('subscriptions').update({ generations_used: (sub.generations_used || 0) + 1 }).eq('user_id', userId);
+      }
+    } catch {}
+
     return NextResponse.json({
       success: true,
       videoUrl: finalUrl,
