@@ -309,11 +309,11 @@ export default function UploadPage() {
           ) : (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               {stage === 'select' && (
-                <div>
+                <div className="max-w-xl mx-auto">
                   <DropZone onFilesSelected={handleFileSelected} maxFiles={tier === 'plus' ? 5 : 1}
                     title={tier === 'plus' ? 'Drop 1-5 photos of your pet' : 'Drop a photo of your pet'}
                     subtitle={tier === 'plus' ? 'Plus member — up to 5 photos, 5 actions, 3 redos · JPG, PNG, WebP up to 10MB' : 'Basic member — 1 photo · JPG, PNG, WebP up to 10MB'} />
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="max-w-xl mx-auto mt-8 bg-white rounded-2xl border border-gray-100 p-6">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-6 bg-white rounded-2xl border border-gray-100 p-6">
                     <h3 className="font-display font-bold text-text-primary mb-3">📸 Tips</h3>
                     <ul className="space-y-2 text-sm text-text-secondary">
                       <li>🐾 <strong>Front-facing</strong> photo works best</li>
