@@ -50,7 +50,7 @@ export default function UploadPage() {
     });
   }, []);
 
-  const maxActions = tier === 'plus' ? 6 : 1;
+  const maxActions = tier === 'plus' ? 5 : 1;
   const gensLeft = Math.max(0, gensMax - gensUsed);
 
   const initChecked = (nPhotos: number) => {
@@ -193,7 +193,7 @@ export default function UploadPage() {
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">Create Your Desktop Pet</h1>
           <p className="mt-2 text-text-secondary">
-            {tier === 'plus' ? 'Plus member — 6 actions, 8 total generations' : tier === 'basic' ? 'Basic member — 1 default action' : 'Subscribe to get started'}
+            {tier === 'plus' ? 'Plus member — 5 actions, 3 redo slots' : tier === 'basic' ? 'Basic member — 1 default action' : 'Subscribe to get started'}
           </p>
           {tier === 'plus' && <p className="text-xs text-mint mt-1">{gensLeft} generation{gensLeft !== 1 ? 's' : ''} remaining</p>}
         </div>
@@ -312,7 +312,7 @@ export default function UploadPage() {
                 <div>
                   <DropZone onFilesSelected={handleFileSelected} maxFiles={tier === 'plus' ? 5 : 1}
                     title={tier === 'plus' ? 'Drop 1-5 photos of your pet' : 'Drop a photo of your pet'}
-                    subtitle={tier === 'plus' ? 'Plus member — up to 5 photos · JPG, PNG, WebP up to 10MB' : 'Basic member — 1 photo · JPG, PNG, WebP up to 10MB'} />
+                    subtitle={tier === 'plus' ? 'Plus member — up to 5 photos, 5 actions, 3 redos · JPG, PNG, WebP up to 10MB' : 'Basic member — 1 photo · JPG, PNG, WebP up to 10MB'} />
                   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="max-w-xl mx-auto mt-8 bg-white rounded-2xl border border-gray-100 p-6">
                     <h3 className="font-display font-bold text-text-primary mb-3">📸 Tips</h3>
                     <ul className="space-y-2 text-sm text-text-secondary">

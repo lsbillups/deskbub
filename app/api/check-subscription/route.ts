@@ -17,7 +17,7 @@ export async function GET() {
       await supabase.from('subscriptions').upsert({
         user_id: userId, tier: 'plus', generations_used: 0, max_generations: 8,
       });
-      data = { tier: 'plus', generations_used: 0, max_generations: 8 };
+      data = { tier: 'plus', generations_used: 0, max_generations: 8 }; // 5 actions + 3 redos
     }
 
     const canGenerate = (data.generations_used || 0) < (data.max_generations || 0);
