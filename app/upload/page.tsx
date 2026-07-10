@@ -290,8 +290,8 @@ export default function UploadPage() {
                             <a href={url} className="text-coral underline text-xs" target="_blank" rel="noopener">Copy</a>
                           </div>
                           {tier === 'plus' && gensLeft > 0 && (
-                            <label className="flex items-center gap-1 text-xs text-white/70 cursor-pointer">
-                              <input type="checkbox" checked={redoFlags[i]} onChange={() => { const f = [...redoFlags]; f[i] = !f[i]; setRedoFlags(f); }} /> Redo
+                            <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer font-semibold select-none">
+                              <input type="checkbox" checked={redoFlags[i]} onChange={() => { const f = [...redoFlags]; f[i] = !f[i]; setRedoFlags(f); }} className="w-5 h-5 accent-coral cursor-pointer" /> Redo
                             </label>
                           )}
                         </div>
@@ -320,9 +320,6 @@ export default function UploadPage() {
               )}
 
               {error && <p className="mt-4 text-sm text-red-500 text-center">{error}</p>}
-              {videoUrls.length > 0 && (
-                <button onClick={handleReset} className="block mx-auto mt-6 text-sm text-text-secondary/50 hover:text-coral underline underline-offset-4 cursor-pointer">Upload new photos</button>
-              )}
             </motion.div>
           ) : (
             <motion.div key="upload" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
