@@ -68,7 +68,7 @@ export default function UploadPage() {
         setStage('done');
       }
     }).catch(() => {});
-  }, [pairingCode, tier]);
+  }, [pairingCode]);
 
   const syncToDB = async (urls: string[], labels: string[]) => {
     await fetch('/api/sync-pet-data', { method: 'POST', headers: { 'Content-Type': 'application/json' },
