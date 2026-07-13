@@ -322,10 +322,12 @@ export default function UploadPage() {
                         <img src={url} className="w-full h-full object-contain" /></div>
                     </div>
                   ))}</div>
-                  {(tier === 'plus' || tier === 'basic') && (<>
-                    <div className="flex justify-center gap-3 mb-4">{(Object.keys(petActions) as PetType[]).map(t => (
-                      <button key={t} onClick={() => setPetType(t)} className={`px-4 py-2 rounded-full font-semibold text-xs ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>{petActions[t].label}</button>
-                    ))}</div>
+                  {/* Pet type selector - visible for all tiers */}
+                  <div className="flex justify-center gap-3 mb-4">{(Object.keys(petActions) as PetType[]).map(t => (
+                    <button key={t} onClick={() => setPetType(t)} className={`px-4 py-2 rounded-full font-semibold text-xs ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>{petActions[t].label}</button>
+                  ))}</div>
+                  {/* Action grid - Plus only */}
+                  {tier === 'plus' && (
                     <div className="mb-6">
                       <div className="flex items-center justify-between mb-3"><p className="text-sm font-semibold text-text-primary">Pick up to {MAX_ACTIONS} action-photo pairs</p><span className="text-xs font-bold text-coral">{checked.flat().filter(v => v).length}/{MAX_ACTIONS}</span></div>
                       <div className="overflow-x-auto"><table className="w-full text-sm">
@@ -338,7 +340,7 @@ export default function UploadPage() {
                         ))}</tbody>
                       </table></div>
                     </div>
-                  </>)}
+                  )}
                   <div className="text-center">
                     <button onClick={handleGenerate} disabled={isGenerating || (tier === 'plus' && checked.flat().filter(v => v).length === 0)}
                       className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
