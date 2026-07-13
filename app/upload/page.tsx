@@ -322,7 +322,7 @@ export default function UploadPage() {
                         <img src={url} className="w-full h-full object-contain" /></div>
                     </div>
                   ))}</div>
-                  {tier === 'plus' && (<>
+                  {(tier === 'plus' || tier === 'basic') && (<>
                     <div className="flex justify-center gap-3 mb-4">{(Object.keys(petActions) as PetType[]).map(t => (
                       <button key={t} onClick={() => setPetType(t)} className={`px-4 py-2 rounded-full font-semibold text-xs ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>{petActions[t].label}</button>
                     ))}</div>
