@@ -12,12 +12,12 @@ export async function GET() {
     const supabase = createAdminClient();
     let { data } = await supabase.from('subscriptions').select('*').eq('user_id', userId).single();
 
-    // Auto-create dev trial (8 gens, Plus tier)
+    // New users start as Free (0 generations)
     if (!data) {
       await supabase.from('subscriptions').upsert({
-        user_id: userId, tier: 'plus', generations_used: 0, max_generations: 8,
+        user_id: userId, tier: 'free', generations_used: 0, max_generations: 0,
       });
-      data = { tier: 'plus', generations_used: 0, max_generations: 8 }; // 5 actions + 3 redos
+      data = { tier: 'free', generations_used: 0, max_generations: 0 };
     }
 
     const canGenerate = (data.generations_used || 0) < (data.max_generations || 0);
