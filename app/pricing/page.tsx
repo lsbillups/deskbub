@@ -28,6 +28,7 @@ const tiers = [
     price: '$1.00',
     period: 'one-time',
     desc: 'One pet action. Simple and affordable.',
+    promo: true,
     features: [
       '1 pet action',
       'Full AI video generation',
@@ -45,6 +46,7 @@ const tiers = [
     price: '$4.99',
     period: 'one-time',
     desc: 'Five actions, three redo slots. Best value.',
+    promo: true,
     features: [
       '5 pet actions',
       '3 redo slots included',
@@ -108,6 +110,7 @@ export default function PricingPage() {
               <div className="mb-5">
                 <span className="text-4xl font-display font-extrabold text-text-primary">{tier.price}</span>
                 {tier.period && <span className="text-text-secondary text-sm ml-1">/{tier.period}</span>}
+                {tier.promo && <p className="text-xs text-coral font-medium mt-1">🎉 Launch price — will increase soon</p>}
               </div>
 
               <ul className="space-y-2.5 mb-6 flex-1">
