@@ -326,6 +326,66 @@ export default function UploadPage() {
             </motion.div>
           ) : stage === 'done' ? (
             <motion.div key="done" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-4xl mx-auto">
+              {/* Initial generation UI — show when no videos yet */}
+              {videoUrls.length === 0 && (
+                <div className="mb-8">
+                  {/* Photos */}
+                  <div className="flex gap-4 mb-4 justify-center flex-wrap">
+                    {processedUrls.map((url, i) => (
+                      <div key={i} className="bg-white rounded-xl border-2 border-mint/40 p-3">
+                        <p className="text-xs text-mint mb-1 text-center font-semibold">Photo #{i + 1}</p>
+                        <div className="w-48 h-56 rounded-lg overflow-hidden mx-auto" style={{backgroundImage:'linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb),linear-gradient(45deg,#e5e7eb 25%,transparent 25%,transparent 75%,#e5e7eb 75%,#e5e7eb)',backgroundSize:'20px 20px',backgroundPosition:'0 0,10px 10px'}}>
+                          <img src={url} alt={`Pet ${i + 1}`} className="w-full h-full object-contain" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {tier === 'plus' && (
+                    <>
+                      <div className="flex justify-center gap-3 mb-4">
+                        {(Object.keys(petActions) as PetType[]).map(t => (
+                          <button key={t} onClick={() => setPetType(t)} className={`px-4 py-2 rounded-full font-semibold text-xs transition-all ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>
+                            {petActions[t].label}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-sm font-semibold text-text-primary">Pick up to {MAX_ACTIONS} action-photo pairs</p>
+                          <span className="text-xs font-bold text-coral">{totalSelected}/{MAX_ACTIONS}</span>
+                        </div>
+                        <div className="overflow-x-auto"><table className="w-full text-sm">
+                          <thead><tr className="border-b border-gray-100"><th className="text-left py-2 pr-4 text-text-secondary font-medium text-xs">Action</th>{processedUrls.map((_, pi) => <th key={pi} className="text-center py-2 px-3 text-text-secondary font-medium text-xs">Photo {pi + 1}</th>)}</tr></thead>
+                          <tbody>{petActions[petType].actions.map((action, ai) => (
+                            <tr key={ai} className="border-b border-gray-50 hover:bg-gray-50/50">
+                              <td className="py-3 pr-4 font-medium text-text-primary text-sm">{action}</td>
+                              {processedUrls.map((_, pi) => (
+                                <td key={pi} className="text-center px-3 py-3">
+                                  <button onClick={() => toggleCheck(ai, pi)} className={`w-10 h-10 rounded-xl text-lg font-bold transition-all ${checked[ai]?.[pi] ? 'bg-coral text-white shadow-md' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
+                                    {checked[ai]?.[pi] ? '✓' : ''}
+                                  </button>
+                                </td>
+                              ))}
+                            </tr>
+                          ))}</tbody>
+                        </table></div>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="text-center">
+                    <button onClick={handleGenerate} disabled={isGenerating || (tier === 'plus' && totalSelected === 0)}
+                      className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
+                      {isGenerating ? '🎬 Generating...' : tier === 'plus' ? `🎬 Generate ${totalSelected} Videos` : '🎬 Generate Video'}
+                    </button>
+                    {isGenerating && <p className="text-xs text-text-secondary/60 mt-3">About 1 min per video. Please wait...</p>}
+                  </div>
+                </div>
+              )}
+
+              {/* Video results — show after generation */}
+              {videoUrls.length > 0 && (
               <div className="mb-8">
                 <p className="text-center text-mint font-semibold mb-3">{totalVideos} Video{totalVideos !== 1 ? 's' : ''} · Select {FINAL_COUNT} final</p>
                 <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
@@ -366,6 +426,7 @@ export default function UploadPage() {
                   </div>
                 )}
               </div>
+              )}
               {error && <p className="mt-4 text-sm text-red-500 text-center">{error}</p>}
             </motion.div>
           ) : (
