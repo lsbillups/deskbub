@@ -257,7 +257,7 @@ export default function UploadPage() {
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">Create Your Desktop Pet</h1>
           <p className="mt-2 text-text-secondary">
-            {tier === 'plus' ? `Plus member — pick ${FINAL_COUNT} final from up to ${MAX_TOTAL} generations` : tier === 'basic' ? 'Basic member — 1 default action' : 'Subscribe to get started'}
+            {tier === 'plus' ? `Plus member — generate up to ${MAX_TOTAL}, keep your ${FINAL_COUNT} favorites` : tier === 'basic' ? 'Basic member — 1 default action' : 'Subscribe to get started'}
           </p>
           {tier === 'plus' && <p className="text-xs text-mint mt-1">{gensLeft} generation{gensLeft !== 1 ? 's' : ''} remaining · {totalVideos}/{MAX_TOTAL} generated · {selectedCount}/{FINAL_COUNT} selected</p>}
         </div>
