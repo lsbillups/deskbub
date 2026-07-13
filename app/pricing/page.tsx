@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useAuth } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import ShareModal from '@/components/pricing/ShareModal';
 
 const tiers = [
   {
@@ -33,6 +35,7 @@ const tiers = [
     features: [
       '1 pet action',
       'Full AI video generation',
+      'Cat, dog, or other pets',
       'Transparent desktop pet',
       'Download & keep forever',
     ],
@@ -46,11 +49,12 @@ const tiers = [
     emoji: '🌟',
     price: '$4.99',
     period: 'one-time',
-    desc: 'Five actions, three redo slots. Best value.',
+    desc: 'Five actions, 3 extra chances to add more. Best value.',
     promo: true,
     features: [
       '5 pet actions',
-      '3 redo slots included',
+      '3 extra chances to add more videos',
+      'Pick your 5 favorites',
       'Cat, dog, or other pets',
       'Transparent desktop pet',
       'All Basic features',
@@ -64,7 +68,9 @@ const tiers = [
 
 export default function PricingPage() {
   const { isSignedIn } = useAuth();
+  const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const handleCheckout = async (productId: string) => {
     setLoading(productId);
@@ -124,9 +130,10 @@ export default function PricingPage() {
 
               {tier.name === 'Free' ? (
                 isSignedIn ? (
-                  <Link href="/upload" className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center text-sm">
+                  <button onClick={() => setShowShareModal(true)}
+                    className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center text-sm cursor-pointer">
                     {tier.cta}
-                  </Link>
+                  </button>
                 ) : (
                   <Link href="/sign-up" className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center text-sm">
                     Sign Up & Share
@@ -150,6 +157,12 @@ export default function PricingPage() {
         </motion.p>
       </div>
       <Footer />
+
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        onShared={() => router.push('/upload')}
+      />
     </main>
   );
 }

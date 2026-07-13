@@ -45,9 +45,10 @@ export async function POST(request: NextRequest) {
     let processedImageUrl: string | null = null;
     const outputAny = output as any;
 
-    if (outputAny && outputAny.url) {
-      // Replicate hosted URL
-      processedImageUrl = outputAny.url();
+    if (outputAny && outputAny.url && typeof outputAny.url === 'function') {
+      // Replicate v1 FileOutput — .url() returns a URL object
+      const u = outputAny.url();
+      processedImageUrl = u instanceof URL ? u.href : String(u);
     } else if (typeof outputAny === 'string') {
       processedImageUrl = outputAny;
     } else if (Array.isArray(outputAny) && typeof outputAny[0] === 'string') {
