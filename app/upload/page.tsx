@@ -394,6 +394,13 @@ export default function UploadPage() {
                     )}
                   </div>
 
+                  {tier === 'basic' && totalVideos > 0 && (
+                    <div className="text-center mt-4">
+                      <button onClick={handleReset} className="px-6 py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark text-sm cursor-pointer">
+                        Upload New Photo
+                      </button>
+                    </div>
+                  )}
                   {pairingCode && (
                     <div className="mt-4 p-4 bg-mint/5 rounded-xl border border-mint/20 text-center">
                       <p className="text-sm font-semibold text-mint mb-1">🔗 Your Pairing Code</p>
