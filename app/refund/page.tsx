@@ -1,3 +1,4 @@
+import Footer from '@/components/landing/Footer';
 export default function RefundPage() {
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 px-6">
@@ -25,6 +26,7 @@ export default function RefundPage() {
         <h2>Chargebacks</h2>
         <p>If you initiate a chargeback without contacting us first, your account may be suspended. Please reach out to us first — we'll make it right.</p>
       </div>
+      <Footer />
     </main>
   );
 }

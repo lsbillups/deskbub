@@ -1,4 +1,5 @@
 'use client';
+import Footer from '@/components/landing/Footer';
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -148,6 +149,7 @@ export default function PricingPage() {
           One-time payment. No subscription. Pet forever.
         </motion.p>
       </div>
+      <Footer />
     </main>
   );
 }

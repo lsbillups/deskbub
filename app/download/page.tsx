@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Footer from '@/components/landing/Footer';
 
 export default function DownloadPage() {
   const [os, setOs] = useState<'windows' | 'mac' | 'unknown'>('unknown');
@@ -179,6 +180,7 @@ export default function DownloadPage() {
           </p>
         </motion.div>
       </div>
+      <Footer />
     </main>
   );
 }

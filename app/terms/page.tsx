@@ -1,3 +1,4 @@
+import Footer from '@/components/landing/Footer';
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 px-6">
@@ -33,6 +34,7 @@ export default function TermsPage() {
         <h2>8. Contact</h2>
         <p><strong>support@deskbub.app</strong></p>
       </div>
+      <Footer />
     </main>
   );
 }

@@ -1,3 +1,4 @@
+import Footer from '@/components/landing/Footer';
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 px-6">
@@ -36,6 +37,7 @@ export default function PrivacyPage() {
         <h2>7. Contact</h2>
         <p>For privacy questions, contact us at <strong>support@deskbub.app</strong>.</p>
       </div>
+      <Footer />
     </main>
   );
 }
