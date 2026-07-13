@@ -42,6 +42,8 @@ export default function UploadPage() {
   const [videoUrls, setVideoUrls] = useState<string[]>([]);
   const [videoLabels, setVideoLabels] = useState<string[]>([]);
   const [finalFlags, setFinalFlags] = useState<boolean[]>([]);
+  const [redoFlags, setRedoFlags] = useState<boolean[]>([]);
+  const [redoIndices, setRedoIndices] = useState<number[]>([]);
   const [redoActions, setRedoActions] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -150,7 +152,7 @@ export default function UploadPage() {
         urls.push(data.videoUrl); labels.push(petActions[petType].actions[ai]);
       }
       setVideoUrls(urls); setVideoLabels(labels);
-      setFinalFlags(Array(urls.length).fill(true));
+      setFinalFlags(urls.map((_, i) => i < FINAL_COUNT)); // First N pre-checked
       await syncToDB(urls, labels);
       fetch('/api/check-subscription').then(r => r.json()).then(d => { setGensUsed(d.used || 0); setGensMax(d.max || 0); });
     } catch (err) {
@@ -158,12 +160,14 @@ export default function UploadPage() {
     } finally { setIsGenerating(false); }
   };
 
-  // Redo: upload new photos, add new videos to existing list
+  // Redo: upload new photos, REPLACE selected videos
   const handleStartRedo = () => {
-    const redoCount = Math.min(MAX_TOTAL - totalVideos, gensLeft);
-    if (redoCount <= 0) return;
+    const idxs: number[] = [];
+    (redoFlags || []).forEach((v, i) => { if (v) idxs.push(i); });
+    if (idxs.length === 0 || idxs.length > gensLeft) return;
+    setRedoIndices(idxs);
     setFiles([]); setPreviewUrls([]); setProcessedUrls([]);
-    setRedoActions(Array(redoCount).fill(0));
+    setRedoActions(Array(idxs.length).fill(0));
     setStage('redo');
   };
 
@@ -218,12 +222,16 @@ export default function UploadPage() {
         newUrls.push(data.videoUrl);
         newLabels.push(petActions[petType].actions[ai]);
       }
-      // Append to existing videos
-      const allUrls = [...videoUrls, ...newUrls];
-      const allLabels = [...videoLabels, ...newLabels];
+      // Replace selected videos with new ones
+      const allUrls = [...videoUrls];
+      const allLabels = [...videoLabels];
+      for (let k = 0; k < redoIndices.length && k < newUrls.length; k++) {
+        allUrls[redoIndices[k]] = newUrls[k];
+        allLabels[redoIndices[k]] = newLabels[k];
+      }
       setVideoUrls(allUrls); setVideoLabels(allLabels);
-      setFinalFlags(Array(allUrls.length).fill(true));
-      setFiles([]); setPreviewUrls([]); setProcessedUrls([]); setRedoActions([]);
+      setRedoFlags([]);
+      setFiles([]); setPreviewUrls([]); setProcessedUrls([]); setRedoActions([]); setRedoIndices([]);
       await syncToDB(allUrls, allLabels);
       setStage('done');
       fetch('/api/check-subscription').then(r => r.json()).then(d => { setGensUsed(d.used || 0); setGensMax(d.max || 0); });
@@ -395,28 +403,38 @@ export default function UploadPage() {
                       <video src={url} autoPlay loop muted playsInline className="w-full" />
                       <div className="flex items-center justify-between px-3 py-2 bg-black/80">
                         <a href={url} download className="text-coral underline text-xs" target="_blank" rel="noopener">Download</a>
-                        <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer font-semibold select-none">
-                          <input type="checkbox" checked={finalFlags[i]} onChange={() => {
-                            const f = [...finalFlags]; f[i] = !f[i];
-                            if (f.filter(v => v).length <= FINAL_COUNT) setFinalFlags(f);
-                          }} className="w-5 h-5 accent-mint cursor-pointer" /> Keep
-                        </label>
+                        {totalVideos > FINAL_COUNT ? (
+                          <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer font-semibold select-none">
+                            <input type="checkbox" checked={finalFlags[i]} onChange={() => {
+                              const f = [...finalFlags]; f[i] = !f[i];
+                              if (f.filter(v => v).length <= FINAL_COUNT) setFinalFlags(f);
+                            }} className="w-5 h-5 accent-mint cursor-pointer" /> Keep
+                          </label>
+                        ) : (
+                          gensLeft > 0 && (
+                            <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer font-semibold select-none">
+                              <input type="checkbox" checked={redoFlags[i] || false} onChange={() => { const f = [...redoFlags]; f[i] = !f[i]; setRedoFlags(f); }} className="w-5 h-5 accent-coral cursor-pointer" /> Redo
+                            </label>
+                          )
+                        )}
                       </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="flex justify-center gap-4 mt-4 flex-wrap">
-                  {canRedo && (
+                  {totalVideos <= FINAL_COUNT && gensLeft > 0 && (
                     <button onClick={handleStartRedo}
                       className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-all text-sm cursor-pointer">
-                      🔄 Add More ({gensLeft} left)
+                      🔄 Redo Selected ({(redoFlags || []).filter(v => v).length} selected · {gensLeft} left)
                     </button>
                   )}
-                  <button onClick={handleFinalize} disabled={selectedCount !== FINAL_COUNT}
-                    className="px-6 py-3 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all disabled:opacity-50 text-sm cursor-pointer">
-                    ✅ Finalize {selectedCount}/{FINAL_COUNT} Videos
-                  </button>
+                  {totalVideos > FINAL_COUNT && (
+                    <button onClick={handleFinalize} disabled={selectedCount !== FINAL_COUNT}
+                      className="px-6 py-3 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all disabled:opacity-50 text-sm cursor-pointer">
+                      ✅ Finalize {selectedCount}/{FINAL_COUNT} Videos
+                    </button>
+                  )}
                 </div>
 
                 {pairingCode && (
