@@ -39,6 +39,7 @@ export default function UploadPage() {
   const [videoLabels, setVideoLabels] = useState<string[]>([]);
   const [redoFlags, setRedoFlags] = useState<boolean[]>([]);
   const [keepFlags, setKeepFlags] = useState<boolean[]>([]);
+  const [redoActions, setRedoActions] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
@@ -197,7 +198,7 @@ export default function UploadPage() {
     try {
       const newUrls: string[] = []; const newLabels: string[] = [];
       for (let k = 0; k < genCount; k++) {
-        const ai = 0; // default action, can add selector later
+        const ai = redoActions[k] ?? 0;
         const pi = Math.min(k, processedUrls.length - 1);
         const res = await fetch('/api/generate-video', { method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ imageUrl: processedUrls[pi], petType, action: ai, actionLabel: petActions[petType].actions[ai] }) });
@@ -282,10 +283,24 @@ export default function UploadPage() {
                   <div className="flex justify-center gap-3 mb-4">{(Object.keys(petActions) as PetType[]).map(t => (
                     <button key={t} onClick={() => setPetType(t)} className={`px-4 py-2 rounded-full font-semibold text-xs ${petType === t ? 'bg-coral text-white shadow-lg' : 'bg-white border'}`}>{petActions[t].label}</button>
                   ))}</div>
+                  {/* Action selectors */}
+                  <div className="space-y-2 mb-6">
+                    {processedUrls.map((_, k) => (
+                      <div key={k} className="flex items-center gap-3 bg-white rounded-xl border p-3">
+                        <span className="text-xs font-mono w-5">#{totalVideos + k + 1}</span>
+                        <span className="text-sm text-text-secondary flex-1">New video {k + 1}</span>
+                        <select value={redoActions[k] ?? 0} onChange={e => { const a = [...redoActions]; a[k] = parseInt(e.target.value); setRedoActions(a); }}
+                          className="text-sm border rounded-lg p-2">
+                          {petActions[petType].actions.map((act, ai) => <option key={ai} value={ai}>{act}</option>)}
+                        </select>
+                      </div>
+                    ))}
+                  </div>
                   <div className="text-center">
                     <button onClick={handleRedoGenerate} disabled={isGenerating} className="px-8 py-4 bg-orange-500 text-white font-bold rounded-full hover:bg-orange-600 transition-all shadow-xl disabled:opacity-60 text-lg cursor-pointer">
                       {isGenerating ? 'Generating...' : `🎬 Generate ${Math.min(processedUrls.length, gensLeft)} Videos`}
                     </button>
+                    {isGenerating && <p className="text-xs text-text-secondary/60 mt-3">About 1 min per video. Please wait...</p>}
                   </div>
                   <button onClick={() => { setStage('done'); setFiles([]); setPreviewUrls([]); setProcessedUrls([]); }}
                     className="block mx-auto mt-4 text-sm text-text-secondary hover:text-coral underline cursor-pointer">Cancel</button>
@@ -327,6 +342,7 @@ export default function UploadPage() {
                       className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
                       {isGenerating ? '🎬 Generating...' : `🎬 Generate ${tier === 'plus' ? checked.flat().filter(v => v).length : 1} Videos`}
                     </button>
+                    {isGenerating && <p className="text-xs text-text-secondary/60 mt-3">About 1 min per video. Please wait...</p>}
                   </div>
                 </div>
               )}
