@@ -380,16 +380,13 @@ export default function UploadPage() {
                   </div>
 
                   <div className="flex justify-center gap-4 mt-4 flex-wrap">
-                    {/* Redo: only when ≤ FINAL and there's room to add */}
-                    {totalVideos <= FINAL && canRedo && redoCount > 0 && (
+                    {/* Redo: always available when under MAX_TOTAL and have gens left */}
+                    {totalVideos < MAX_TOTAL && gensLeft > 0 && (
                       <button onClick={handleStartRedo} className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-all text-sm cursor-pointer">
-                        🔄 Redo Selected ({redoCount} · {gensLeft} left)
+                        🔄 Add More Videos ({gensLeft} left · {totalVideos}/{MAX_TOTAL})
                       </button>
                     )}
-                    {totalVideos <= FINAL && canRedo && redoCount === 0 && (
-                      <p className="text-xs text-text-secondary/60">Check videos above to redo</p>
-                    )}
-                    {/* Finalize: only when > FINAL */}
+                    {/* Finalize: when > FINAL */}
                     {totalVideos > FINAL && (
                       <button onClick={handleFinalize} disabled={keepCount !== FINAL}
                         className="px-6 py-3 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all disabled:opacity-50 text-sm cursor-pointer">
