@@ -59,6 +59,8 @@ export default function UploadPage() {
 
   useEffect(() => {
     if (!pairingCode) return;
+    // Only auto-load old videos for Plus users; Basic always starts fresh
+    if (tier !== 'plus') return;
     fetch(`/api/pairing/${pairingCode}`).then(r => r.json()).then(d => {
       if (d.videos && d.videos.length > 0) {
         setVideoUrls(d.videos.map((v: any) => v.url));
@@ -66,7 +68,7 @@ export default function UploadPage() {
         setStage('done');
       }
     }).catch(() => {});
-  }, [pairingCode]);
+  }, [pairingCode, tier]);
 
   const syncToDB = async (urls: string[], labels: string[]) => {
     await fetch('/api/sync-pet-data', { method: 'POST', headers: { 'Content-Type': 'application/json' },
