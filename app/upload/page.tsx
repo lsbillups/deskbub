@@ -247,9 +247,11 @@ export default function UploadPage() {
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">Create Your Desktop Pet</h1>
           <p className="mt-2 text-text-secondary">
-            {tier === 'plus' ? `Plus — 5 actions · Redo up to 3 · Finalize ${FINAL} best` : tier === 'basic' ? 'Basic — 1 default action' : 'Subscribe to get started'}
+            {tier === 'plus'
+              ? `Plus — Step 1: choose 5 actions · Step 2: redo up to 3 to improve · Step 3: pick your ${FINAL} favorites`
+              : tier === 'basic' ? 'Basic — 1 default action' : 'Subscribe to get started'}
           </p>
-          {tier === 'plus' && <p className="text-xs text-mint mt-1">{gensLeft} gen{gensLeft !== 1 ? 's' : ''} left · {totalVideos}/{MAX_TOTAL} videos</p>}
+          {tier === 'plus' && <p className="text-xs text-mint mt-1">{gensLeft} generations remaining · {totalVideos} videos generated</p>}
         </div>
 
         <AnimatePresence mode="wait">
