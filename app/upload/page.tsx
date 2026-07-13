@@ -222,13 +222,9 @@ export default function UploadPage() {
         newUrls.push(data.videoUrl);
         newLabels.push(petActions[petType].actions[ai]);
       }
-      // Replace selected videos with new ones
-      const allUrls = [...videoUrls];
-      const allLabels = [...videoLabels];
-      for (let k = 0; k < redoIndices.length && k < newUrls.length; k++) {
-        allUrls[redoIndices[k]] = newUrls[k];
-        allLabels[redoIndices[k]] = newLabels[k];
-      }
+      // Append new videos to list
+      const allUrls = [...videoUrls, ...newUrls];
+      const allLabels = [...videoLabels, ...newLabels];
       setVideoUrls(allUrls); setVideoLabels(allLabels);
       setRedoFlags([]);
       setFiles([]); setPreviewUrls([]); setProcessedUrls([]); setRedoActions([]); setRedoIndices([]);
@@ -403,19 +399,13 @@ export default function UploadPage() {
                       <video src={url} autoPlay loop muted playsInline className="w-full" />
                       <div className="flex items-center justify-between px-3 py-2 bg-black/80">
                         <a href={url} download className="text-coral underline text-xs" target="_blank" rel="noopener">Download</a>
-                        {totalVideos > FINAL_COUNT ? (
+                        {totalVideos > FINAL_COUNT && (
                           <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer font-semibold select-none">
                             <input type="checkbox" checked={finalFlags[i]} onChange={() => {
                               const f = [...finalFlags]; f[i] = !f[i];
                               if (f.filter(v => v).length <= FINAL_COUNT) setFinalFlags(f);
                             }} className="w-5 h-5 accent-mint cursor-pointer" /> Keep
                           </label>
-                        ) : (
-                          gensLeft > 0 && (
-                            <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer font-semibold select-none">
-                              <input type="checkbox" checked={redoFlags[i] || false} onChange={() => { const f = [...redoFlags]; f[i] = !f[i]; setRedoFlags(f); }} className="w-5 h-5 accent-coral cursor-pointer" /> Redo
-                            </label>
-                          )
                         )}
                       </div>
                     </div>
@@ -423,10 +413,10 @@ export default function UploadPage() {
                 </div>
 
                 <div className="flex justify-center gap-4 mt-4 flex-wrap">
-                  {totalVideos <= FINAL_COUNT && gensLeft > 0 && (
+                  {gensLeft > 0 && totalVideos < MAX_TOTAL && (
                     <button onClick={handleStartRedo}
                       className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-all text-sm cursor-pointer">
-                      🔄 Redo Selected ({(redoFlags || []).filter(v => v).length} selected · {gensLeft} left)
+                      🔄 Add More ({gensLeft} left)
                     </button>
                   )}
                   {totalVideos > FINAL_COUNT && (
