@@ -1,4 +1,6 @@
 import Footer from '@/components/landing/Footer';
+import type { Metadata } from 'next';
+export const metadata: Metadata = { title: 'Refund Policy', description: 'DeskBub refund policy — eligibility and process for refund requests.' };
 export default function RefundPage() {
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 px-6">

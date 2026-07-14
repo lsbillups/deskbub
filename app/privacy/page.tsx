@@ -1,4 +1,6 @@
 import Footer from '@/components/landing/Footer';
+import type { Metadata } from 'next';
+export const metadata: Metadata = { title: 'Privacy Policy', description: 'How DeskBub collects, uses, and protects your personal data.' };
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 px-6">

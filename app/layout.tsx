@@ -16,10 +16,21 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'DeskBub — Your Furry Desktop Friend',
+  metadataBase: new URL('https://deskbub.com'),
+  title: {
+    default: 'DeskBub — Your Real Pet, Alive on Your Desktop',
+    template: '%s | DeskBub',
+  },
   description:
-    'Upload a photo of your real pet. AI brings it to life on your desktop — napping, stretching, and reminding you to take care of yourself.',
-  keywords: ['desktop pet', 'virtual pet', 'real pet photo', 'desktop companion', 'deskbub'],
+    'Upload a photo of your real pet. AI removes the background and brings it to life on your desktop — napping, stretching, and reminding you to take care of yourself.',
+  keywords: ['desktop pet', 'virtual pet', 'real pet photo', 'desktop companion', 'deskbub', 'AI pet', 'pet on desktop'],
+  openGraph: {
+    title: 'DeskBub — Your Real Pet, Alive on Your Desktop',
+    description: 'Upload a photo. AI does the magic. Your furry friend lives on your desktop.',
+    url: 'https://deskbub.com',
+    siteName: 'DeskBub',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
