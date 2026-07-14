@@ -30,23 +30,18 @@ jobs:
       - name: Build Windows installer
         run: npx electron-builder --win --x64
 
-      - name: Find installer file
-        id: find-exe
-        shell: pwsh
-        run: |
-          $file = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
-          echo "installer=$($file.Name)" >> $env:GITHUB_OUTPUT
-
       - name: Upload to Supabase Storage
-        shell: bash
+        shell: pwsh
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
-            -H "Content-Type: application/octet-stream" \
-            --data-binary @"dist/${{ steps.find-exe.outputs.installer }}"
+          $file = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
+          $url = "$env:SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe"
+          Invoke-RestMethod -Uri $url -Method Put -Headers @{
+            apikey = "$env:SUPABASE_SERVICE_ROLE_KEY"
+            "Content-Type" = "application/octet-stream"
+          } -InFile $file.FullName
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -75,21 +70,16 @@ jobs:
       - name: Build macOS installer
         run: npx electron-builder --mac --x64
 
-      - name: Find installer file
-        id: find-dmg
-        run: |
-          file=$(ls dist/*.dmg 2>/dev/null | head -1)
-          echo "installer=$(basename "$file")" >> $GITHUB_OUTPUT
-
       - name: Upload to Supabase Storage
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
+          file=$(ls dist/*.dmg 2>/dev/null | head -1)
           curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-macOS.dmg" \
             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
             -H "Content-Type: application/octet-stream" \
-            --data-binary @"dist/${{ steps.find-dmg.outputs.installer }}"
+            --data-binary @"$file"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
