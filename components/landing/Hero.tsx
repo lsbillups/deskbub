@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 const DEMO_VIDEO = 'https://xmmvznxrcuqxstkfhgsh.supabase.co/storage/v1/object/public/pet-photos/videos/user_3GRs2u0DnUOALc40epyY1sSP6V9/1784017312186.webm';
 
 const demoSteps = [
-  { emoji: '📸', title: 'Upload a Photo', desc: 'Take or choose any photo of your real pet.' },
-  { emoji: '✨', title: 'AI Removes Background', desc: 'Our AI cuts out the background perfectly.' },
-  { emoji: '🐾', title: 'Pet Comes Alive', desc: 'Your pet breathes, moves, and lives on your desktop.' },
+  { emoji: '📸', title: 'Upload 1–5 Photos', desc: 'Take or choose photos of your real pet. The more the better!' },
+  { emoji: '✨', title: 'Pick Actions & Generate', desc: 'Choose up to 5 actions — wagging tail, stretching, sleeping... AI does the magic.' },
+  { emoji: '💻', title: 'Pet Lives on Your Desktop', desc: 'Your real pet, right on your screen. Napping, stretching, reminding you to take breaks.' },
 ];
 
 export default function Hero() {
@@ -108,12 +108,30 @@ export default function Hero() {
                       </div>
                     </div>
                   ) : (
-                    /* Step 2: Show video */
+                    /* Step 2: Show video on fake desktop */
                     <div className="text-center w-full">
-                      <div className="bg-black rounded-xl overflow-hidden max-w-[200px] mx-auto shadow-lg">
-                        <video src={DEMO_VIDEO} autoPlay loop muted playsInline className="w-full" />
+                      {/* Desktop mockup */}
+                      <div className="relative max-w-[260px] mx-auto rounded-xl overflow-hidden shadow-xl border-4 border-gray-700">
+                        {/* Wallpaper background */}
+                        <div className="bg-gradient-to-br from-blue-400 via-blue-300 to-green-300 h-[180px] relative flex items-center justify-center">
+                          {/* Pet video — appears like it's on the desktop */}
+                          <div className="absolute bottom-4 right-4 w-[100px]">
+                            <video src={DEMO_VIDEO} autoPlay loop muted playsInline className="w-full drop-shadow-lg" />
+                          </div>
+                          {/* Desktop icons */}
+                          <div className="absolute top-3 left-3 flex flex-col gap-1">
+                            <div className="bg-white/20 rounded px-2 py-0.5 text-[10px] text-white">📁 Folder</div>
+                            <div className="bg-white/20 rounded px-2 py-0.5 text-[10px] text-white">🌐 Browser</div>
+                          </div>
+                        </div>
+                        {/* Taskbar */}
+                        <div className="bg-gray-800/90 h-[28px] flex items-center px-3 gap-2">
+                          <span className="text-[10px] text-white">🪟</span>
+                          <span className="text-[10px] text-white/70">DeskBub</span>
+                          <span className="ml-auto text-[10px] text-white/50">🕐</span>
+                        </div>
                       </div>
-                      <p className="text-sm font-semibold text-text-primary mt-3">Your pet on the desktop!</p>
+                      <p className="text-sm font-semibold text-text-primary mt-3">Your real pet, right on your desktop!</p>
                       <Link href="/sign-up"
                         className="inline-block mt-4 px-6 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg cursor-pointer">
                         🐾 Get Started Free
