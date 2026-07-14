@@ -22,29 +22,33 @@ export default function Hero() {
   const [demoActive, setDemoActive] = useState(false);
   const [demoStep, setDemoStep] = useState(0);
   const [videoIdx, setVideoIdx] = useState(0);
-  const rotationRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-rotate demo videos
+  // Auto-play demo: advance step every 3.5 seconds, loop forever, rotate videos on step 2
   useEffect(() => {
-    if (demoActive && demoStep === 2) {
-      rotationRef.current = setInterval(() => {
-        setVideoIdx(i => (i + 1) % DEMO_VIDEOS.length);
-      }, 4000);
-    }
-    return () => { if (rotationRef.current) clearInterval(rotationRef.current); };
+    if (!demoActive) return;
+    timerRef.current = setInterval(() => {
+      setDemoStep(prev => {
+        if (prev >= 2) return 0; // loop back
+        return prev + 1;
+      });
+    }, 3500);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [demoActive]);
+
+  // Rotate videos separately (faster than step timer) when on step 2
+  useEffect(() => {
+    if (!demoActive || demoStep !== 2) return;
+    const videoTimer = setInterval(() => {
+      setVideoIdx(i => (i + 1) % DEMO_VIDEOS.length);
+    }, 4000);
+    return () => clearInterval(videoTimer);
   }, [demoActive, demoStep]);
 
   const startDemo = () => {
     setDemoActive(true);
     setDemoStep(0);
-  };
-
-  const nextStep = () => {
-    if (demoStep < 2) setDemoStep(demoStep + 1);
-  };
-
-  const prevStep = () => {
-    if (demoStep > 0) setDemoStep(demoStep - 1);
+    setVideoIdx(0);
   };
 
   return (
@@ -195,23 +199,14 @@ export default function Hero() {
                     </div>
                   )}
 
-                  {/* Step navigation */}
-                  <div className="flex items-center gap-3 mt-5">
-                    <button onClick={prevStep} disabled={demoStep === 0}
-                      className="text-xs text-text-secondary hover:text-coral disabled:opacity-30 cursor-pointer disabled:cursor-default">
-                      ← Back
-                    </button>
-                    {demoStep < 2 ? (
-                      <button onClick={nextStep}
-                        className="text-xs font-semibold text-coral hover:text-coral-dark cursor-pointer">
-                        Next →
-                      </button>
-                    ) : (
-                      <button onClick={() => { setDemoActive(false); setDemoStep(0); }}
-                        className="text-xs text-text-secondary hover:text-coral cursor-pointer">
-                        Start Over
-                      </button>
-                    )}
+                  {/* Auto-play indicator */}
+                  <div className="flex items-center justify-center gap-1.5 mt-5">
+                    {demoSteps.map((_, i) => (
+                      <span key={i}
+                        className={`h-1.5 rounded-full transition-all duration-500 ${
+                          i === demoStep ? 'w-5 bg-coral' : i < demoStep ? 'w-1.5 bg-coral/30' : 'w-1.5 bg-gray-300'
+                        }`} />
+                    ))}
                   </div>
                 </motion.div>
               )}
