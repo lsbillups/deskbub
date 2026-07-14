@@ -3,7 +3,10 @@ name: Build DeskBub Desktop App
 on:
   push:
     branches: [main, master]
-  workflow_dispatch:  # Allow manual trigger
+    paths:
+      - 'desktop-pet/**'
+      - '.github/workflows/build-electron.yml'
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -21,13 +24,33 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies (including Electron)
+      - name: Install dependencies
         run: npm install
 
       - name: Build Windows installer
         run: npx electron-builder --win --x64
 
-      - name: Upload Windows installer
+      - name: Find installer file
+        id: find-exe
+        shell: pwsh
+        run: |
+          $file = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
+          echo "installer=$($file.Name)" >> $env:GITHUB_OUTPUT
+
+      - name: Upload to Supabase Storage
+        shell: pwsh
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          $file = "dist/${{ steps.find-exe.outputs.installer }}"
+          $url = "$env:SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe"
+          Invoke-RestMethod -Uri $url -Method Put -Headers @{
+            Authorization = "Bearer $env:SUPABASE_SERVICE_ROLE_KEY"
+            "Content-Type" = "application/octet-stream"
+          } -InFile $file
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: DeskBub-Windows
@@ -48,13 +71,29 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies (including Electron)
+      - name: Install dependencies
         run: npm install
 
       - name: Build macOS installer
         run: npx electron-builder --mac --x64
 
-      - name: Upload macOS installer
+      - name: Find installer file
+        id: find-dmg
+        run: |
+          file=$(ls dist/*.dmg 2>/dev/null | head -1)
+          echo "installer=$(basename "$file")" >> $GITHUB_OUTPUT
+
+      - name: Upload to Supabase Storage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-macOS.dmg" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @"dist/${{ steps.find-dmg.outputs.installer }}"
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: DeskBub-macOS

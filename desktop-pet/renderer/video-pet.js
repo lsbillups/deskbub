@@ -122,7 +122,7 @@ window.loadByCode = function() {
   if (!code || code.length !== 6) { status('Enter 6-digit code', 3000); return; }
 
   status('Pairing...', 0);
-  fetch('http://localhost:3000/api/pairing/' + code)
+  fetch('https://deskbub.com/api/pairing/' + code)
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.videos && data.videos.length > 0) {
