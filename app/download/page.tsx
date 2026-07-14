@@ -82,7 +82,7 @@ export default function DownloadPage() {
 
           {os === 'windows' || os === 'unknown' ? (
             <a
-              href=https://github.com/lsbillups/deskbub/releases/latest/download/DeskBub-Windows.exe
+              href="https://github.com/lsbillups/deskbub/releases/latest/download/DeskBub-Windows.exe"
               className="inline-block px-8 py-3.5 bg-coral text-white font-semibold rounded-full hover:bg-coral-dark transition-all shadow-xl shadow-coral/30 text-lg cursor-pointer"
             >
               Download for Windows
@@ -90,7 +90,7 @@ export default function DownloadPage() {
           ) : null}
           {os === 'mac' || os === 'unknown' ? (
             <a
-              href=https://github.com/lsbillups/deskbub/releases/latest/download/DeskBub-macOS.dmg
+              href="https://github.com/lsbillups/deskbub/releases/latest/download/DeskBub-macOS.dmg"
               className={`inline-block px-8 py-3.5 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all shadow-xl shadow-mint/30 text-lg cursor-pointer ${os === 'unknown' ? 'ml-4' : ''}`}
             >
               Download for macOS
