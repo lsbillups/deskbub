@@ -30,24 +30,25 @@ jobs:
       - name: Build Windows installer
         run: npx electron-builder --win --x64
 
-      - name: Upload to Supabase Storage
+      - name: Rename and upload to Supabase
         shell: pwsh
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          $file = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
+          $exe = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
+          Rename-Item -Path $exe.FullName -NewName "DeskBub-Windows.exe"
           $url = "$env:SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe"
-          Invoke-RestMethod -Uri $url -Method Put -Headers @{
+          Invoke-RestMethod -Uri $url -Method Put -InFile "dist/DeskBub-Windows.exe" -Headers @{
             apikey = "$env:SUPABASE_SERVICE_ROLE_KEY"
             "Content-Type" = "application/octet-stream"
-          } -InFile $file.FullName
+          }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: DeskBub-Windows
-          path: desktop-pet/dist/*.exe
+          path: desktop-pet/dist/DeskBub-Windows.exe
 
   build-macos:
     runs-on: macos-latest
@@ -70,19 +71,20 @@ jobs:
       - name: Build macOS installer
         run: npx electron-builder --mac --x64
 
-      - name: Upload to Supabase Storage
+      - name: Rename and upload to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          file=$(ls dist/*.dmg 2>/dev/null | head -1)
+          dmg=$(ls dist/*.dmg 2>/dev/null | head -1)
+          mv "$dmg" dist/DeskBub-macOS.dmg
           curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-macOS.dmg" \
             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
             -H "Content-Type: application/octet-stream" \
-            --data-binary @"$file"
+            --data-binary @"dist/DeskBub-macOS.dmg"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: DeskBub-macOS
-          path: desktop-pet/dist/*.dmg
+          path: desktop-pet/dist/DeskBub-macOS.dmg
