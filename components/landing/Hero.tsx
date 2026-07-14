@@ -19,7 +19,7 @@ const demoSteps = [
 ];
 
 export default function Hero() {
-  const [demoActive, setDemoActive] = useState(false);
+  const [demoActive, setDemoActive] = useState(true);
   const [demoStep, setDemoStep] = useState(0);
   const [videoIdx, setVideoIdx] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -78,12 +78,6 @@ export default function Hero() {
             >
               Upload Your Pet — It&apos;s Free
             </Link>
-            <button
-              onClick={startDemo}
-              className="px-7 py-3.5 text-base font-medium text-coral border-2 border-coral/30 rounded-full hover:bg-coral/5 hover:border-coral/60 transition-all cursor-pointer"
-            >
-              See a Live Demo
-            </button>
             <a
               href="#how-it-works"
               className="px-7 py-3.5 text-base font-medium text-text-secondary hover:text-text-primary transition-colors underline underline-offset-4"
@@ -102,18 +96,7 @@ export default function Hero() {
         >
           <div className="h-full min-h-[380px] rounded-3xl bg-gradient-to-br from-coral/10 via-mint/10 to-coral/5 border border-coral/20 overflow-hidden shadow-2xl shadow-coral/10 flex flex-col items-center justify-center relative">
             <AnimatePresence mode="wait">
-              {!demoActive ? (
-                /* ── Idle state ── */
-                <motion.div key="idle" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                  className="text-center p-8">
-                  <div className="text-8xl mb-4">🐶</div>
-                  <p className="text-sm text-text-secondary font-medium">Your pet lives here</p>
-                  <button onClick={startDemo}
-                    className="mt-4 px-5 py-2 text-sm font-semibold bg-white/80 text-coral rounded-full border border-coral/20 hover:bg-coral hover:text-white transition-all cursor-pointer">
-                    👀 Try Demo
-                  </button>
-                </motion.div>
-              ) : (
+              {demoActive && (
                 /* ── Demo active ── */
                 <motion.div key="demo" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="w-full h-full flex flex-col items-center justify-center p-6">
