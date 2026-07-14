@@ -30,20 +30,15 @@ jobs:
       - name: Build Windows installer
         run: npx electron-builder --win --x64
 
-      - name: Rename installer
+      - name: Rename and upload
         shell: pwsh
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           $exe = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
           Rename-Item -Path $exe.FullName -NewName "DeskBub-Windows.exe"
-
-      - name: Upload to Supabase Storage
-        uses: lesnitsky/upload-to-supabase@v1
-        with:
-          supabase_url: ${{ secrets.SUPABASE_URL }}
-          supabase_key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          bucket: pet-photos
-          src: desktop-pet/dist/DeskBub-Windows.exe
-          dst: releases/DeskBub-Windows.exe
+          node upload-release.js dist/DeskBub-Windows.exe DeskBub-Windows.exe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -72,19 +67,13 @@ jobs:
       - name: Build macOS installer
         run: npx electron-builder --mac --x64
 
-      - name: Rename installer
+      - name: Rename and upload
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          dmg=$(ls dist/*.dmg 2>/dev/null | head -1)
-          mv "$dmg" dist/DeskBub-macOS.dmg
-
-      - name: Upload to Supabase Storage
-        uses: lesnitsky/upload-to-supabase@v1
-        with:
-          supabase_url: ${{ secrets.SUPABASE_URL }}
-          supabase_key: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          bucket: pet-photos
-          src: desktop-pet/dist/DeskBub-macOS.dmg
-          dst: releases/DeskBub-macOS.dmg
+          mv dist/*.dmg dist/DeskBub-macOS.dmg
+          node upload-release.js dist/DeskBub-macOS.dmg DeskBub-macOS.dmg
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
