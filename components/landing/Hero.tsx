@@ -1,10 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const DEMO_VIDEO = 'https://xmmvznxrcuqxstkfhgsh.supabase.co/storage/v1/object/public/pet-photos/videos/user_3GRs2u0DnUOALc40epyY1sSP6V9/1784017312186.webm';
+const DEMO_VIDEOS = [
+  'https://xmmvznxrcuqxstkfhgsh.supabase.co/storage/v1/object/public/pet-photos/videos/user_3GRs2u0DnUOALc40epyY1sSP6V9/1784017312186.webm',
+  'https://xmmvznxrcuqxstkfhgsh.supabase.co/storage/v1/object/public/pet-photos/videos/user_3GRs2u0DnUOALc40epyY1sSP6V9/1784017398691.webm',
+  'https://xmmvznxrcuqxstkfhgsh.supabase.co/storage/v1/object/public/pet-photos/videos/user_3GRs2u0DnUOALc40epyY1sSP6V9/1784017540788.webm',
+  'https://xmmvznxrcuqxstkfhgsh.supabase.co/storage/v1/object/public/pet-photos/videos/user_3GRs2u0DnUOALc40epyY1sSP6V9/1784018082317.webm',
+  'https://xmmvznxrcuqxstkfhgsh.supabase.co/storage/v1/object/public/pet-photos/videos/user_3GRs2u0DnUOALc40epyY1sSP6V9/1784018140990.webm',
+];
 
 const demoSteps = [
   { emoji: '📸', title: 'Upload 1–5 Photos', desc: 'Take or choose photos of your real pet. The more the better!' },
@@ -15,6 +21,18 @@ const demoSteps = [
 export default function Hero() {
   const [demoActive, setDemoActive] = useState(false);
   const [demoStep, setDemoStep] = useState(0);
+  const [videoIdx, setVideoIdx] = useState(0);
+  const rotationRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Auto-rotate demo videos
+  useEffect(() => {
+    if (demoActive && demoStep === 2) {
+      rotationRef.current = setInterval(() => {
+        setVideoIdx(i => (i + 1) % DEMO_VIDEOS.length);
+      }, 4000);
+    }
+    return () => { if (rotationRef.current) clearInterval(rotationRef.current); };
+  }, [demoActive, demoStep]);
 
   const startDemo = () => {
     setDemoActive(true);
@@ -111,27 +129,65 @@ export default function Hero() {
                     /* Step 2: Show video on fake desktop */
                     <div className="text-center w-full">
                       {/* Desktop mockup */}
-                      <div className="relative max-w-[260px] mx-auto rounded-xl overflow-hidden shadow-xl border-4 border-gray-700">
-                        {/* Wallpaper background */}
-                        <div className="bg-gradient-to-br from-blue-400 via-blue-300 to-green-300 h-[180px] relative flex items-center justify-center">
-                          {/* Pet video — appears like it's on the desktop */}
-                          <div className="absolute bottom-4 right-4 w-[100px]">
-                            <video src={DEMO_VIDEO} autoPlay loop muted playsInline className="w-full drop-shadow-lg" />
-                          </div>
+                      <div className="relative max-w-[320px] mx-auto rounded-xl overflow-hidden shadow-2xl ring-1 ring-gray-300">
+                        {/* Wallpaper */}
+                        <div className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] h-[200px] relative overflow-hidden">
+                          {/* Subtle wallpaper pattern */}
+                          <div className="absolute inset-0 opacity-10" style={{
+                            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 0%, transparent 40%)',
+                          }} />
                           {/* Desktop icons */}
-                          <div className="absolute top-3 left-3 flex flex-col gap-1">
-                            <div className="bg-white/20 rounded px-2 py-0.5 text-[10px] text-white">📁 Folder</div>
-                            <div className="bg-white/20 rounded px-2 py-0.5 text-[10px] text-white">🌐 Browser</div>
+                          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+                            {['📁 Files', '🌐 Chrome', '🎵 Music'].map(icon => (
+                              <div key={icon} className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 rounded-md px-2 py-1 text-[11px] text-white/80 cursor-default">
+                                <span className="text-sm">{icon.split(' ')[0]}</span>
+                                <span>{icon.split(' ')[1]}</span>
+                              </div>
+                            ))}
+                          </div>
+                          {/* Pet on desktop */}
+                          <div className="absolute bottom-3 right-6" style={{ width: '110px', height: '130px' }}>
+                            <motion.div
+                              key={videoIdx}
+                              initial={{ opacity: 0, scale: 0.8 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ duration: 0.5 }}
+                              className="w-full h-full"
+                            >
+                              <video
+                                src={DEMO_VIDEOS[videoIdx]}
+                                autoPlay loop muted playsInline
+                                className="w-full h-full object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                              />
+                            </motion.div>
+                            {/* Pet shadow on desktop */}
+                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[60px] h-[8px] bg-black/20 rounded-full blur-sm" />
                           </div>
                         </div>
                         {/* Taskbar */}
-                        <div className="bg-gray-800/90 h-[28px] flex items-center px-3 gap-2">
-                          <span className="text-[10px] text-white">🪟</span>
-                          <span className="text-[10px] text-white/70">DeskBub</span>
-                          <span className="ml-auto text-[10px] text-white/50">🕐</span>
+                        <div className="bg-gray-900/95 h-[32px] flex items-center px-3 gap-2 backdrop-blur">
+                          <span className="text-sm">🪟</span>
+                          {['DeskBub', 'Chrome'].map(app => (
+                            <div key={app} className={`h-[22px] px-3 rounded-sm flex items-center text-[10px] text-white/90 ${app === 'DeskBub' ? 'bg-white/10 border-b-2 border-coral' : 'hover:bg-white/10'}`}>
+                              {app}
+                            </div>
+                          ))}
+                          <div className="ml-auto flex items-center gap-3 text-[10px] text-white/60">
+                            <span>🔊</span>
+                            <span>📶</span>
+                            <span>🔋</span>
+                            <span>{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
                         </div>
                       </div>
-                      <p className="text-sm font-semibold text-text-primary mt-3">Your real pet, right on your desktop!</p>
+                      <motion.p
+                        key={`label-${videoIdx}`}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-sm font-semibold text-text-primary mt-3"
+                      >
+                        {['Panting happily', 'Head tilting', 'Lying relaxed', 'Curious look', 'Peaceful nap'][videoIdx]}
+                      </motion.p>
                       <Link href="/sign-up"
                         className="inline-block mt-4 px-6 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg cursor-pointer">
                         🐾 Get Started Free
