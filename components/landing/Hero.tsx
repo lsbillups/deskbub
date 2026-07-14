@@ -146,7 +146,7 @@ export default function Hero() {
                             ))}
                           </div>
                           {/* Pet on desktop */}
-                          <div className="absolute bottom-3 right-6" style={{ width: '110px', height: '130px' }}>
+                          <div className="absolute bottom-0 right-2" style={{ width: '85px', height: '105px' }}>
                             <motion.div
                               key={videoIdx}
                               initial={{ opacity: 0, scale: 0.8 }}
