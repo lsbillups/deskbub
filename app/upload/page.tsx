@@ -295,7 +295,7 @@ export default function UploadPage() {
                 </span>
               </motion.div>
 
-              <p className="text-text-secondary text-sm mb-6">These {FINAL} videos are locked and cannot be changed.</p>
+              {tier === 'plus' && <p className="text-text-secondary text-sm mb-6">These {FINAL} videos are locked and cannot be changed.</p>}
 
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 mb-8">
                 {videoUrls.map((url, i) => (
@@ -316,6 +316,28 @@ export default function UploadPage() {
                   <p className="text-xs text-text-secondary/60 mt-2">Enter this code in the DeskBub desktop app to sync your pet.</p>
                 </div>
               )}
+
+              {/* ── Download guide ── */}
+              <div className="mt-6 bg-gradient-to-b from-mint/5 to-white rounded-2xl border border-mint/20 p-6 text-center">
+                <h3 className="font-display font-bold text-text-primary text-lg mb-4">📥 How to see your pet on your desktop</h3>
+                <div className="grid sm:grid-cols-3 gap-4 text-left">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">1</span>
+                    <div><p className="text-sm font-semibold text-text-primary">Download the App</p><p className="text-xs text-text-secondary mt-0.5">Get DeskBub for Windows or Mac</p></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">2</span>
+                    <div><p className="text-sm font-semibold text-text-primary">Enter Pairing Code</p><p className="text-xs text-text-secondary mt-0.5">Open the app and enter the code below</p></div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">3</span>
+                    <div><p className="text-sm font-semibold text-text-primary">Pet Appears!</p><p className="text-xs text-text-secondary mt-0.5">Your furry friend lives on your desktop</p></div>
+                  </div>
+                </div>
+                <a href="/download" className="inline-block mt-5 px-6 py-3 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all shadow-lg text-sm">
+                  ⬇ Download DeskBub
+                </a>
+              </div>
             </motion.div>
           ) : stage === 'append' || stage === 'appendActions' ? (
             /* ═══════════════════════ APPEND FLOW ═══════════════════════ */
@@ -487,7 +509,8 @@ export default function UploadPage() {
                     ))}
                   </div>
 
-                  {/* ── Action buttons ── */}
+                  {/* ── Action buttons (Plus only) ── */}
+                  {tier === 'plus' && (
                   <div className="flex justify-center gap-4 mt-6 flex-wrap">
 
                     {/* Add More Videos */}
@@ -514,6 +537,31 @@ export default function UploadPage() {
                       </button>
                     )}
                   </div>
+                  )}
+
+                  {/* ── Download guide ── */}
+                  {videoUrls.length > 0 && (
+                  <div className="mt-8 bg-gradient-to-b from-mint/5 to-white rounded-2xl border border-mint/20 p-6 text-center">
+                    <h3 className="font-display font-bold text-text-primary text-lg mb-4">📥 How to see your pet on your desktop</h3>
+                    <div className="grid sm:grid-cols-3 gap-4 text-left">
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">1</span>
+                        <div><p className="text-sm font-semibold text-text-primary">Download the App</p><p className="text-xs text-text-secondary mt-0.5">Get DeskBub for Windows or Mac</p></div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">2</span>
+                        <div><p className="text-sm font-semibold text-text-primary">Enter Pairing Code</p><p className="text-xs text-text-secondary mt-0.5">Open the app and enter the code below</p></div>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">3</span>
+                        <div><p className="text-sm font-semibold text-text-primary">Pet Appears!</p><p className="text-xs text-text-secondary mt-0.5">Your furry friend lives on your desktop</p></div>
+                      </div>
+                    </div>
+                    <a href="/download" className="inline-block mt-5 px-6 py-3 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all shadow-lg text-sm">
+                      ⬇ Download DeskBub
+                    </a>
+                  </div>
+                  )}
 
                   {pairingCode && (
                     <div className="mt-6 p-4 bg-mint/5 rounded-xl border border-mint/20 text-center">
