@@ -44,7 +44,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @"dist/${{ steps.find-exe.outputs.installer }}"
 
@@ -87,7 +87,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-macOS.dmg" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
             -H "Content-Type: application/octet-stream" \
             --data-binary @"dist/${{ steps.find-dmg.outputs.installer }}"
 
