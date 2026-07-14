@@ -126,8 +126,31 @@ export async function POST(request: NextRequest) {
     let transparentUrl = bgOutput?.video || bgOutput?.output || bgOutput;
     if (typeof transparentUrl === 'object' && transparentUrl.url) transparentUrl = transparentUrl.url;
 
-    const finalUrl = transparentUrl || videoUrl;
+    let finalUrl = transparentUrl || videoUrl;
 
+    // Download video and upload to Supabase for permanent storage
+    try {
+      const videoResponse = await fetch(finalUrl);
+      if (videoResponse.ok) {
+        const videoBuffer = Buffer.from(await videoResponse.arrayBuffer());
+        const supabaseClient = createAdminClient();
+        const storagePath = `videos/${userId}/${Date.now()}.webm`;
+        const { error: uploadErr } = await supabaseClient.storage
+          .from('pet-photos')
+          .upload(storagePath, videoBuffer, {
+            contentType: 'video/webm',
+            upsert: false,
+          });
+        if (!uploadErr) {
+          const { data: urlData } = supabaseClient.storage
+            .from('pet-photos')
+            .getPublicUrl(storagePath);
+          finalUrl = urlData.publicUrl;
+        }
+      }
+    } catch (err) {
+      console.error('Video download/upload error:', err);
+    }
 
     // Increment generation counter
     try {
