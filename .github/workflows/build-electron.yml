@@ -38,17 +38,15 @@ jobs:
           echo "installer=$($file.Name)" >> $env:GITHUB_OUTPUT
 
       - name: Upload to Supabase Storage
-        shell: pwsh
+        shell: bash
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          $file = "dist/${{ steps.find-exe.outputs.installer }}"
-          $url = "$env:SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe"
-          Invoke-RestMethod -Uri $url -Method Put -Headers @{
-            Authorization = "Bearer $env:SUPABASE_SERVICE_ROLE_KEY"
-            "Content-Type" = "application/octet-stream"
-          } -InFile $file
+          curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @"dist/${{ steps.find-exe.outputs.installer }}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
