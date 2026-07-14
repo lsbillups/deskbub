@@ -32,7 +32,7 @@ export default function Hero() {
     };
     // Use timeout chain instead of interval to vary durations
     const schedule = () => {
-      const delay = demoStep >= 2 ? 16000 : 3000;
+      const delay = demoStep >= 2 ? 16000 : 5000;
       timerRef.current = setTimeout(() => {
         advance();
       }, delay);
@@ -182,12 +182,13 @@ export default function Hero() {
                     </div>
                   )}
 
-                  {/* Auto-play indicator */}
+                  {/* Clickable progress dots */}
                   <div className="flex items-center justify-center gap-1.5 mt-5">
                     {demoSteps.map((_, i) => (
-                      <span key={i}
-                        className={`h-1.5 rounded-full transition-all duration-500 ${
-                          i === demoStep ? 'w-5 bg-coral' : i < demoStep ? 'w-1.5 bg-coral/30' : 'w-1.5 bg-gray-300'
+                      <button key={i} onClick={() => setDemoStep(i)}
+                        title={demoSteps[i].title}
+                        className={`rounded-full transition-all duration-500 cursor-pointer ${
+                          i === demoStep ? 'w-5 h-1.5 bg-coral' : i < demoStep ? 'w-1.5 h-1.5 bg-coral/30' : 'w-1.5 h-1.5 bg-gray-300'
                         }`} />
                     ))}
                   </div>
