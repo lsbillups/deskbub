@@ -14,34 +14,19 @@ jobs:
     defaults:
       run:
         working-directory: desktop-pet
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Windows installer
-        run: npx electron-builder --win --x64
-
-      - name: Rename and upload
+      - run: npm install
+      - run: npx electron-builder --win --x64
+      - name: Rename
         shell: pwsh
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           $exe = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
           Rename-Item -Path $exe.FullName -NewName "DeskBub-Windows.exe"
-          node upload-release.js dist/DeskBub-Windows.exe DeskBub-Windows.exe
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: DeskBub-Windows
           path: desktop-pet/dist/DeskBub-Windows.exe
@@ -51,32 +36,35 @@ jobs:
     defaults:
       run:
         working-directory: desktop-pet
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build macOS installer
-        run: npx electron-builder --mac --x64
-
-      - name: Rename and upload
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
+      - run: npm install
+      - run: npx electron-builder --mac --x64
+      - run: |
           mv dist/*.dmg dist/DeskBub-macOS.dmg
-          node upload-release.js dist/DeskBub-macOS.dmg DeskBub-macOS.dmg
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: DeskBub-macOS
           path: desktop-pet/dist/DeskBub-macOS.dmg
+
+  release:
+    needs: [build-windows, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: DeskBub-Windows
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: DeskBub-macOS
+          path: dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          files: |
+            dist/DeskBub-Windows.exe
+            dist/DeskBub-macOS.dmg
