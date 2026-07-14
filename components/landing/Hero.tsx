@@ -24,17 +24,22 @@ export default function Hero() {
   const [videoIdx, setVideoIdx] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-play demo: advance step every 3.5 seconds, loop forever, rotate videos on step 2
+  // Auto-play demo: steps 0-1 stay 3s each, step 2 stays 16s (room for video rotation)
   useEffect(() => {
     if (!demoActive) return;
-    timerRef.current = setInterval(() => {
-      setDemoStep(prev => {
-        if (prev >= 2) return 0; // loop back
-        return prev + 1;
-      });
-    }, 3500);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [demoActive]);
+    const advance = () => {
+      setDemoStep(prev => (prev >= 2 ? 0 : prev + 1));
+    };
+    // Use timeout chain instead of interval to vary durations
+    const schedule = () => {
+      const delay = demoStep >= 2 ? 16000 : 3000;
+      timerRef.current = setTimeout(() => {
+        advance();
+      }, delay);
+    };
+    schedule();
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [demoActive, demoStep]);
 
   // Rotate videos separately (faster than step timer) when on step 2
   useEffect(() => {
@@ -45,11 +50,6 @@ export default function Hero() {
     return () => clearInterval(videoTimer);
   }, [demoActive, demoStep]);
 
-  const startDemo = () => {
-    setDemoActive(true);
-    setDemoStep(0);
-    setVideoIdx(0);
-  };
 
   return (
     <section className="pt-32 pb-20 px-6">
@@ -175,7 +175,7 @@ export default function Hero() {
                       >
                         {['Panting happily', 'Head tilting', 'Lying relaxed', 'Curious look', 'Peaceful nap'][videoIdx]}
                       </motion.p>
-                      <Link href="/sign-up"
+                      <Link href="/upload"
                         className="inline-block mt-4 px-6 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg cursor-pointer">
                         🐾 Get Started Free
                       </Link>
