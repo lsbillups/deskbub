@@ -39,7 +39,10 @@ export default function ContactPage() {
       <div className="max-w-xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-text-primary text-center mb-2">Contact Us</h1>
-          <p className="text-text-secondary text-center mb-8">Questions, feedback, or just want to say hi? We&apos;d love to hear from you.</p>
+          <p className="text-text-secondary text-center mb-2">Questions, feedback, or just want to say hi? We&apos;d love to hear from you.</p>
+          <p className="text-center mb-8 text-sm text-text-secondary">
+            📧 Email us: <a href="mailto:support@deskbub.com" className="text-coral font-semibold hover:underline">support@deskbub.com</a>
+          </p>
         </motion.div>
 
         {sent ? (

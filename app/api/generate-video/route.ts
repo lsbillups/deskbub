@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { screenPrompt } from '@/lib/creem/moderation';
 import Replicate from 'replicate';
 
 // ByteDance Seedance 1.0 Lite — affordable ($0.09/video)
@@ -58,6 +59,13 @@ export async function POST(request: NextRequest) {
 
     if (!process.env.REPLICATE_API_TOKEN) {
       return NextResponse.json({ error: 'AI not configured.' }, { status: 500 });
+    }
+
+    // Screen prompt through Creem Moderation API
+    const promptText = getActionPrompt(petType, typeof action === 'number' ? action : 0);
+    const moderation = await screenPrompt(promptText, userId);
+    if (!moderation.passed) {
+      return NextResponse.json({ error: moderation.error || 'Content rejected.' }, { status: 400 });
     }
 
     const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
