@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
+import Navbar from '@/components/landing/Navbar';
 import './globals.css';
 
 const inter = Inter({
@@ -32,7 +33,10 @@ export default function RootLayout({
         lang="en"
         className={`${inter.variable} ${poppins.variable} h-full antialiased`}
       >
-        <body className="min-h-full flex flex-col font-sans">{children}</body>
+        <body className="min-h-full flex flex-col font-sans">
+          <Navbar />
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );

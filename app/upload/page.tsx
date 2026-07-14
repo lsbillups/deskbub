@@ -281,7 +281,8 @@ export default function UploadPage() {
               ? `Plus — Step 1: pick up to 5 actions · Step 2: add more videos if needed · Step 3: pick your ${FINAL} favorites`
               : tier === 'basic' ? 'Basic — 1 default action' : 'Subscribe to get started'}
           </p>
-          {tier === 'plus' && <p className="text-xs text-mint mt-1">{gensLeft} generations left · {totalVideos} videos so far</p>}
+          {(tier === 'plus' || tier === 'basic') && <p className="text-xs text-mint mt-1">{gensLeft} generations left · {totalVideos} videos so far</p>}
+          {tier === 'free' && <p className="text-xs text-text-secondary/60 mt-1">Free plan — share to unlock Basic</p>}
         </div>
 
         <AnimatePresence mode="wait">

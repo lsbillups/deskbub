@@ -1,12 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Footer from '@/components/landing/Footer';
 
 export default function DownloadPage() {
+  const { user, isSignedIn } = useUser();
   const [os, setOs] = useState<'windows' | 'mac' | 'unknown'>('unknown');
+
+  const pairingCode = useMemo(() => {
+    if (!user) return null;
+    let hash = 0;
+    for (let i = 0; i < user.id.length; i++) { hash = ((hash << 5) - hash) + user.id.charCodeAt(i); hash |= 0; }
+    return String(Math.abs(hash) % 1000000).padStart(6, '0');
+  }, [user]);
 
   useEffect(() => {
     const ua = navigator.userAgent.toLowerCase();
@@ -101,6 +110,16 @@ export default function DownloadPage() {
             No account needed to download. Sign in to sync your pet.
           </p>
         </motion.div>
+
+        {/* Pairing Code — shown only when logged in */}
+        {isSignedIn && pairingCode && (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            className="mt-6 bg-mint/5 rounded-2xl border border-mint/20 p-6 text-center max-w-lg mx-auto">
+            <p className="text-sm font-semibold text-mint mb-2">🔗 Your Pairing Code</p>
+            <code className="text-3xl font-mono font-bold tracking-[0.3em] text-coral select-all">{pairingCode}</code>
+            <p className="text-xs text-text-secondary/60 mt-2">After installing, open the app and enter this code. Your pet will appear!</p>
+          </motion.div>
+        )}
 
         {/* Install Steps */}
         <motion.div
