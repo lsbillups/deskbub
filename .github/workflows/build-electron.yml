@@ -31,18 +31,16 @@ jobs:
         run: npx electron-builder --win --x64
 
       - name: Rename and upload to Supabase
-        shell: pwsh
+        shell: bash
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          $exe = Get-ChildItem -Path dist -Filter "*.exe" | Select-Object -First 1
-          Rename-Item -Path $exe.FullName -NewName "DeskBub-Windows.exe"
-          $url = "$env:SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe"
-          Invoke-RestMethod -Uri $url -Method Put -InFile "dist/DeskBub-Windows.exe" -Headers @{
-            apikey = "$env:SUPABASE_SERVICE_ROLE_KEY"
-            "Content-Type" = "application/octet-stream"
-          }
+          mv dist/*.exe dist/DeskBub-Windows.exe
+          curl -X PUT "$SUPABASE_URL/storage/v1/object/pet-photos/releases/DeskBub-Windows.exe" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @dist/DeskBub-Windows.exe
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
