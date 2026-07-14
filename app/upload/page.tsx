@@ -380,7 +380,7 @@ export default function UploadPage() {
                   </div>
 
                   <div className="text-center">
-                    <button onClick={handleAppendGenerate} disabled={isGenerating}
+                    <button onClick={handleAppendGenerate} disabled={isGenerating || gensLeft <= 0}
                       className="px-8 py-4 bg-orange-500 text-white font-bold rounded-full hover:bg-orange-600 transition-all shadow-xl disabled:opacity-60 text-lg cursor-pointer">
                       {isGenerating ? 'Generating...' : `🎬 Generate ${Math.min(processedUrls.length, gensLeft, MAX_TOTAL - totalVideos)} Video${Math.min(processedUrls.length, gensLeft, MAX_TOTAL - totalVideos) !== 1 ? 's' : ''}`}
                     </button>
@@ -451,7 +451,7 @@ export default function UploadPage() {
 
                   <div className="text-center">
                     <button onClick={handleGenerate}
-                      disabled={isGenerating || (tier === 'plus' && checkedCount === 0)}
+                      disabled={isGenerating || gensLeft <= 0 || (tier === 'plus' && checkedCount === 0)}
                       className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-full hover:from-purple-600 hover:to-pink-600 transition-all shadow-xl disabled:opacity-60 disabled:cursor-wait text-lg cursor-pointer">
                       {isGenerating ? '🎬 Generating...' : `🎬 Generate ${tier === 'plus' ? checkedCount : 1} Video${(tier === 'plus' ? checkedCount : 1) !== 1 ? 's' : ''}`}
                     </button>

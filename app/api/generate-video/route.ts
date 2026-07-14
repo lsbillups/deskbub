@@ -41,6 +41,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }
 
+    // Check remaining generations
+    const adminSupabase = createAdminClient();
+    const { data: sub } = await adminSupabase.from('subscriptions').select('generations_used,max_generations').eq('user_id', userId).single();
+    const used = sub?.generations_used || 0;
+    const max = sub?.max_generations || 0;
+    if (used >= max) {
+      return NextResponse.json({ error: 'No generations remaining. Share or upgrade to unlock more.' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { imageUrl, petType, action, actionLabel, clear_first } = body;
     if (!imageUrl) {
