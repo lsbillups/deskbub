@@ -28,7 +28,7 @@ export default function ContactPage() {
       if (dbErr) throw dbErr;
       setSent(true);
     } catch {
-      setError('Failed to send. Please email support@deskbub.app directly.');
+      setError('Failed to send. Please email support@deskbub.com directly.');
     } finally {
       setSending(false);
     }

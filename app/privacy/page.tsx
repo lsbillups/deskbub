@@ -37,7 +37,7 @@ export default function PrivacyPage() {
         <p>We use essential cookies for authentication and session management. No tracking cookies are used.</p>
 
         <h2>7. Contact</h2>
-        <p>For privacy questions, contact us at <strong>support@deskbub.app</strong>.</p>
+        <p>For privacy questions, contact us at <strong>support@deskbub.com</strong>.</p>
       </div>
       <Footer />
     </main>

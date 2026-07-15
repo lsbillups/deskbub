@@ -23,7 +23,7 @@ export default function RefundPage() {
         </ul>
 
         <h2>How to Request</h2>
-        <p>Email <strong>support@deskbub.app</strong> with your order ID and reason for refund. We will respond within 48 hours. Approved refunds are processed within 5-10 business days.</p>
+        <p>Email <strong>support@deskbub.com</strong> with your order ID and reason for refund. We will respond within 48 hours. Approved refunds are processed within 5-10 business days.</p>
 
         <h2>Chargebacks</h2>
         <p>If you initiate a chargeback without contacting us first, your account may be suspended. Please reach out to us first — we'll make it right.</p>
