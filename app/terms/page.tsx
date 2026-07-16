@@ -12,7 +12,13 @@ export default function TermsPage() {
         <p>DeskBub provides AI-powered pet animation services. You upload photos of your pet, and we generate animated desktop companions.</p>
 
         <h2>2. AI Technology Disclosure</h2>
-        <p>DeskBub uses third-party AI models hosted on Replicate to process your pet photos and generate animations. These models perform background removal, video generation, and video background removal. The specific models used may be updated from time to time to improve quality and performance.</p>
+        <p>DeskBub uses the following AI models hosted on Replicate:</p>
+        <ul>
+          <li>RMBG (rembg) for photo background removal</li>
+          <li>ByteDance Seedance 1.0 Lite for pet video generation</li>
+          <li>Bria Video Background Removal for transparent video output</li>
+        </ul>
+        <p>These models may be updated or replaced from time to time to improve quality and performance.</p>
 
         <h2>3. User Responsibilities</h2>
         <ul>
