@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const { userId } = await auth();
     if (!userId) {
-      return NextResponse.redirect(new URL('/sign-in', appUrl));
+      return NextResponse.json({ error: 'Please sign in first.', redirect: '/sign-in' }, { status: 401 });
     }
 
     const body = await req.json().catch(() => ({}));

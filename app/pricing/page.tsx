@@ -83,6 +83,8 @@ export default function PricingPage() {
       const data = await res.json();
       if (data.checkoutUrl) {
         window.location.href = data.checkoutUrl;
+      } else if (data.redirect) {
+        window.location.href = data.redirect;
       } else {
         alert(data.error || 'Something went wrong');
       }
