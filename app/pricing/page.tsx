@@ -42,7 +42,7 @@ const tiers = [
     cta: 'Get Basic — $1.00',
     href: null, // Will use Creem checkout
     primary: false,
-    productId: 'prod_60Egf7GJt88AU9bWJ8cKGz',
+    productId: 'prod_6tpK7rYSe4qOn0Gkwu5orH',
   },
   {
     name: 'Plus',
@@ -62,7 +62,7 @@ const tiers = [
     cta: 'Get Plus — $4.99',
     href: null, // Will use Creem checkout
     primary: true,
-    productId: 'prod_3iVWs9zbilzhQKD73DMYab',
+    productId: 'prod_3plVm23uj3TPfXW0XpdaMo',
   },
 ];
 
