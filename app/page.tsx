@@ -23,8 +23,8 @@ export default function HomePage() {
   return (
     <main className="min-h-screen bg-cream">
       <Hero />
-      <KakaShowcase />
       <ProductChoice />
+      <KakaShowcase />
       <HowItWorks />
       <Features />
       <HomeFAQ />

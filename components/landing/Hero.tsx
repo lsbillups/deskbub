@@ -11,27 +11,27 @@ export default function Hero() {
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <span className="inline-flex items-center gap-2 rounded-full border border-coral/20 bg-white px-4 py-2 text-sm font-semibold text-coral shadow-sm">
             <span aria-hidden="true">🐾</span>
-            Desktop companions for every kind of pet
+            One photo → a pet on your desktop
           </span>
 
           <h1 className="mt-6 max-w-2xl font-display text-5xl font-extrabold leading-[1.05] text-text-primary sm:text-6xl lg:text-7xl">
-            Bring Any Pet to Life on Your Desktop
+            Turn One Pet Photo Into a Desktop Companion
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary sm:text-xl">
-            Upload one photo of your dog, cat, rabbit, bird, or other pet and turn them into an animated desktop companion. Or use Kaka for free with five actions and gentle break reminders.
+            Upload a clear photo of your dog, cat, rabbit, bird, or another pet. DeskBub turns them into a transparent animated companion for Windows or Mac.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 text-center text-base font-bold text-white shadow-xl shadow-coral/25 transition hover:-translate-y-0.5 hover:bg-coral-dark">
-              Upload a Pet Photo
+              Create My Desktop Pet
             </Link>
             <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 text-center text-base font-bold text-text-primary transition hover:border-coral/30 hover:text-coral">
-              Use Kaka for Free
+              Try Kaka First
             </Link>
           </div>
 
-          <p className="mt-4 text-sm font-medium text-text-secondary">Custom pets start at $1. Kaka comes with DeskBub at no cost.</p>
+          <p className="mt-4 text-sm font-medium text-text-secondary">One-time custom pet options start at $1. No subscription.</p>
           <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-text-secondary">
             <span>✓ Cats, dogs &amp; other pets</span>
             <span>✓ Windows &amp; macOS</span>

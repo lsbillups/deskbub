@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export default function KakaShowcase() {
   return (
-    <section className="bg-white px-6 py-20">
+    <section id="examples" className="scroll-mt-20 bg-white px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">A real pet, not a mascot</p>
@@ -53,7 +53,7 @@ export default function KakaShowcase() {
         </div>
 
         <div className="mt-9 text-center">
-          <Link href="/free-desktop-pet" className="font-bold text-coral underline decoration-coral/30 underline-offset-4 hover:decoration-coral">Meet Kaka and see what is included →</Link>
+          <Link href="/download" className="font-bold text-coral underline decoration-coral/30 underline-offset-4 hover:decoration-coral">Try Kaka on my desktop →</Link>
         </div>
       </div>
     </section>

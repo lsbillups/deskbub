@@ -11,7 +11,7 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="bg-cream px-6 py-20">
+    <section className="bg-white px-6 py-20">
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
           <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">A tiny companion, not another complicated app</h2>
@@ -26,7 +26,7 @@ export default function Features() {
             </article>
           ))}
         </div>
-        <div className="mt-12 text-center"><Link href="/download" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Use Kaka for Free</Link></div>
+        <div className="mt-12 text-center"><Link href="/upload" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Create My Desktop Pet</Link></div>
       </div>
     </section>
   );

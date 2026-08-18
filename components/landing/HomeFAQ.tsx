@@ -8,12 +8,12 @@ const faqs = [
 
 export default function HomeFAQ() {
   return (
-    <section className="bg-white px-6 py-20">
+    <section className="bg-cream px-6 py-20">
       <div className="mx-auto max-w-3xl">
-        <h2 className="text-center font-display text-3xl font-bold text-text-primary sm:text-4xl">Questions before Kaka moves in?</h2>
+        <h2 className="text-center font-display text-3xl font-bold text-text-primary sm:text-4xl">Questions before you get started?</h2>
         <div className="mt-10 space-y-4">
           {faqs.map(([question, answer]) => (
-            <details key={question} className="group rounded-2xl border border-gray-100 bg-cream px-6 py-4">
+            <details key={question} className="group rounded-2xl border border-gray-100 bg-white px-6 py-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-text-primary">{question}<span className="text-xl text-coral transition group-open:rotate-45">+</span></summary>
               <p className="mt-3 pr-8 leading-relaxed text-text-secondary">{answer}</p>
             </details>

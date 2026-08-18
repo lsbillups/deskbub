@@ -1,26 +1,55 @@
 import Link from 'next/link';
 
-const products = [
-  { eyebrow: 'INCLUDED', title: 'Meet Kaka', description: 'Use the official DeskBub pet for free. No upload, payment, or account required.', points: ['Five Kaka actions', 'Water and stretch reminders', 'Windows and macOS'], cta: 'Use Kaka for Free', href: '/download', accent: 'border-mint/40 bg-mint/5' },
-  { eyebrow: 'FROM $1', title: 'Bring Your Own Pet', description: 'Upload one clear photo of your dog, cat, rabbit, bird, or other pet and create a companion that looks like them.', points: ['Your actual pet', 'Transparent animation', 'One-time purchase'], cta: 'Upload a Pet Photo', href: '/upload', accent: 'border-coral/40 bg-coral/5' },
+const paths = [
+  {
+    eyebrow: 'MAKE IT YOURS · FROM $1',
+    title: 'Create a pet from my photo',
+    description: 'Choose this path when you want the companion on your desktop to look like your own pet.',
+    steps: ['Upload one clear pet photo', 'Choose a one-time custom option', 'Generate, download, and pair your pet'],
+    cta: 'Create My Desktop Pet',
+    href: '/upload',
+    card: 'border-coral/50 shadow-xl shadow-coral/10',
+    button: 'bg-coral hover:bg-coral-dark',
+  },
+  {
+    eyebrow: 'TRY DESKBUB · $0',
+    title: 'Start with Kaka',
+    description: 'Choose this path when you want to experience the desktop app before creating a custom pet.',
+    steps: ['Download DeskBub for Windows or Mac', 'Open the app—no account or code', 'Kaka appears with five actions'],
+    cta: 'Try Kaka First',
+    href: '/download',
+    card: 'border-mint/50',
+    button: 'bg-text-primary hover:bg-black',
+  },
 ];
 
 export default function ProductChoice() {
   return (
-    <section className="bg-cream px-6 py-20">
+    <section id="start" className="scroll-mt-20 bg-text-primary px-6 py-20 text-white">
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
-          <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">Start with Kaka—or make it personal.</h2>
-          <p className="mt-3 text-lg text-text-secondary">Two clear choices. No subscription hiding behind either one.</p>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Choose one path</p>
+          <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">What do you want on your desktop?</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/65">You only need to make one decision. We&apos;ll guide you through everything after that.</p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {products.map((product) => (
-            <article key={product.title} className={`rounded-3xl border-2 p-8 sm:p-10 ${product.accent}`}>
-              <span className="text-xs font-extrabold tracking-[0.2em] text-coral">{product.eyebrow}</span>
-              <h3 className="mt-3 font-display text-3xl font-bold text-text-primary">{product.title}</h3>
-              <p className="mt-4 leading-relaxed text-text-secondary">{product.description}</p>
-              <ul className="mt-6 space-y-3 text-sm font-medium text-text-primary">{product.points.map((point) => <li key={point}>✓ {point}</li>)}</ul>
-              <Link href={product.href} className="mt-8 inline-block rounded-full bg-text-primary px-6 py-3 font-bold text-white transition hover:bg-coral">{product.cta}</Link>
+          {paths.map((path) => (
+            <article key={path.title} className={`flex flex-col rounded-3xl border-2 bg-white p-8 text-text-primary sm:p-10 ${path.card}`}>
+              <span className="text-xs font-extrabold tracking-[0.18em] text-coral">{path.eyebrow}</span>
+              <h3 className="mt-3 font-display text-3xl font-bold">{path.title}</h3>
+              <p className="mt-4 min-h-12 leading-relaxed text-text-secondary">{path.description}</p>
+              <div className="mt-7 flex-1 rounded-2xl bg-cream p-5">
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-text-secondary">Your path</p>
+                <ol className="mt-4 space-y-4">
+                  {path.steps.map((step, index) => (
+                    <li key={step} className="flex items-center gap-3 text-sm font-semibold">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-xs font-extrabold text-coral shadow-sm">{index + 1}</span>
+                      {step}
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <Link href={path.href} className={`mt-7 block rounded-full px-6 py-3.5 text-center font-bold text-white transition ${path.button}`}>{path.cta}</Link>
             </article>
           ))}
         </div>
