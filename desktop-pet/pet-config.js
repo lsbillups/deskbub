@@ -3,6 +3,7 @@ const DEFAULT_CONFIG = Object.freeze({
   waterReminder: 90,
   opacity: 0.9,
   petSize: 1,
+  petVisible: true,
   remindersPaused: false,
   welcomeSeen: false,
   pet: Object.freeze({
@@ -41,6 +42,7 @@ function normalizeConfig(config) {
     ...source,
     opacity: clamp(source.opacity, 0.3, 1, DEFAULT_CONFIG.opacity),
     petSize: clamp(source.petSize, 0.5, 1.5, DEFAULT_CONFIG.petSize),
+    petVisible: typeof source.petVisible === 'boolean' ? source.petVisible : DEFAULT_CONFIG.petVisible,
     remindersPaused: Boolean(source.remindersPaused),
     welcomeSeen: Boolean(source.welcomeSeen),
     pet: normalizePet(source.pet),

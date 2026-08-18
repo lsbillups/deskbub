@@ -1,10 +1,12 @@
 {
   "id": "kaka",
   "name": "Kaka",
-  "version": 1,
+  "version": 2,
   "actions": [
     { "id": "curious", "label": "Curious", "file": "curious.webm" },
     { "id": "relaxed", "label": "Relaxed", "file": "relaxed.webm" },
-    { "id": "happy", "label": "Happy", "file": "happy.webm" }
+    { "id": "happy", "label": "Happy", "file": "happy.webm" },
+    { "id": "playful", "label": "Playful", "file": "playful.webm" },
+    { "id": "bouncy", "label": "Bouncy", "file": "bouncy.webm" }
   ]
 }

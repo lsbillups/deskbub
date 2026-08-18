@@ -174,6 +174,9 @@ if (window.deskBub) {
     reminderConfig.remindersPaused = !enabled;
     configureReminders(reminderConfig);
   });
+  window.deskBub.onTestReminder(function(type) {
+    showBubble(type === 'stretch' ? 'Time to stand and stretch 🧘' : 'Water break 💧');
+  });
 }
 
 function resizeCanvas() {

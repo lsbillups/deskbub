@@ -82,6 +82,18 @@ function notifyControlPanel(channel, payload) {
   }
 }
 
+function setPetVisibility(visible) {
+  const nextVisible = Boolean(visible);
+  patchConfig({ petVisible: nextVisible });
+  if (petWindow && !petWindow.isDestroyed()) {
+    if (nextVisible) petWindow.show();
+    else petWindow.hide();
+  }
+  notifyControlPanel('pet-visibility-updated', nextVisible);
+  if (tray) tray.setContextMenu(buildTrayMenu());
+  return nextVisible;
+}
+
 function createTrayIcon() {
   const size = 16;
   const buf = Buffer.alloc(size * size * 4);
@@ -145,9 +157,12 @@ function buildTrayMenu() {
   });
   template.push({ type: 'separator' });
 
+  const petIsVisible = petWindow && !petWindow.isDestroyed()
+    ? petWindow.isVisible()
+    : loadConfig().petVisible;
   template.push({
-    label: 'Show / Hide Pet',
-    click: () => { if (petWindow) petWindow.isVisible() ? petWindow.hide() : petWindow.show(); },
+    label: petIsVisible ? 'Hide Pet' : 'Show Pet',
+    click: () => setPetVisibility(!petIsVisible),
   });
   template.push({
     label: 'Pause Reminders',
@@ -158,6 +173,7 @@ function buildTrayMenu() {
       cfg.remindersPaused = menuItem.checked;
       saveConfig(cfg);
       if (petWindow) petWindow.webContents.send('reminders-toggled', !menuItem.checked);
+      notifyControlPanel('reminders-toggled', !menuItem.checked);
     },
   });
   template.push({ type: 'separator' });
@@ -275,6 +291,7 @@ function createPetWindow() {
     width: initialWidth, height: initialHeight,
     transparent: true, frame: false, alwaysOnTop: true,
     hasShadow: false, resizable: false, skipTaskbar: true,
+    show: config.petVisible,
     opacity: config.opacity,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -294,7 +311,7 @@ function createTray() {
   tray.setToolTip('DeskBub');
   tray.setContextMenu(buildTrayMenu());
   tray.on('click', () => {
-    if (petWindow) petWindow.isVisible() ? petWindow.hide() : petWindow.show();
+    if (petWindow) setPetVisibility(!petWindow.isVisible());
   });
 }
 
@@ -334,6 +351,8 @@ ipcMain.handle('get-starter-pet', (_, starterId) => getStarterPet(starterId));
 ipcMain.handle('save-pet-selection', (_, pet) => patchConfig({ pet }).pet);
 ipcMain.handle('get-actions', () => ({ actions: currentActions, currentAction }));
 ipcMain.handle('open-control-panel', () => { createSettingsWindow(); return true; });
+ipcMain.handle('get-pet-visibility', () => Boolean(petWindow && !petWindow.isDestroyed() && petWindow.isVisible()));
+ipcMain.handle('set-pet-visible', (_, visible) => setPetVisibility(visible));
 ipcMain.handle('control-action', (_, action) => {
   if (petWindow) petWindow.webContents.send('tray-action', String(action));
   return true;
@@ -349,6 +368,12 @@ ipcMain.handle('use-starter-pet', (_, starterId) => {
 });
 ipcMain.handle('report-pairing-result', (_, result) => {
   notifyControlPanel('pairing-result', result);
+  return true;
+});
+ipcMain.handle('test-reminder', (_, type) => {
+  if (!petWindow || petWindow.isDestroyed()) return false;
+  setPetVisibility(true);
+  petWindow.webContents.send('test-reminder', type === 'stretch' ? 'stretch' : 'water');
   return true;
 });
 ipcMain.handle('read-clipboard', () => clipboard.readText());

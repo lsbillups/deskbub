@@ -10,6 +10,7 @@ test('old config receives a free Kaka starter without losing existing values', (
   const config = normalizeConfig({ opacity: 0.7, remindersPaused: true });
   assert.equal(config.opacity, 0.7);
   assert.equal(config.remindersPaused, true);
+  assert.equal(config.petVisible, true);
   assert.deepEqual(config.pet, { mode: 'starter', starterId: 'kaka', pairingCode: null });
 });
 
@@ -27,16 +28,24 @@ test('appearance patches preserve pairing and reminder configuration', () => {
   assert.equal(updated.petSize, 1.25);
 });
 
+test('show or hide preference persists without changing other controls', () => {
+  const hidden = mergeConfig(normalizeConfig({ sitReminder: 30 }), { petVisible: false });
+  assert.equal(hidden.petVisible, false);
+  assert.equal(hidden.sitReminder, 30);
+  const visibleAgain = mergeConfig(hidden, { petVisible: true });
+  assert.equal(visibleAgain.petVisible, true);
+});
+
 test('invalid pairing state safely falls back to Kaka', () => {
   const config = normalizeConfig({ pet: { mode: 'paired', pairingCode: '../bad' } });
   assert.deepEqual(config.pet, { mode: 'starter', starterId: 'kaka', pairingCode: null });
 });
 
-test('Kaka manifest resolves three existing local WebM actions', () => {
+test('Kaka manifest resolves five existing local WebM actions', () => {
   const root = path.join(__dirname, '..', 'starter-pets');
   const kaka = loadStarterPet(root, 'kaka');
   assert.equal(kaka.id, 'kaka');
-  assert.deepEqual(kaka.videos.map((video) => video.id), ['curious', 'relaxed', 'happy']);
+  assert.deepEqual(kaka.videos.map((video) => video.id), ['curious', 'relaxed', 'happy', 'playful', 'bouncy']);
   for (const video of kaka.videos) {
     assert.match(video.url, /^file:\/\//);
     assert.ok(fs.existsSync(new URL(video.url)), `${video.id} should exist`);
