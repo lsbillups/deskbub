@@ -42,7 +42,7 @@ export default function PricingPage() {
             <h2 className="mt-3 font-display text-2xl font-bold text-text-primary">Kaka</h2>
             <p className="mt-3 text-text-secondary">DeskBub&apos;s official desktop dog.</p>
             <div className="mt-6 font-display text-5xl font-extrabold text-text-primary">$0</div>
-            <ul className="mt-7 flex-1 space-y-3 text-sm text-text-secondary">{['Kaka included with the app', 'Windows and macOS', 'No account required', 'Use Kaka forever'].map((feature) => <li key={feature} className="flex gap-2"><span className="font-bold text-mint-dark">✓</span>{feature}</li>)}</ul>
+            <ul className="mt-7 flex-1 space-y-3 text-sm text-text-secondary">{['Five animated Kaka actions', 'Water and stretch reminders', 'Instant Show/Hide controls', 'Windows and macOS', 'No account required'].map((feature) => <li key={feature} className="flex gap-2"><span className="font-bold text-mint-dark">✓</span>{feature}</li>)}</ul>
             <Link href="/download" className="mt-8 rounded-full border-2 border-mint bg-white px-5 py-3 text-center font-bold text-mint-dark transition hover:bg-mint hover:text-white">Download Kaka Free</Link>
           </article>
 

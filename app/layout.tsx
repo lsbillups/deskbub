@@ -6,23 +6,23 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://deskbub.com'),
   title: {
-    default: 'DeskBub — Free Desktop Pet for Windows & Mac',
+    default: 'DeskBub — Bring Any Pet to Life on Your Desktop',
     template: '%s | DeskBub',
   },
   description:
-    'Download Kaka, a free desktop pet for Windows and Mac, or turn a photo of your own dog or cat into a custom animated desktop companion.',
+    'Upload one photo of any pet to create an animated desktop companion for Windows or Mac, or download Kaka free.',
   keywords: ['free desktop pet', 'desktop pet', 'virtual pet', 'Windows desktop pet', 'Mac desktop pet', 'custom pet', 'DeskBub'],
   openGraph: {
-    title: 'DeskBub — Free Desktop Pet for Windows & Mac',
-    description: 'Meet Kaka for free, or bring your own pet to your Windows or Mac desktop.',
+    title: 'DeskBub — Bring Any Pet to Life on Your Desktop',
+    description: 'Meet Kaka for free, or bring any pet to your Windows or Mac desktop.',
     url: 'https://deskbub.com',
     siteName: 'DeskBub',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DeskBub — Free Desktop Pet for Windows & Mac',
-    description: 'Meet Kaka for free, or bring your own pet to your desktop.',
+    title: 'DeskBub — Bring Any Pet to Life on Your Desktop',
+    description: 'Meet Kaka for free, or bring any pet to your desktop.',
   },
 };
 

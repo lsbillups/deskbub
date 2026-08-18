@@ -1,8 +1,9 @@
 const faqs = [
-  ['Is Kaka really free?', 'Yes. Kaka is included with the DeskBub app, needs no account, and can be used for as long as you like.'],
-  ['Can I use my own dog or cat?', 'Yes. Custom pets are created from your own photo and are sold as a one-time purchase starting at $1.'],
+  ['Is Kaka really free?', 'Yes. Kaka includes five animated actions, needs no account, and can be used for as long as you like.'],
+  ['Can I use a pet other than a dog?', 'Yes. Upload a clear photo of your cat, rabbit, bird, dog, or another pet. Custom pets are a one-time purchase starting at $1.'],
   ['Does DeskBub work on Windows and Mac?', 'DeskBub is available for Windows 10/11 and macOS 12 or later.'],
-  ['Does the pet cover my work?', 'You can drag your pet around the desktop and adjust its size and opacity from the app controls.'],
+  ['Can Kaka remind me to take breaks?', 'Yes. You can set water and stretch reminders, pause them anytime, or test them from the DeskBub controls.'],
+  ['Does the pet cover my work?', 'You can drag your pet, adjust its size and opacity, or hide it instantly from the app controls.'],
 ];
 
 export default function HomeFAQ() {

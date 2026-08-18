@@ -16,8 +16,9 @@ export const metadata: Metadata = {
 
 const faqs = [
   ['Does Kaka cost anything?', 'No. Kaka comes with the DeskBub app and is free to use without an account.'],
-  ['What can I do with him?', 'Move Kaka around your screen, switch his actions, and adjust his size and opacity.'],
-  ['Can I replace Kaka with my pet?', 'Yes. Create a custom pet from your own photo, then pair it with the same desktop app.'],
+  ['What can I do with him?', 'Choose from five Kaka actions, move him around your screen, set water and stretch reminders, and adjust his size and opacity.'],
+  ['Can I hide Kaka without quitting?', 'Yes. Use the Show/Hide control whenever you need a clear desktop.'],
+  ['Can I replace Kaka with my pet?', 'Yes. Upload a photo of your dog, cat, rabbit, bird, or another pet, then pair the result with the same desktop app.'],
 ];
 
 export default function FreeDesktopPetPage() {
@@ -58,7 +59,7 @@ export default function FreeDesktopPetPage() {
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Meet the original</p>
               <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">Kaka is a real little dog.</h2>
-              <p className="mt-5 text-lg leading-relaxed text-text-secondary">He became DeskBub&apos;s first desktop pet after we turned a real photo into transparent animations. The free app includes three Kaka actions, plus controls for movement, size, opacity, and sharing.</p>
+              <p className="mt-5 text-lg leading-relaxed text-text-secondary">He became DeskBub&apos;s first desktop pet after we turned a real photo into transparent animations. The free app includes five Kaka actions, water and stretch reminders, instant Show/Hide, plus controls for movement, size, opacity, and sharing.</p>
             </div>
           </div>
         </div>
@@ -80,7 +81,7 @@ export default function FreeDesktopPetPage() {
           <div className="mt-12 rounded-3xl bg-text-primary p-8 text-center text-white sm:p-10">
             <h2 className="font-display text-3xl font-bold">Love having Kaka around?</h2>
             <p className="mx-auto mt-3 max-w-xl text-white/70">Put your own pet on your desktop next. Custom pets start at $1 with no subscription.</p>
-            <Link href="/custom-desktop-pet" className="mt-6 inline-block rounded-full bg-coral px-6 py-3 font-bold text-white">Create My Custom Pet</Link>
+            <Link href="/upload" className="mt-6 inline-block rounded-full bg-coral px-6 py-3 font-bold text-white">Upload a Pet Photo</Link>
           </div>
         </div>
       </section>

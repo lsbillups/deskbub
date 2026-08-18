@@ -27,10 +27,10 @@ export default function CustomDesktopPetPage() {
         <div className="mx-auto max-w-5xl text-center">
           <span className="inline-flex rounded-full bg-coral/10 px-4 py-2 text-sm font-bold text-coral">ONE PHOTO · YOUR ACTUAL PET</span>
           <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl font-extrabold leading-tight text-text-primary sm:text-6xl">Turn Your Pet Photo Into a Custom Desktop Pet</h1>
-          <p className="mx-auto mt-6 max-w-3xl text-xl leading-relaxed text-text-secondary">Upload a clear photo of your dog, cat, or other pet. DeskBub turns it into a transparent animated companion for Windows and Mac. Custom generation is paid with a one-time purchase.</p>
+          <p className="mx-auto mt-6 max-w-3xl text-xl leading-relaxed text-text-secondary">Upload a clear photo of your dog, cat, rabbit, bird, or other pet. DeskBub turns it into a transparent animated companion for Windows and Mac. Custom generation is paid with a one-time purchase.</p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link href="/pricing" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">See Custom Pricing</Link>
-            <Link href="/free-desktop-pet" className="rounded-full border-2 border-gray-200 bg-white px-7 py-3 font-bold text-text-primary hover:border-coral/30">Try Kaka Free First</Link>
+            <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Upload a Pet Photo</Link>
+            <Link href="/pricing" className="rounded-full border-2 border-gray-200 bg-white px-7 py-3 font-bold text-text-primary hover:border-coral/30">Compare Custom Plans</Link>
           </div>
         </div>
       </section>
@@ -66,7 +66,7 @@ export default function CustomDesktopPetPage() {
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="font-display text-3xl font-bold sm:text-4xl">Custom generation starts at $1.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-white/70">Choose one action with Basic, or generate more options and keep your five favorites with Plus. One-time payment, no subscription.</p>
-          <Link href="/pricing" className="mt-8 inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white hover:bg-coral-dark">Compare Custom Plans</Link>
+          <Link href="/upload" className="mt-8 inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white hover:bg-coral-dark">Upload a Pet Photo</Link>
         </div>
       </section>
       <Footer />

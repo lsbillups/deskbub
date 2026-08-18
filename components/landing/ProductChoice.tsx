@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 const products = [
-  { eyebrow: 'FREE', title: 'Meet Kaka', description: 'Download the official DeskBub pet for free. No upload, payment, or account required.', points: ['Kaka included', 'Windows and macOS', 'Use him forever'], cta: 'Download Kaka Free', href: '/download', accent: 'border-mint/40 bg-mint/5' },
-  { eyebrow: 'FROM $1', title: 'Bring Your Own Pet', description: 'Upload one clear photo of your dog, cat, or other pet and create a companion that looks like them.', points: ['Your actual pet', 'Transparent animation', 'One-time purchase'], cta: 'See Custom Pet Options', href: '/custom-desktop-pet', accent: 'border-coral/40 bg-coral/5' },
+  { eyebrow: 'FREE', title: 'Meet Kaka', description: 'Download the official DeskBub pet for free. No upload, payment, or account required.', points: ['Five Kaka actions', 'Water and stretch reminders', 'Windows and macOS'], cta: 'Download Kaka Free', href: '/download', accent: 'border-mint/40 bg-mint/5' },
+  { eyebrow: 'FROM $1', title: 'Bring Your Own Pet', description: 'Upload one clear photo of your dog, cat, rabbit, bird, or other pet and create a companion that looks like them.', points: ['Your actual pet', 'Transparent animation', 'One-time purchase'], cta: 'Upload a Pet Photo', href: '/upload', accent: 'border-coral/40 bg-coral/5' },
 ];
 
 export default function ProductChoice() {
