@@ -6,7 +6,7 @@ const features = [
   { emoji: '💧', title: 'Gentle break reminders', description: 'Let Kaka remind you to drink water or stand and stretch at an interval you choose.' },
   { emoji: '👋', title: 'Show or hide instantly', description: 'Hide your pet in one click when you need a clear screen, then bring it back just as quickly.' },
   { emoji: '📤', title: 'Ready to share', description: 'Prepare your pet animation and caption for TikTok, X, or Instagram from the desktop app.' },
-  { emoji: '🐾', title: 'Any pet can be the star', description: 'Start with free Kaka, or upload a dog, cat, rabbit, bird, or another pet you love.' },
+  { emoji: '🐾', title: 'Any pet can be the star', description: 'Start with Kaka, or upload a dog, cat, rabbit, bird, or another pet you love.' },
 ];
 
 export default function Features() {
@@ -26,7 +26,7 @@ export default function Features() {
             </article>
           ))}
         </div>
-        <div className="mt-12 text-center"><Link href="/download" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Download Kaka Free</Link></div>
+        <div className="mt-12 text-center"><Link href="/download" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Use Kaka for Free</Link></div>
       </div>
     </section>
   );

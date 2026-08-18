@@ -141,7 +141,7 @@ function buildTrayMenu() {
   }
 
   template.push({
-    label: 'Use Free Kaka',
+    label: 'Use Kaka for Free',
     click: () => { if (petWindow) petWindow.webContents.send('use-starter-pet', 'kaka'); },
   });
   template.push({

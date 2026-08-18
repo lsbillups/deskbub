@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: '%s | DeskBub',
   },
   description:
-    'Upload one photo of any pet to create an animated desktop companion for Windows or Mac, or download Kaka free.',
+    'Upload one photo of any pet to create an animated desktop companion for Windows or Mac, or use Kaka for free.',
   keywords: ['free desktop pet', 'desktop pet', 'virtual pet', 'Windows desktop pet', 'Mac desktop pet', 'custom pet', 'DeskBub'],
   openGraph: {
     title: 'DeskBub — Bring Any Pet to Life on Your Desktop',

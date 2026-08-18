@@ -66,7 +66,7 @@
   </section>
 
   <section class="card">
-    <span class="badge" id="petBadge">Kaka · free starter pet</span>
+    <span class="badge" id="petBadge">Kaka · included with DeskBub</span>
     <h2 style="margin-top:11px">Choose an action</h2>
     <p class="desc">Kaka works immediately, even when you are offline.</p>
     <div class="actions" id="actionList"><span class="desc">Loading actions…</span></div>
@@ -74,14 +74,14 @@
 
   <section class="card" id="pairCard">
     <h2>Replace Kaka with your own pet</h2>
-    <p class="desc">Create a custom pet at deskbub.com, then enter its 6-digit pairing code here. Pairing is optional—Kaka stays free.</p>
+    <p class="desc">Create a custom pet at deskbub.com, then enter its 6-digit pairing code here. Pairing is optional—Kaka comes with DeskBub at no cost.</p>
     <div class="pair-row">
       <input id="pairingCode" type="text" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="123456" aria-label="6-digit pairing code" />
       <button class="quiet" id="pasteButton">Paste</button>
       <button class="primary" id="pairButton">Pair</button>
     </div>
     <div class="feedback" id="pairFeedback">Ctrl/Cmd+V works. Right-click the field to paste directly.</div>
-    <button class="secondary" id="useKakaButton">Use Free Kaka</button>
+    <button class="secondary" id="useKakaButton">Use Kaka for Free</button>
   </section>
 
   <section class="card">
@@ -303,7 +303,7 @@
     });
     document.getElementById('useKakaButton').addEventListener('click', async () => {
       await window.deskBub.useStarterPet('kaka');
-      document.getElementById('petBadge').textContent = 'Kaka · free starter pet';
+      document.getElementById('petBadge').textContent = 'Kaka · included with DeskBub';
       setPairFeedback('Kaka is active. Pairing remains available whenever you want it.', 'ok');
     });
 
@@ -339,7 +339,7 @@
     window.deskBub.onRemindersToggled(renderReminderState);
     window.deskBub.onPairingResult(result => {
       setPairFeedback(result.message, result.ok ? 'ok' : 'error');
-      if (result.ok) document.getElementById('petBadge').textContent = result.mode === 'starter' ? 'Kaka · free starter pet' : 'Custom pet · paired';
+      if (result.ok) document.getElementById('petBadge').textContent = result.mode === 'starter' ? 'Kaka · included with DeskBub' : 'Custom pet · paired';
     });
     window.deskBub.onFocusPairing(() => { document.getElementById('pairCard').scrollIntoView({ behavior:'smooth' }); pairingCode.focus(); });
     window.deskBub.onShareResult(result => {

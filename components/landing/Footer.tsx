@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 const groups = [
-  { title: 'Product', links: [['Free Kaka', '/free-desktop-pet'], ['Custom Pet', '/custom-desktop-pet'], ['Pricing', '/pricing'], ['Download', '/download']] },
+  { title: 'Product', links: [['Meet Kaka', '/free-desktop-pet'], ['Custom Pet', '/custom-desktop-pet'], ['Pricing', '/pricing'], ['Download', '/download']] },
   { title: 'Support', links: [['How It Works', '/#how-it-works'], ['Contact', '/contact'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Refunds', '/refund']] },
 ];
 
@@ -11,7 +11,7 @@ export default function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 sm:grid-cols-[1.5fr_1fr_1fr]">
         <div>
           <Link href="/" className="flex items-center gap-2 font-display text-xl font-extrabold"><span>🐾</span> DeskBub</Link>
-          <p className="mt-4 max-w-sm leading-relaxed text-white/65">A free desktop pet—and a way to bring your own pet to life on Windows and Mac.</p>
+          <p className="mt-4 max-w-sm leading-relaxed text-white/65">Meet Kaka on your desktop—or bring your own pet to life on Windows and Mac.</p>
           <p className="mt-6 text-sm text-white/40">&copy; {new Date().getFullYear()} DeskBub</p>
         </div>
         {groups.map((group) => (

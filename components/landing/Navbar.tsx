@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 
 const publicLinks = [
-  { href: '/free-desktop-pet', label: 'Free Kaka' },
+  { href: '/free-desktop-pet', label: 'Meet Kaka' },
   { href: '/custom-desktop-pet', label: 'Custom Pet' },
   { href: '/upload', label: 'Upload Photo' },
   { href: '/pricing', label: 'Pricing' },

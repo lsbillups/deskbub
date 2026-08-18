@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Download DeskBub for Windows & macOS',
-  description: 'Download DeskBub and meet Kaka, the free desktop pet included with the app. Available for Windows and macOS.',
+  description: 'Download DeskBub and use Kaka for free on Windows or macOS. No account required.',
   alternates: { canonical: '/download' },
   openGraph: {
     title: 'Download DeskBub for Windows & macOS',
-    description: 'Download DeskBub and meet Kaka, the free desktop pet included with the app.',
+    description: 'Download DeskBub and use Kaka for free. No account required.',
     url: 'https://deskbub.com/download',
   },
 };

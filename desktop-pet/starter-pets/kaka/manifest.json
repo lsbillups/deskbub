@@ -6,7 +6,7 @@
     { "id": "curious", "label": "Curious", "file": "curious.webm" },
     { "id": "relaxed", "label": "Relaxed", "file": "relaxed.webm" },
     { "id": "happy", "label": "Happy", "file": "happy.webm" },
-    { "id": "playful", "label": "Playful", "file": "playful.webm" },
+    { "id": "lie-down", "label": "Lie Down", "file": "lie-down.webm" },
     { "id": "bouncy", "label": "Bouncy", "file": "bouncy.webm" }
   ]
 }

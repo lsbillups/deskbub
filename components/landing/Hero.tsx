@@ -19,7 +19,7 @@ export default function Hero() {
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary sm:text-xl">
-            Upload one photo of your dog, cat, rabbit, bird, or other pet and turn them into an animated desktop companion. Or download Kaka free with five actions and gentle break reminders.
+            Upload one photo of your dog, cat, rabbit, bird, or other pet and turn them into an animated desktop companion. Or use Kaka for free with five actions and gentle break reminders.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -27,11 +27,11 @@ export default function Hero() {
               Upload a Pet Photo
             </Link>
             <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 text-center text-base font-bold text-text-primary transition hover:border-coral/30 hover:text-coral">
-              Download Kaka Free
+              Use Kaka for Free
             </Link>
           </div>
 
-          <p className="mt-4 text-sm font-medium text-text-secondary">Custom pets start at $1. Kaka is free forever.</p>
+          <p className="mt-4 text-sm font-medium text-text-secondary">Custom pets start at $1. Kaka comes with DeskBub at no cost.</p>
           <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-text-secondary">
             <span>✓ Cats, dogs &amp; other pets</span>
             <span>✓ Windows &amp; macOS</span>
@@ -76,7 +76,7 @@ export default function Hero() {
                 <p className="mt-0.5 text-[10px] text-text-secondary">Kaka can remind you.</p>
               </div>
 
-              <video className="absolute -bottom-1 right-0 z-20 h-[68%] w-[48%] object-contain drop-shadow-[0_22px_26px_rgba(45,52,54,0.30)]" src="/media/kaka/kaka-happy.webm" autoPlay loop muted playsInline aria-label="Kaka moving above an open app on a computer desktop" />
+              <video className="absolute bottom-3 right-3 z-20 h-[58%] w-[42%] object-contain drop-shadow-[0_22px_26px_rgba(45,52,54,0.30)]" src="/media/kaka/kaka-happy.webm" autoPlay loop muted playsInline aria-label="Kaka moving above an open app on a computer desktop" />
 
               <div className="absolute inset-x-0 bottom-0 z-30 flex h-11 items-center justify-center gap-2 border-t border-white/60 bg-white/75 shadow-[0_-6px_20px_rgba(36,48,58,.08)] backdrop-blur-md">
                 <span className="grid h-7 w-7 place-items-center rounded-md bg-[#e9f1f9] text-xs">⊞</span>
@@ -89,7 +89,7 @@ export default function Hero() {
           </div>
           <div className="mt-4 flex items-center justify-between gap-4 px-2 text-sm">
             <p className="font-bold text-text-primary">The pet floats above your apps—not inside a video.</p>
-            <span className="shrink-0 rounded-full bg-mint/15 px-3 py-1.5 text-xs font-bold text-mint-dark">Kaka included free</span>
+            <span className="shrink-0 rounded-full bg-mint/15 px-3 py-1.5 text-xs font-bold text-mint-dark">Kaka included with DeskBub</span>
           </div>
         </motion.div>
       </div>

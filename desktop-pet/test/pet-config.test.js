@@ -6,7 +6,7 @@ const vm = require('vm');
 const { normalizeConfig, mergeConfig } = require('../pet-config');
 const { loadStarterPet } = require('../starter-library');
 
-test('old config receives a free Kaka starter without losing existing values', () => {
+test('old config receives the included Kaka starter without losing existing values', () => {
   const config = normalizeConfig({ opacity: 0.7, remindersPaused: true });
   assert.equal(config.opacity, 0.7);
   assert.equal(config.remindersPaused, true);
@@ -45,7 +45,7 @@ test('Kaka manifest resolves five existing local WebM actions', () => {
   const root = path.join(__dirname, '..', 'starter-pets');
   const kaka = loadStarterPet(root, 'kaka');
   assert.equal(kaka.id, 'kaka');
-  assert.deepEqual(kaka.videos.map((video) => video.id), ['curious', 'relaxed', 'happy', 'playful', 'bouncy']);
+  assert.deepEqual(kaka.videos.map((video) => video.id), ['curious', 'relaxed', 'happy', 'lie-down', 'bouncy']);
   for (const video of kaka.videos) {
     assert.match(video.url, /^file:\/\//);
     assert.ok(fs.existsSync(new URL(video.url)), `${video.id} should exist`);

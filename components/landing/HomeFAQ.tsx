@@ -1,5 +1,5 @@
 const faqs = [
-  ['Is Kaka really free?', 'Yes. Kaka includes five animated actions, needs no account, and can be used for as long as you like.'],
+  ['Does Kaka cost anything?', 'No. Kaka includes five animated actions, needs no account, and can be used for as long as you like.'],
   ['Can I use a pet other than a dog?', 'Yes. Upload a clear photo of your cat, rabbit, bird, dog, or another pet. Custom pets are a one-time purchase starting at $1.'],
   ['Does DeskBub work on Windows and Mac?', 'DeskBub is available for Windows 10/11 and macOS 12 or later.'],
   ['Can Kaka remind me to take breaks?', 'Yes. You can set water and stretch reminders, pause them anytime, or test them from the DeskBub controls.'],

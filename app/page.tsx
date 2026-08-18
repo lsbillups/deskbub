@@ -10,11 +10,11 @@ import Footer from '@/components/landing/Footer';
 export const metadata: Metadata = {
   title: { absolute: 'DeskBub — Bring Any Pet to Life on Your Desktop' },
   description:
-    'Upload one photo of any pet to create an animated desktop companion for Windows or Mac, or download Kaka free with five actions and break reminders.',
+    'Upload one photo of any pet to create an animated desktop companion for Windows or Mac, or use Kaka for free with five actions and break reminders.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'DeskBub — Bring Any Pet to Life on Your Desktop',
-    description: 'Upload one pet photo to create an animated desktop companion, or download Kaka free.',
+    description: 'Upload one pet photo to create an animated desktop companion, or use Kaka for free.',
     url: 'https://deskbub.com/',
   },
 };

@@ -279,10 +279,10 @@ export default function UploadPage() {
           <p className="mt-2 text-text-secondary">
             {tier === 'plus'
               ? `Plus — Step 1: pick up to 5 actions · Step 2: add more videos if needed · Step 3: pick your ${FINAL} favorites`
-              : tier === 'basic' ? 'Basic — 1 default action' : 'Subscribe to get started'}
+              : tier === 'basic' ? 'Basic — 1 default action' : 'Choose a custom pet option to generate animations'}
           </p>
           {(tier === 'plus' || tier === 'basic') && <p className="text-xs text-mint mt-1">{gensLeft} generations left · {totalVideos} videos so far</p>}
-          {tier === 'free' && <p className="text-xs text-text-secondary/60 mt-1">Free plan — share to unlock Basic</p>}
+          {tier === 'free' && <p className="text-xs text-text-secondary/60 mt-1">Upload your photo first; choose a one-time custom pet option when you&apos;re ready to generate.</p>}
         </div>
 
         <AnimatePresence mode="wait">
