@@ -6,9 +6,9 @@ export default function KakaShowcase() {
     <section id="examples" className="scroll-mt-20 bg-white px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">A real pet, not a mascot</p>
-          <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">This is Kaka—in real life and on the desktop.</h2>
-          <p className="mt-4 text-lg leading-relaxed text-text-secondary">Kaka is the real dog behind DeskBub. His photo became a transparent animated companion that can live right on your screen.</p>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">OUR REAL DOG · INCLUDED FOR FREE</p>
+          <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">Meet Kaka—in real life and on your desktop.</h2>
+          <p className="mt-4 text-lg leading-relaxed text-text-secondary">Kaka is the real dog behind DeskBub. We turned him into a desktop companion—and included him for free, so you can try DeskBub before creating your own pet.</p>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -53,7 +53,7 @@ export default function KakaShowcase() {
         </div>
 
         <div className="mt-9 text-center">
-          <Link href="/download" className="font-bold text-coral underline decoration-coral/30 underline-offset-4 hover:decoration-coral">Try Kaka on my desktop →</Link>
+          <Link href="/download" className="font-bold text-coral underline decoration-coral/30 underline-offset-4 hover:decoration-coral">Try Kaka for Free →</Link>
         </div>
       </div>
     </section>

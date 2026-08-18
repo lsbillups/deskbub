@@ -27,7 +27,7 @@ export default function Hero() {
               Create My Desktop Pet
             </Link>
             <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 text-center text-base font-bold text-text-primary transition hover:border-coral/30 hover:text-coral">
-              Try Kaka First
+              Try Kaka for Free
             </Link>
           </div>
 

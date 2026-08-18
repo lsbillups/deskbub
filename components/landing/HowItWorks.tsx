@@ -9,7 +9,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="scroll-mt-20 bg-cream px-6 py-20">
+    <section id="custom-journey" className="scroll-mt-20 bg-cream px-6 py-20">
       <div className="mx-auto max-w-6xl">
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Your custom pet journey</p>
@@ -27,7 +27,7 @@ export default function HowItWorks() {
         </div>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 text-center sm:flex-row">
           <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Start with My Pet Photo</Link>
-          <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 font-bold text-text-primary hover:border-mint/50">I&apos;d Rather Try Kaka First</Link>
+          <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 font-bold text-text-primary hover:border-mint/50">I&apos;d Rather Try Kaka for Free</Link>
         </div>
       </div>
     </section>
