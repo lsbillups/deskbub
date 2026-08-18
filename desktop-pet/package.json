@@ -5,6 +5,9 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "test": "node --test test/*.test.js",
+    "check": "node --check main.js && node --check preload.js && node --check renderer/video-pet.js && node --check pet-config.js && node --check starter-library.js",
+    "build:dir": "electron-builder --dir",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac"
   },
@@ -16,17 +19,26 @@
     },
     "files": [
       "main.js",
+      "pet-config.js",
+      "starter-library.js",
       "preload.js",
       "renderer/**/*",
       "assets/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "starter-pets",
+        "to": "starter-pets",
+        "filter": ["**/*"]
+      }
+    ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assets/app-icon.png"
     },
     "mac": {
       "target": "dmg",
-      "icon": "assets/icon.icns"
+      "icon": "assets/app-icon.png"
     },
     "nsis": {
       "oneClick": false,

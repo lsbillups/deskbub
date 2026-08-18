@@ -1,209 +1,264 @@
-// DeskBub — Multi-video pet with rotation
-
+// DeskBub desktop pet renderer: local Kaka starter + paired custom pets.
 var video = document.getElementById('petVideo');
-var canvas = document.getElementById('pet3d');
+var canvas = document.getElementById('petCanvas');
 var ctx = canvas.getContext('2d');
 var bubble = document.getElementById('bubble');
-var urlBar = document.getElementById('url-bar');
-var hint = document.getElementById('hint');
 var statusEl = document.getElementById('status');
-var input = document.getElementById('mediaUrl');
-var pairingInput = document.getElementById('pairingCode');
 
-canvas.style.display = 'block';
-video.style.opacity = '0';
-
-// Multi-video support
-var videos = [];        // Array of {url, label}
+var videos = [];
 var currentIdx = 0;
+var currentSource = 'starter';
+var starterPet = null;
 var rotationTimer = null;
-var rotationInterval = 180000; // 3 minutes
-var autoRotate = true;
+var rotationInterval = 180000;
+var fallbackInProgress = false;
+var reminderConfig = { sitReminder: 50, waterReminder: 90, remindersPaused: false };
+var sitReminderTimer = null;
+var waterReminderTimer = null;
 
-input.addEventListener('contextmenu', function(e) { e.stopPropagation(); });
-
-window.addEventListener('dblclick', function(e) {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
-  if (videos.length > 0) return; // Don't show URL bar while pet is playing
-  urlBar.classList.remove('hidden'); hint.style.opacity = '1';
-});
-window.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') { urlBar.classList.add('hidden'); hint.style.opacity = '0'; }
-});
-
-function status(m, d) {
-  statusEl.textContent = m; statusEl.style.display = 'block';
+function status(message, duration) {
+  statusEl.textContent = message;
+  statusEl.style.display = message ? 'block' : 'none';
   clearTimeout(status.timer);
-  if (d > 0) status.timer = setTimeout(function() { statusEl.style.display = 'none'; }, d);
+  if (message && duration > 0) status.timer = setTimeout(function() { statusEl.style.display = 'none'; }, duration);
 }
 
-// IPC: receive tray menu action from main process
-if (window.deskBub && window.deskBub.onTrayAction) {
-  window.deskBub.onTrayAction(function(action) {
-    var idx = parseInt(action);
-    if (!isNaN(idx) && idx >= 0 && idx < videos.length) {
-      playIdx(idx);
-    } else if (action === 'next') {
-      playNext();
-    } else if (action === 'prev') {
-      playPrev();
-    }
-  });
+function reportPairing(result) {
+  if (window.deskBub && window.deskBub.reportPairingResult) window.deskBub.reportPairingResult(result);
 }
 
-// Send actions to main process for tray menu
 function updateTray() {
-  if (window.deskBub && window.deskBub.setActions) {
-    window.deskBub.setActions(videos);
-  }
+  if (window.deskBub && window.deskBub.setActions) window.deskBub.setActions(videos);
 }
 
-// Rotation
-function startRotation() {
-  stopRotation();
-  if (videos.length <= 1) return;
-  rotationTimer = setInterval(function() { playNext(); }, rotationInterval);
+function updateCurrentAction() {
+  if (window.deskBub && window.deskBub.setCurrentAction) window.deskBub.setCurrentAction(videos[currentIdx] || null);
 }
 
 function stopRotation() {
-  if (rotationTimer) { clearInterval(rotationTimer); rotationTimer = null; }
+  if (rotationTimer) clearInterval(rotationTimer);
+  rotationTimer = null;
 }
 
-function playIdx(idx) {
-  if (idx < 0 || idx >= videos.length) return;
-  currentIdx = idx;
-  videoReady = false;
-  canvas.style.display = 'block';
-  video.style.display = 'none';
-  var v = videos[idx];
-  status('', 0);
-  video.src = v.url;
-  video.load();
-  var playP = video.play();
-  if (playP && playP.then) {
-    playP.then(function() {
-      // Video is playing — showVideo will be called by renderFrame
-    }).catch(function(e) {
-      status('❌ Cannot play video', 5000);
+function startRotation() {
+  stopRotation();
+  if (videos.length > 1) rotationTimer = setInterval(playNext, rotationInterval);
+}
+
+function normalizeVideos(nextVideos) {
+  return (Array.isArray(nextVideos) ? nextVideos : [])
+    .filter(function(item) { return item && typeof item.url === 'string' && item.url; })
+    .map(function(item, index) {
+      return { id: item.id || String(index), url: item.url, label: item.label || ('Pet action ' + (index + 1)) };
     });
-  }
 }
 
-// Force show video when it's ready
-video.addEventListener('playing', function() {
-  if (!videoReady) { showVideo(); videoReady = true; statusEl.style.display = 'none'; }
-});
-video.addEventListener('error', function() {
-  status('❌ Video load error', 5000);
-  video.style.opacity = '0';
-});
+function loadPlaylist(nextVideos, source) {
+  var normalized = normalizeVideos(nextVideos);
+  if (normalized.length === 0) return false;
+  videos = normalized;
+  currentSource = source || 'starter';
+  currentIdx = 0;
+  fallbackInProgress = false;
+  updateTray();
+  playIdx(0);
+  startRotation();
+  return true;
+}
+
+function playIdx(index) {
+  if (index < 0 || index >= videos.length) return;
+  currentIdx = index;
+  var action = videos[index];
+  video.src = action.url;
+  video.load();
+  updateCurrentAction();
+  var promise = video.play();
+  if (promise && promise.catch) promise.catch(handlePlaybackFailure);
+}
 
 function playNext() {
-  playIdx((currentIdx + 1) % videos.length);
+  if (videos.length) playIdx((currentIdx + 1) % videos.length);
 }
 
 function playPrev() {
-  playIdx((currentIdx - 1 + videos.length) % videos.length);
+  if (videos.length) playIdx((currentIdx - 1 + videos.length) % videos.length);
 }
 
-// Load single video URL
-function loadVideo(url) {
-  videos = [{url: url, label: 'Custom video'}];
-  currentIdx = 0;
-  playIdx(0);
-  stopRotation();
-  updateTray();
-  if (autoRotate && videos.length > 1) startRotation();
+function handlePlaybackFailure() {
+  if (currentSource === 'paired' && starterPet && !fallbackInProgress) {
+    fallbackInProgress = true;
+    status("Couldn't load your pet. Showing Kaka.", 5000);
+    loadPlaylist(starterPet.videos, 'starter');
+    return;
+  }
+  status('This pet animation could not be played.', 5000);
 }
 
-// Load multiple videos from pairing API
-window.loadByCode = function() {
-  var code = pairingInput ? pairingInput.value.trim() : '';
-  if (!code || code.length !== 6) { status('Enter 6-digit code', 3000); return; }
+video.addEventListener('playing', function() { status('', 0); });
+video.addEventListener('error', handlePlaybackFailure);
+video.addEventListener('ended', function() {
+  if (videos.length > 1) playNext();
+  else if (videos.length === 1) playIdx(0);
+});
 
-  status('Pairing...', 0);
-  fetch('https://deskbub.com/api/pairing/' + code)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.videos && data.videos.length > 0) {
-        videos = data.videos;
-        currentIdx = 0;
-        playIdx(0);
-        startRotation();
-        updateTray();
-        urlBar.classList.add('hidden');
-        hint.style.display = 'none';
-        hint.style.opacity = '0';
-      } else if (data.videoUrl) {
-        // Backward compat: single video
-        loadVideo(data.videoUrl);
-        urlBar.classList.add('hidden');
-        hint.style.opacity = '0';
-      } else {
-        status('No pet found', 4000);
-      }
+function persistSelection(pet) {
+  if (window.deskBub && window.deskBub.savePetSelection) return window.deskBub.savePetSelection(pet);
+  return Promise.resolve();
+}
+
+function useStarterPet(starterId, persist) {
+  var id = starterId || 'kaka';
+  var starterPromise = starterPet && starterPet.id === id ? Promise.resolve(starterPet) : window.deskBub.getStarterPet(id);
+  return starterPromise.then(function(pet) {
+    starterPet = pet;
+    if (!loadPlaylist(pet.videos, 'starter')) throw new Error('Kaka has no playable actions.');
+    if (persist) {
+      return persistSelection({ mode: 'starter', starterId: id, pairingCode: null }).then(function() {
+        status('Kaka is back!', 2500);
+        reportPairing({ ok: true, mode: 'starter', message: 'Kaka is active. Pairing remains available whenever you want it.' });
+        return pet;
+      });
+    }
+    return pet;
+  }).catch(function() {
+    status('Kaka could not be loaded from this installation.', 7000);
+    return null;
+  });
+}
+
+function pairByCode(rawCode, options) {
+  var opts = options || {};
+  var code = String(rawCode || '').trim();
+  if (!/^\d{6}$/.test(code)) {
+    status('Pairing codes contain 6 numbers.', 4000);
+    reportPairing({ ok: false, message: 'Enter the 6-digit code from your DeskBub dashboard.' });
+    return Promise.resolve(false);
+  }
+  if (!opts.silent) status('Loading your custom pet…', 0);
+  return fetch('https://deskbub.com/api/pairing/' + encodeURIComponent(code))
+    .then(function(response) {
+      if (!response.ok) throw new Error(response.status === 404 ? 'No custom pet was found for that code.' : 'DeskBub could not check that code.');
+      return response.json();
     })
-    .catch(function() {
-      status('Cannot connect', 5000);
+    .then(function(data) {
+      var pairedVideos = Array.isArray(data.videos) && data.videos.length
+        ? data.videos
+        : (data.videoUrl ? [{ url: data.videoUrl, label: 'Custom pet' }] : []);
+      if (!loadPlaylist(pairedVideos, 'paired')) throw new Error('No finished pet actions are available yet.');
+      return persistSelection({ mode: 'paired', starterId: 'kaka', pairingCode: code }).then(function() {
+        status('Your custom pet is here!', 3000);
+        reportPairing({ ok: true, mode: 'paired', message: 'Kaka has been replaced with your custom pet.' });
+        return true;
+      });
+    })
+    .catch(function(error) {
+      var message = error && error.message ? error.message : 'Could not connect to DeskBub.';
+      if (!opts.silent) status(message + ' Kaka is still here.', 6000);
+      reportPairing({ ok: false, message: message });
+      return false;
     });
-};
-
-window.loadMedia = function() {
-  var url = input.value.trim();
-  if (!url) return;
-  loadVideo(url);
-  urlBar.classList.add('hidden');
-  hint.style.opacity = '0';
-  input.style.borderColor = '#4ECDC4';
-};
-
-window.toggleMode = function(){};
-
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-window.addEventListener('resize', resize); resize();
-
-var videoReady = false;
-
-function showVideo() {
-  video.style.opacity = '1';
 }
+
+if (window.deskBub) {
+  window.deskBub.onTrayAction(function(action) {
+    var index = parseInt(action, 10);
+    if (!isNaN(index)) playIdx(index);
+    else if (action === 'next') playNext();
+    else if (action === 'prev') playPrev();
+  });
+  window.deskBub.onPairPet(function(code) { pairByCode(code); });
+  window.deskBub.onUseStarterPet(function(starterId) { useStarterPet(starterId, true); });
+  window.deskBub.onConfigUpdated(function(config) { configureReminders(config); });
+  window.deskBub.onRemindersToggled(function(enabled) {
+    reminderConfig.remindersPaused = !enabled;
+    configureReminders(reminderConfig);
+  });
+}
+
+function resizeCanvas() {
+  var ratio = window.devicePixelRatio || 1;
+  canvas.width = Math.round(window.innerWidth * ratio);
+  canvas.height = Math.round(window.innerHeight * ratio);
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
 function renderFrame() {
   requestAnimationFrame(renderFrame);
+  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   if (!video.src || video.paused || !video.videoWidth) return;
-  if (!videoReady) { showVideo(); videoReady = true; }
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  var pad = 10;
-  var aw = canvas.width - pad * 2, ah = canvas.height - pad * 2;
-  var s = Math.min(aw / video.videoWidth, ah / video.videoHeight);
-  var dw = video.videoWidth * s, dh = video.videoHeight * s;
-  ctx.drawImage(video, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
+  var padding = 8;
+  var availableWidth = window.innerWidth - padding * 2;
+  var availableHeight = window.innerHeight - padding * 2;
+  var scale = Math.min(availableWidth / video.videoWidth, availableHeight / video.videoHeight);
+  var drawWidth = video.videoWidth * scale;
+  var drawHeight = video.videoHeight * scale;
+  ctx.drawImage(video, (window.innerWidth - drawWidth) / 2, (window.innerHeight - drawHeight) / 2, drawWidth, drawHeight);
 }
 renderFrame();
 
-// Auto-play rotation when video ends
-video.addEventListener('ended', function() {
-  if (autoRotate && videos.length > 1) playNext();
+// A short move is a click; a deliberate move drags the pet window.
+var pointerDown = false;
+var didDrag = false;
+var startScreenX = 0;
+var startScreenY = 0;
+var lastScreenX = 0;
+var lastScreenY = 0;
+document.addEventListener('mousedown', function(event) {
+  if (event.button !== 0) return;
+  pointerDown = true;
+  didDrag = false;
+  startScreenX = lastScreenX = event.screenX;
+  startScreenY = lastScreenY = event.screenY;
+});
+window.addEventListener('mousemove', function(event) {
+  if (!pointerDown) return;
+  if (Math.hypot(event.screenX - startScreenX, event.screenY - startScreenY) >= 5) {
+    didDrag = true;
+    document.body.classList.add('dragging');
+  }
+  if (didDrag) {
+    window.moveBy(event.screenX - lastScreenX, event.screenY - lastScreenY);
+    lastScreenX = event.screenX;
+    lastScreenY = event.screenY;
+  }
+});
+window.addEventListener('mouseup', function(event) {
+  if (event.button !== 0 || !pointerDown) return;
+  pointerDown = false;
+  document.body.classList.remove('dragging');
+  if (!didDrag && window.deskBub && window.deskBub.openControlPanel) window.deskBub.openControlPanel();
 });
 
-// Drag
-var dragging = false, sx = 0, sy = 0;
-document.addEventListener('mousedown', function(e) {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON') return;
-  dragging = true; sx = e.screenX; sy = e.screenY;
-});
-window.addEventListener('mousemove', function(e) {
-  if (!dragging) return;
-  window.moveBy(e.screenX - sx, e.screenY - sy);
-  sx = e.screenX; sy = e.screenY;
-});
-window.addEventListener('mouseup', function() { dragging = false; });
+var bubbleTimer = null;
+function showBubble(message) {
+  bubble.textContent = message;
+  bubble.classList.add('show');
+  clearTimeout(bubbleTimer);
+  bubbleTimer = setTimeout(function() { bubble.classList.remove('show'); }, 5000);
+}
+setTimeout(function() { showBubble('Click me for controls 🐾'); }, 12000);
 
-// Reminders
-var bt = null;
-function showBubble(m) { bubble.textContent = m; bubble.classList.add('show'); clearTimeout(bt); bt = setTimeout(function() { bubble.classList.remove('show'); }, 8000); }
-setTimeout(function() { showBubble('Stretch break! 🧘'); }, 30000);
-setInterval(function() { if (Math.random() < 0.2) showBubble(['Water! 💧', 'Eye break! 👀', 'Stretch! 🧘'][Math.floor(Math.random() * 3)]); }, 60000);
+function configureReminders(config) {
+  reminderConfig = Object.assign({}, reminderConfig, config || {});
+  clearInterval(sitReminderTimer);
+  clearInterval(waterReminderTimer);
+  sitReminderTimer = null;
+  waterReminderTimer = null;
+  if (reminderConfig.remindersPaused) return;
+  var sitMinutes = Number(reminderConfig.sitReminder) || 50;
+  var waterMinutes = Number(reminderConfig.waterReminder) || 90;
+  sitReminderTimer = setInterval(function() { showBubble('Time to stand and stretch 🧘'); }, sitMinutes * 60000);
+  waterReminderTimer = setInterval(function() { showBubble('Water break 💧'); }, waterMinutes * 60000);
+}
 
-urlBar.classList.remove('hidden');
-status('👆 Enter pairing code → Pair  or paste URL → Load', 15000);
+// Always show local Kaka first. A remembered custom pet replaces him only after it loads.
+useStarterPet('kaka', false).then(function() {
+  if (!window.deskBub || !window.deskBub.getConfig) return;
+  window.deskBub.getConfig().then(function(config) {
+    configureReminders(config);
+    if (config.pet && config.pet.mode === 'paired' && config.pet.pairingCode) pairByCode(config.pet.pairingCode, { silent: true });
+  });
+});
