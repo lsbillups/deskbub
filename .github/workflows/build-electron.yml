@@ -2,7 +2,7 @@ name: Build DeskBub Desktop App
 
 on:
   push:
-    branches: [main, master, codex/free-pet-growth]
+    branches: [main, master]
     paths:
       - 'desktop-pet/**'
       - '.github/workflows/build-electron.yml'
