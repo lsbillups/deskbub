@@ -1,170 +1,66 @@
 'use client';
-import Footer from '@/components/landing/Footer';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useAuth } from '@clerk/nextjs';
-import { useRouter } from 'next/navigation';
-import ShareModal from '@/components/pricing/ShareModal';
+import Footer from '@/components/landing/Footer';
 
-const tiers = [
-  {
-    name: 'Free',
-    emoji: '🐾',
-    price: '$0',
-    period: '',
-    desc: 'Share to unlock one free pet action per day.',
-    features: [
-      'Share on social media to unlock',
-      '1 pet action per day',
-      'Basic animations',
-      '10 daily free spots',
-    ],
-    cta: 'Share to Unlock',
-    href: '/upload',
-    primary: false,
-  },
-  {
-    name: 'Basic',
-    emoji: '⭐',
-    price: '$1.00',
-    period: 'one-time',
-    desc: 'One pet action. Simple and affordable.',
-    promo: true,
-    features: [
-      '1 pet action',
-      'Full AI video generation',
-      'Cat, dog, or other pets',
-      'Transparent desktop pet',
-      'Download & keep forever',
-    ],
-    cta: 'Get Basic — $1.00',
-    href: null, // Will use Creem checkout
-    primary: false,
-    productId: 'prod_6tpK7rYSe4qOn0Gkwu5orH',
-  },
-  {
-    name: 'Plus',
-    emoji: '🌟',
-    price: '$4.99',
-    period: 'one-time',
-    desc: 'Five actions, 3 extra chances to add more. Best value.',
-    promo: true,
-    features: [
-      '5 pet actions',
-      '3 extra chances to add more videos',
-      'Pick your 5 favorites',
-      'Cat, dog, or other pets',
-      'Transparent desktop pet',
-      'All Basic features',
-    ],
-    cta: 'Get Plus — $4.99',
-    href: null, // Will use Creem checkout
-    primary: true,
-    productId: 'prod_3plVm23uj3TPfXW0XpdaMo',
-  },
+const customTiers = [
+  { name: 'Custom Basic', eyebrow: 'ONE ACTION', price: '$1', productId: 'prod_6tpK7rYSe4qOn0Gkwu5orH', description: 'Create one animated action for your own pet.', features: ['Upload one pet photo', 'One AI-generated animation', 'Transparent desktop pet', 'Pair with Windows or Mac', 'Keep and use it forever'], cta: 'Create 1 Custom Action — $1' },
+  { name: 'Custom Plus', eyebrow: 'BEST VALUE', price: '$4.99', productId: 'prod_3plVm23uj3TPfXW0XpdaMo', description: 'Generate more options and keep your five favorites.', features: ['Upload 1–5 pet photos', 'Generate up to 8 animated clips', 'Keep your favorite 5', 'Choose different actions', 'Windows and macOS'], cta: 'Create a Full Custom Pet — $4.99' },
 ];
 
 export default function PricingPage() {
-  const { isSignedIn } = useAuth();
-  const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
-  const [showShareModal, setShowShareModal] = useState(false);
 
   const handleCheckout = async (productId: string) => {
     setLoading(productId);
     try {
-      const res = await fetch('/api/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId }),
-      });
-      const data = await res.json();
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else if (data.redirect) {
-        window.location.href = data.redirect;
-      } else {
-        alert(data.error || 'Something went wrong');
-      }
+      const response = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId }) });
+      const data = await response.json();
+      const destination = data.checkoutUrl || data.redirect;
+      if (destination) window.location.assign(destination);
+      else window.alert(data.error || 'Something went wrong. Please try again.');
     } catch {
-      alert('Failed to start checkout.');
+      window.alert('Failed to start checkout. Please try again.');
     } finally {
       setLoading(null);
     }
   };
 
   return (
-    <main className="min-h-screen bg-cream pt-24 pb-16 px-6">
-      <div className="max-w-5xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-14">
-          <span className="inline-block px-4 py-1.5 mb-4 text-sm font-medium text-coral bg-coral/10 rounded-full">💡 Simple pricing</span>
-          <h1 className="text-4xl sm:text-5xl font-display font-bold text-text-primary">Bring your pet to life</h1>
-          <p className="mt-4 text-lg text-text-secondary max-w-xl mx-auto">
-            Share to try for free, or unlock more actions for your desktop companion.
-          </p>
-        </motion.div>
+    <main className="min-h-screen bg-cream pt-16">
+      <section className="px-6 py-20 text-center sm:py-24">
+        <span className="inline-flex rounded-full bg-coral/10 px-4 py-2 text-sm font-bold text-coral">CLEAR, ONE-TIME PRICING</span>
+        <h1 className="mx-auto mt-6 max-w-3xl font-display text-5xl font-extrabold leading-tight text-text-primary sm:text-6xl">Free to try. Pay only for your own pet.</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-xl leading-relaxed text-text-secondary">Kaka is included free. Creating a custom pet is a one-time purchase—no subscription.</p>
+      </section>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {tiers.map((tier, i) => (
-            <motion.div key={tier.name} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className={`relative rounded-2xl p-7 flex flex-col ${tier.primary ? 'bg-white border-2 border-coral shadow-xl shadow-coral/10' : 'bg-white border border-gray-100'}`}>
-              {tier.primary && <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-coral text-white text-xs font-bold rounded-full">BEST VALUE</span>}
+      <section className="px-6 pb-20">
+        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-3">
+          <article className="flex flex-col rounded-3xl border-2 border-mint/40 bg-white p-8 shadow-sm">
+            <span className="text-xs font-extrabold tracking-[0.18em] text-mint-dark">FREE FOREVER</span>
+            <h2 className="mt-3 font-display text-2xl font-bold text-text-primary">Kaka</h2>
+            <p className="mt-3 text-text-secondary">DeskBub&apos;s official desktop dog.</p>
+            <div className="mt-6 font-display text-5xl font-extrabold text-text-primary">$0</div>
+            <ul className="mt-7 flex-1 space-y-3 text-sm text-text-secondary">{['Kaka included with the app', 'Windows and macOS', 'No account required', 'Use Kaka forever'].map((feature) => <li key={feature} className="flex gap-2"><span className="font-bold text-mint-dark">✓</span>{feature}</li>)}</ul>
+            <Link href="/download" className="mt-8 rounded-full border-2 border-mint bg-white px-5 py-3 text-center font-bold text-mint-dark transition hover:bg-mint hover:text-white">Download Kaka Free</Link>
+          </article>
 
-              <div className="text-4xl mb-3">{tier.emoji}</div>
-              <h2 className="text-xl font-display font-bold text-text-primary">{tier.name}</h2>
-              <p className="text-sm text-text-secondary mt-1 mb-4">{tier.desc}</p>
-
-              <div className="mb-5">
-                <span className="text-4xl font-display font-extrabold text-text-primary">{tier.price}</span>
-                {tier.period && <span className="text-text-secondary text-sm ml-1">/{tier.period}</span>}
-                {tier.promo && <p className="text-xs text-coral font-medium mt-1">🎉 Launch price — will increase soon</p>}
-              </div>
-
-              <ul className="space-y-2.5 mb-6 flex-1">
-                {tier.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-text-secondary">
-                    <span className="text-mint mt-0.5 shrink-0">✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-
-              {tier.name === 'Free' ? (
-                isSignedIn ? (
-                  <button onClick={() => setShowShareModal(true)}
-                    className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center text-sm cursor-pointer">
-                    {tier.cta}
-                  </button>
-                ) : (
-                  <Link href="/sign-up" className="block w-full py-3 border-2 border-gray-200 text-text-primary font-semibold rounded-full hover:border-coral/30 hover:text-coral transition-all text-center text-sm">
-                    Sign Up & Share
-                  </Link>
-                )
-              ) : (
-                <button onClick={() => handleCheckout(tier.productId!)} disabled={loading === tier.productId}
-                  className={`w-full py-3 text-white font-semibold rounded-full transition-all text-sm shadow-lg cursor-pointer
-                    ${tier.primary ? 'bg-coral hover:bg-coral-dark shadow-coral/25' : 'bg-text-primary hover:bg-black shadow-gray-200/50'}
-                    disabled:opacity-60 disabled:cursor-wait`}>
-                  {loading === tier.productId ? 'Redirecting...' : tier.cta}
-                </button>
-              )}
-            </motion.div>
+          {customTiers.map((tier, index) => (
+            <article key={tier.name} className={`relative flex flex-col rounded-3xl bg-white p-8 shadow-sm ${index === 1 ? 'border-2 border-coral shadow-xl shadow-coral/10' : 'border border-gray-100'}`}>
+              {index === 1 && <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-coral px-4 py-1 text-xs font-extrabold text-white">BEST VALUE</span>}
+              <span className="text-xs font-extrabold tracking-[0.18em] text-coral">{tier.eyebrow}</span>
+              <h2 className="mt-3 font-display text-2xl font-bold text-text-primary">{tier.name}</h2>
+              <p className="mt-3 min-h-12 text-text-secondary">{tier.description}</p>
+              <div className="mt-6"><span className="font-display text-5xl font-extrabold text-text-primary">{tier.price}</span><span className="ml-2 text-sm text-text-secondary">one-time</span></div>
+              <ul className="mt-7 flex-1 space-y-3 text-sm text-text-secondary">{tier.features.map((feature) => <li key={feature} className="flex gap-2"><span className="font-bold text-mint-dark">✓</span>{feature}</li>)}</ul>
+              <button type="button" disabled={loading === tier.productId} onClick={() => handleCheckout(tier.productId)} className={`mt-8 cursor-pointer rounded-full px-5 py-3 text-sm font-bold text-white transition disabled:cursor-wait disabled:opacity-60 ${index === 1 ? 'bg-coral hover:bg-coral-dark' : 'bg-text-primary hover:bg-black'}`}>{loading === tier.productId ? 'Redirecting…' : tier.cta}</button>
+            </article>
           ))}
         </div>
-
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-          className="text-center text-text-secondary/60 text-sm mt-10">
-          One-time payment. No subscription. Pet forever.
-        </motion.p>
-      </div>
+        <p className="mt-10 text-center text-sm font-medium text-text-secondary">One-time payment. No subscription.</p>
+      </section>
       <Footer />
-
-      <ShareModal
-        isOpen={showShareModal}
-        onClose={() => setShowShareModal(false)}
-        onShared={() => router.push('/upload')}
-      />
     </main>
   );
 }

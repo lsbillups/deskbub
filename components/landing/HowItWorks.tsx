@@ -1,71 +1,30 @@
-'use client';
-
-import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const steps = [
-  {
-    emoji: '📸',
-    title: 'Upload',
-    description:
-      'Take or choose a photo of your pet. Any breed, any angle — our AI handles the rest.',
-  },
-  {
-    emoji: '✨',
-    title: 'AI Magic',
-    description:
-      'Our AI removes the background and optimizes your pet for the desktop. Takes about 20 seconds.',
-  },
-  {
-    emoji: '💻',
-    title: 'Enjoy',
-    description:
-      'Download DeskBub. Your furry friend appears on your desktop, moving and reminding you to stay healthy.',
-  },
+  { number: '01', emoji: '📥', title: 'Download DeskBub', description: 'Choose the Windows or macOS installer. Kaka is already included.' },
+  { number: '02', emoji: '⚡', title: 'Open the app', description: 'No account or pairing code is required to start with Kaka.' },
+  { number: '03', emoji: '🐾', title: 'Meet Kaka', description: 'Move him around your desktop and adjust how he looks and behaves.' },
 ];
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 px-6 bg-white">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">
-            How It Works
-          </h2>
-          <p className="mt-3 text-text-secondary text-lg">
-            Three simple steps. No technical skills needed.
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.title}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.5, delay: i * 0.15 }}
-              whileHover={{ y: -4 }}
-              className="relative bg-cream rounded-2xl p-8 border border-gray-100 hover:border-coral/30 hover:shadow-lg hover:shadow-coral/5 transition-all"
-            >
-              {/* Step number */}
-              <div className="absolute -top-3 -left-3 w-10 h-10 bg-coral text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg">
-                {i + 1}
-              </div>
-              <div className="text-5xl mb-4">{step.emoji}</div>
-              <h3 className="text-xl font-display font-bold text-text-primary mb-2">
-                {step.title}
-              </h3>
-              <p className="text-text-secondary leading-relaxed">
-                {step.description}
-              </p>
-            </motion.div>
+    <section id="how-it-works" className="bg-white px-6 py-20">
+      <div className="mx-auto max-w-5xl">
+        <div className="text-center">
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">No setup maze</p>
+          <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">A desktop companion in three simple steps</h2>
+        </div>
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {steps.map((step) => (
+            <article key={step.number} className="rounded-3xl border border-gray-100 bg-cream p-7">
+              <div className="flex items-center justify-between"><span className="text-4xl">{step.emoji}</span><span className="font-display text-sm font-extrabold text-coral/60">{step.number}</span></div>
+              <h3 className="mt-6 font-display text-xl font-bold text-text-primary">{step.title}</h3>
+              <p className="mt-2 leading-relaxed text-text-secondary">{step.description}</p>
+            </article>
           ))}
+        </div>
+        <div className="mt-10 rounded-2xl border border-coral/15 bg-coral/5 p-6 text-center text-text-secondary">
+          Ready to make it personal? <Link href="/custom-desktop-pet" className="font-bold text-coral underline underline-offset-4">Create a custom pet from your own photo.</Link>
         </div>
       </div>
     </section>

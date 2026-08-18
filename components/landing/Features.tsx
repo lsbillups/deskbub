@@ -1,74 +1,30 @@
-'use client';
-
-import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 const features = [
-  {
-    emoji: '🐕',
-    title: 'Your Real Pet, Not a Cartoon',
-    description:
-      'We use your actual pet photo — no generic avatars, no pixel art. Your golden retriever looks like YOUR golden retriever.',
-  },
-  {
-    emoji: '💧',
-    title: 'Gentle Health Reminders',
-    description:
-      'Your pet nudges you to drink water, stand up, stretch, and rest your eyes. Cute, not annoying.',
-  },
-  {
-    emoji: '🪶',
-    title: 'Lightweight & Always On',
-    description:
-      'Sits quietly on your desktop without slowing anything down. Always there, never in the way.',
-  },
-  {
-    emoji: '🔒',
-    title: 'Privacy First',
-    description:
-      'Your pet photos are encrypted at rest and in transit. We never share, sell, or use them for training.',
-  },
+  { emoji: '🖱️', title: 'Easy to control', description: 'Click your pet to switch actions, change its size, and tune its opacity.' },
+  { emoji: '🧲', title: 'Lives above your desktop', description: 'Drag your companion wherever it feels comfortable without replacing your wallpaper.' },
+  { emoji: '📤', title: 'Ready to share', description: 'Prepare your pet animation and caption for TikTok, X, or Instagram from the desktop app.' },
+  { emoji: '🐶', title: 'Free first, personal later', description: 'Keep Kaka free forever, then upgrade only if you want your own pet on screen.' },
 ];
 
 export default function Features() {
   return (
-    <section className="py-20 px-6 bg-cream">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-14"
-        >
-          <h2 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">
-            Why DeskBub?
-          </h2>
-          <p className="mt-3 text-text-secondary text-lg">
-            Not just another desktop toy. A little companion that cares.
-          </p>
-        </motion.div>
-
-        <div className="grid sm:grid-cols-2 gap-6">
-          {features.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-100px' }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              whileHover={{ y: -2 }}
-              className="bg-white rounded-2xl p-7 border border-gray-100 hover:border-mint/40 hover:shadow-md transition-all"
-            >
-              <div className="text-4xl mb-3">{f.emoji}</div>
-              <h3 className="text-lg font-display font-bold text-text-primary mb-1.5">
-                {f.title}
-              </h3>
-              <p className="text-text-secondary text-sm leading-relaxed">
-                {f.description}
-              </p>
-            </motion.div>
+    <section className="bg-cream px-6 py-20">
+      <div className="mx-auto max-w-5xl">
+        <div className="text-center">
+          <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">A tiny companion, not another complicated app</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">DeskBub stays simple while giving you control when you want it.</p>
+        </div>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+          {features.map((feature) => (
+            <article key={feature.title} className="rounded-2xl border border-gray-100 bg-white p-7 shadow-sm">
+              <div className="text-4xl">{feature.emoji}</div>
+              <h3 className="mt-4 font-display text-xl font-bold text-text-primary">{feature.title}</h3>
+              <p className="mt-2 leading-relaxed text-text-secondary">{feature.description}</p>
+            </article>
           ))}
         </div>
+        <div className="mt-12 text-center"><Link href="/download" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Download Kaka Free</Link></div>
       </div>
     </section>
   );
