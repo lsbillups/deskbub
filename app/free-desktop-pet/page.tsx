@@ -5,17 +5,17 @@ import Footer from '@/components/landing/Footer';
 
 export const metadata: Metadata = {
   title: 'Free Desktop Pet for Windows & Mac — Meet Kaka',
-  description: 'Use Kaka for free on Windows and Mac. No account required, with custom desktop pets available when you want your own.',
+  description: 'Use Kaka for free on Windows and Mac. No account or payment required, with custom desktop pets available when you want your own.',
   alternates: { canonical: '/free-desktop-pet' },
   openGraph: {
     title: 'Free Desktop Pet for Windows & Mac — Meet Kaka',
-    description: 'Use Kaka for free on Windows and Mac. No account required.',
+    description: 'Use Kaka for free on Windows and Mac. No account or payment required.',
     url: 'https://deskbub.com/free-desktop-pet',
   },
 };
 
 const faqs = [
-  ['Does Kaka cost anything?', 'No. Kaka comes with the DeskBub app at no cost and works without an account.'],
+  ['Does Kaka cost anything?', 'No. Kaka comes with the DeskBub app at no cost. No account or payment is required.'],
   ['What can I do with him?', 'Choose from five Kaka actions, move him around your screen, set water and stretch reminders, and adjust his size and opacity.'],
   ['Can I hide Kaka without quitting?', 'Yes. Use the Show/Hide control whenever you need a clear desktop.'],
   ['Can I replace Kaka with my pet?', 'Yes. Upload a photo of your dog, cat, rabbit, bird, or another pet, then pair the result with the same desktop app.'],
@@ -38,9 +38,9 @@ export default function FreeDesktopPetPage() {
       <section className="px-6 py-20 sm:py-24">
         <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
           <div>
-            <span className="inline-flex rounded-full bg-mint/15 px-4 py-2 text-sm font-bold text-mint-dark">INCLUDED · NO ACCOUNT REQUIRED</span>
+            <span className="inline-flex rounded-full bg-mint/15 px-4 py-2 text-sm font-bold text-mint-dark">INCLUDED · NO ACCOUNT OR PAYMENT REQUIRED</span>
             <h1 className="mt-6 font-display text-5xl font-extrabold leading-tight text-text-primary sm:text-6xl">Meet Kaka on Your Desktop</h1>
-            <p className="mt-6 text-xl leading-relaxed text-text-secondary">Kaka is DeskBub&apos;s official desktop dog. Download the app and he&apos;ll hang out on your Windows or Mac desktop. No account required.</p>
+            <p className="mt-6 text-xl leading-relaxed text-text-secondary">Kaka is DeskBub&apos;s official desktop dog. Download the app and he&apos;ll hang out on your Windows or Mac desktop. No account or payment required.</p>
             <Link href="/download" className="mt-8 inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Use Kaka for Free</Link>
             <p className="mt-4 text-sm text-text-secondary">Available for Windows 10/11 and macOS 12+.</p>
           </div>

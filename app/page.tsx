@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Hero from '@/components/landing/Hero';
-import KakaShowcase from '@/components/landing/KakaShowcase';
 import ProductChoice from '@/components/landing/ProductChoice';
 import HowItWorks from '@/components/landing/HowItWorks';
 import Features from '@/components/landing/Features';
@@ -25,7 +24,6 @@ export default function HomePage() {
       <Hero />
       <ProductChoice />
       <HowItWorks />
-      <KakaShowcase />
       <Features />
       <HomeFAQ />
       <Footer />
