@@ -15,7 +15,7 @@ export default function Features() {
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Why DeskBub</p>
-          <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">Personal enough to feel like yours. Simple enough to live with.</h2>
+          <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">Your pet makes it personal. DeskBub keeps it simple.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">A desktop pet should feel personal, stay out of your way, and be useful only when you want it.</p>
         </div>
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
