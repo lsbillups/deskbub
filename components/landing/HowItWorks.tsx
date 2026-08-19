@@ -29,6 +29,12 @@ export default function HowItWorks() {
           <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Start with My Pet Photo</Link>
           <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 font-bold text-text-primary hover:border-mint/50">I&apos;d Rather Try Kaka for Free</Link>
         </div>
+        <p className="mt-6 text-center text-sm text-text-secondary">
+          Prefer to understand every option first?{' '}
+          <Link href="/blog/how-to-make-a-desktop-pet" className="font-bold text-coral underline decoration-coral/25 underline-offset-4 hover:decoration-coral">
+            Read how to make a desktop pet three different ways.
+          </Link>
+        </p>
       </div>
     </section>
   );

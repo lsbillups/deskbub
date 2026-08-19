@@ -7,6 +7,7 @@ import { SignInButton, UserButton, useAuth } from '@clerk/nextjs';
 const publicLinks = [
   { href: '/#how-it-works', label: 'How It Works' },
   { href: '/#why-deskbub', label: 'Why DeskBub' },
+  { href: '/blog', label: 'Blog' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/#faq', label: 'FAQ' },
   { href: '/download', label: 'Download' },

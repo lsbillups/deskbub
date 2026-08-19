@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { blogPosts } from '@/lib/blog';
 
 const baseUrl = 'https://deskbub.com';
 
@@ -15,10 +16,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/refund', changeFrequency: 'yearly' as const, priority: 0.3 },
   ];
 
-  return pages.map((page) => ({
+  const staticPages: MetadataRoute.Sitemap = pages.map((page) => ({
     url: `${baseUrl}${page.path}`,
     lastModified: new Date(),
     changeFrequency: page.changeFrequency,
     priority: page.priority,
   }));
+
+  const blogPages: MetadataRoute.Sitemap = [
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(Math.max(...blogPosts.map((post) => new Date(post.updatedAt).getTime()))),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    },
+    ...blogPosts.map((post) => ({
+      url: `${baseUrl}/blog/${post.slug}`,
+      lastModified: new Date(post.updatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+  ];
+
+  return [...staticPages, ...blogPages];
 }

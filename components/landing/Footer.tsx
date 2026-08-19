@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const groups = [
   { title: 'Product', links: [['Meet Kaka', '/free-desktop-pet'], ['Custom Pet', '/custom-desktop-pet'], ['Pricing', '/pricing'], ['Download', '/download']] },
-  { title: 'Support', links: [['How It Works', '/#how-it-works'], ['Contact', '/contact'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Refunds', '/refund']] },
+  { title: 'Resources', links: [['Blog', '/blog'], ['How It Works', '/#how-it-works'], ['Contact', '/contact'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Refunds', '/refund']] },
 ];
 
 export default function Footer() {
