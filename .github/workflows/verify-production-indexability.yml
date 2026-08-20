@@ -1,0 +1,26 @@
+name: Verify production indexability
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment.environment == 'Production'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Verify the custom domain is indexable
+        env:
+          INDEXABILITY_BASE_URL: https://deskbub.com
+          INDEXABILITY_ATTEMPTS: 12
+          INDEXABILITY_DELAY_MS: 15000
+        run: node scripts/check-indexability.mjs
