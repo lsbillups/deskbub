@@ -334,6 +334,11 @@ export default function MakeDesktopPetArticle() {
           <aside className="mt-10 rounded-2xl border border-gray-100 bg-white p-6 text-sm leading-relaxed text-text-secondary">
             <strong className="text-text-primary">A note about products:</strong> Codex and ChatGPT are products of OpenAI. DeskBub is an independent product and is not affiliated with or endorsed by OpenAI. Product steps can change, so check the linked official documentation for the latest ChatGPT Pets instructions.
           </aside>
+
+          <aside className="mt-6 rounded-2xl border border-coral/15 bg-coral/5 p-6 leading-relaxed text-text-secondary">
+            <strong className="text-text-primary">Looking for a smaller pet-photo project?</strong>{' '}
+            Try these <Link href="/blog/digital-ways-to-celebrate-your-dog" className="font-bold text-coral underline decoration-coral/25 underline-offset-4">seven digital ways to celebrate your dog on August 26</Link>.
+          </aside>
         </div>
       </article>
       <Footer />

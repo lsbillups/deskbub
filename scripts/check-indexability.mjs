@@ -1,5 +1,8 @@
 const baseUrl = (process.env.INDEXABILITY_BASE_URL || process.argv[2] || 'https://deskbub.com').replace(/\/$/, '');
-const paths = (process.env.INDEXABILITY_PATHS || '/,/download,/blog,/blog/how-to-make-a-desktop-pet')
+const paths = (
+  process.env.INDEXABILITY_PATHS ||
+  '/,/download,/blog,/blog/how-to-make-a-desktop-pet,/blog/digital-ways-to-celebrate-your-dog'
+)
   .split(',')
   .map((path) => path.trim())
   .filter(Boolean);
