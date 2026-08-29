@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { ClerkProvider } from '@clerk/nextjs';
+import { Analytics } from '@vercel/analytics/next';
 import Navbar from '@/components/landing/Navbar';
 import './globals.css';
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         <body className="min-h-full flex flex-col font-sans">
           <Navbar />
           {children}
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
