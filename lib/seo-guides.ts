@@ -152,7 +152,7 @@ export const seoGuides: SeoGuide[] = [
     intro:
       'The best free desktop pet depends on what you want: a collection of characters, an open-source platform, productivity tools, or a pet based on an animal you actually know. This guide separates those jobs instead of pretending one app wins every category.',
     quickAnswer:
-      'Choose Microsoft Store Desktop Pets for a free Windows collection, OpenPets for an open-source multi-platform library, desktoppet.app for an AI productivity companion, or DeskBub when you want to try a real-dog desktop pet free and keep the option to create your own pet from a photo.',
+      'Choose Microsoft Store Desktop Pets for a free Windows collection, OpenPets for an open-source multi-platform library, or DeskBub when you want to try a real-dog desktop pet free and keep the option to create your own pet from a photo.',
     keywords: [
       'free desktop pet',
       'desktop pet free download',
@@ -173,7 +173,6 @@ export const seoGuides: SeoGuide[] = [
           rows: [
             ['Desktop Pets by brksfrb', 'Windows', 'Feeding and collecting ready-made animated pets', 'Free with in-app purchases; generic collection'],
             ['OpenPets', 'Windows, Mac, Linux', 'Open-source pets, plugins, and a large gallery', 'Community and character library rather than your photo'],
-            ['desktoppet.app', 'Windows, Mac', 'AI conversation and productivity features', 'AI companion emphasis'],
             ['DeskBub with Kaka', 'Windows, Mac', 'Trying a desktop pet based on a real dog', 'Kaka is free; your own custom pet is paid'],
           ],
         },

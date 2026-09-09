@@ -279,7 +279,6 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
                 {[
                   ['Desktop Pets on Microsoft Store', 'https://apps.microsoft.com/detail/9pbm91h6xcxp?hl=en-US&gl=US'],
                   ['OpenPets', 'https://openpets.dev/'],
-                  ['desktoppet.app', 'https://desktoppet.app/'],
                   ['DeskBub downloads', '/download'],
                 ].map(([label, href]) => (
                   <a key={href} href={href} className="rounded-full bg-cream px-4 py-2 text-sm font-bold text-text-primary underline decoration-gray-200 underline-offset-4 hover:text-coral">
