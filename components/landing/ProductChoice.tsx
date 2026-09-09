@@ -9,7 +9,7 @@ const paths = [
     description: 'Choose this path when you want the companion on your desktop to be your own pet.',
     steps: ['Upload one clear pet photo', 'Choose a one-time custom option', 'Generate, download, and pair your pet'],
     cta: 'Create My Desktop Pet',
-    href: '/upload',
+    href: '/custom-desktop-pet',
     card: 'border-coral/50 shadow-xl shadow-coral/10',
     button: 'bg-coral hover:bg-coral-dark',
     learnMore: { label: 'See the four steps ↓', href: '/#custom-journey' },
@@ -22,7 +22,7 @@ const paths = [
     description: 'Kaka is the real dog behind DeskBub. Start with his five animated actions before creating a custom pet.',
     steps: ['Download DeskBub for Windows or Mac', 'Open the app—no account or payment', 'Kaka appears with five actions'],
     cta: 'Try Kaka for Free',
-    href: '/download',
+    href: '/free-desktop-pet',
     card: 'border-mint/50',
     button: 'bg-text-primary hover:bg-black',
     learnMore: null,
@@ -34,12 +34,12 @@ export default function ProductChoice() {
     <section id="how-it-works" className="scroll-mt-20 bg-text-primary px-6 py-20 text-white">
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Choose one path</p>
-          <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">What do you want on your desktop?</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/65">You only need to make one decision. We&apos;ll guide you through everything after that.</p>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Two clear paths</p>
+          <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Start free—or make the pet yours.</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/65">Kaka is free with no account or payment. Custom pets use your own photo and start at $1.</p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {paths.map((path) => (
+          {[...paths].reverse().map((path) => (
             <article key={path.title} className={`flex flex-col rounded-3xl border-2 bg-white p-8 text-text-primary sm:p-10 ${path.card}`}>
               <span className="text-xs font-extrabold tracking-[0.18em] text-coral">{path.eyebrow}</span>
               <p className={`mt-3 font-display text-4xl font-extrabold ${path.priceClass}`}>{path.priceLabel}</p>

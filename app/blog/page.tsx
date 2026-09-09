@@ -19,12 +19,6 @@ export const metadata: Metadata = {
 export default function BlogPage() {
   const featuredPost = blogPosts.find((post) => post.featured) ?? blogPosts[0];
   const otherPosts = blogPosts.filter((post) => post.slug !== featuredPost.slug);
-  const comingSoon = [
-    { title: 'How to Turn a Pet Photo into an Animated Desktop Pet', category: 'Photo to Animation' },
-    { title: 'Desktop Pets for Windows and Mac: What Actually Works?', category: 'Platform Guide' },
-    { title: 'How to Choose the Best Photo for a Custom Desktop Pet', category: 'Photo Guide' },
-  ];
-
   return (
     <main className="min-h-screen bg-cream pt-16">
       <section className="relative overflow-hidden px-6 py-20 sm:py-28">
@@ -101,14 +95,13 @@ export default function BlogPage() {
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <p className="text-sm font-bold uppercase tracking-[0.2em] text-mint-dark">Coming next</p>
-              <h2 className="mt-3 font-display text-3xl font-bold text-text-primary">More practical guides are on the way.</h2>
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-mint-dark">Latest guides</p>
+              <h2 className="mt-3 font-display text-3xl font-bold text-text-primary">Choose the guide that matches what you want.</h2>
             </div>
-            <p className="max-w-md text-text-secondary">More photo, animation, Windows, and Mac guides are coming as we test each process ourselves.</p>
+            <p className="max-w-md text-text-secondary">Start free, install safely, compare your options, or learn how a real pet photo becomes a desktop companion.</p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {otherPosts.length > 0
-              ? otherPosts.map((post) => (
+            {otherPosts.map((post) => (
                   <article key={post.slug} className="flex flex-col rounded-3xl border border-gray-100 bg-cream p-7 shadow-sm">
                     <div className="flex items-center justify-between gap-4 text-xs font-bold uppercase tracking-[0.12em]">
                       <span className="text-coral">{post.category}</span>
@@ -119,13 +112,6 @@ export default function BlogPage() {
                     </h3>
                     <p className="mt-4 flex-1 leading-relaxed text-text-secondary">{post.excerpt}</p>
                     <Link href={`/blog/${post.slug}`} className="mt-6 font-bold text-coral underline decoration-coral/25 underline-offset-4 hover:decoration-coral">Read this guide →</Link>
-                  </article>
-                ))
-              : comingSoon.map((item) => (
-                  <article key={item.title} className="rounded-3xl border border-gray-100 bg-cream p-7 shadow-sm">
-                    <span className="text-xs font-bold uppercase tracking-[0.12em] text-coral">{item.category}</span>
-                    <h3 className="mt-5 font-display text-xl font-bold leading-snug text-text-primary">{item.title}</h3>
-                    <span className="mt-6 inline-flex rounded-full bg-white px-3 py-1.5 text-xs font-bold text-text-secondary">Coming soon</span>
                   </article>
                 ))}
           </div>

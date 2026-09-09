@@ -7,13 +7,13 @@ import HomeFAQ from '@/components/landing/HomeFAQ';
 import Footer from '@/components/landing/Footer';
 
 export const metadata: Metadata = {
-  title: { absolute: 'DeskBub — Bring Any Pet to Life on Your Desktop' },
+  title: { absolute: 'Free Desktop Pet & Custom Pet From Photo | DeskBub' },
   description:
-    'Upload one photo of any pet to create an animated desktop companion for Windows or Mac, or use Kaka for free with five actions and break reminders.',
+    'Download a free desktop pet for Windows or Mac, or turn one photo of your real pet into a custom desktop companion. Custom pets start at $1.',
   alternates: { canonical: '/' },
   openGraph: {
-    title: 'DeskBub — Bring Any Pet to Life on Your Desktop',
-    description: 'Upload one pet photo to create an animated desktop companion, or use Kaka for free.',
+    title: 'Free Desktop Pet & Custom Pet From Photo | DeskBub',
+    description: 'Try Kaka free for Windows or Mac, or turn one real pet photo into a custom desktop companion.',
     url: 'https://deskbub.com/',
   },
 };
