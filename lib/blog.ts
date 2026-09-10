@@ -19,8 +19,8 @@ const allBlogPosts: BlogPostSummary[] = [
     excerpt:
       'See the complete photo-to-desktop workflow, what makes a useful source photo, what the finished pet can do, and where realistic expectations matter.',
     category: 'Photo to Desktop Pet',
-    publishedAt: '2026-09-09',
-    updatedAt: '2026-09-09',
+    publishedAt: '2026-09-10',
+    updatedAt: '2026-09-10',
     readingTime: '8 min read',
     featured: true,
   },
@@ -32,8 +32,8 @@ const allBlogPosts: BlogPostSummary[] = [
     excerpt:
       'A transparent comparison of free desktop pets by platform, setup, customization, privacy, and whether you want a generic character or your own pet.',
     category: 'Free Desktop Pets',
-    publishedAt: '2026-09-09',
-    updatedAt: '2026-09-09',
+    publishedAt: '2026-09-10',
+    updatedAt: '2026-09-10',
     readingTime: '9 min read',
     featured: false,
   },
@@ -58,8 +58,8 @@ const allBlogPosts: BlogPostSummary[] = [
     excerpt:
       'A Windows-focused installation and safety guide for putting a free desktop pet—or one made from your own pet photo—above your apps.',
     category: 'Windows Guide',
-    publishedAt: '2026-09-09',
-    updatedAt: '2026-09-09',
+    publishedAt: '2026-09-10',
+    updatedAt: '2026-09-10',
     readingTime: '7 min read',
     featured: false,
   },
@@ -146,6 +146,9 @@ const allBlogPosts: BlogPostSummary[] = [
 const unpublishedBlogPostSlugs = new Set([
   'how-we-turned-kaka-into-a-desktop-pet',
   'how-to-make-a-cat-desktop-pet-from-a-photo',
+  'how-to-get-a-desktop-pet-on-mac',
+  'are-desktop-pets-safe',
+  'shimeji-vs-desktop-pet',
 ]);
 
 export const blogPosts = allBlogPosts.filter((post) => !unpublishedBlogPostSlugs.has(post.slug));

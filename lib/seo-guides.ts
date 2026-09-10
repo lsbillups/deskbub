@@ -32,6 +32,7 @@ export type SeoGuide = {
 };
 
 const publishedAt = '2026-09-09';
+const firstWavePublishedAt = '2026-09-10';
 
 const allSeoGuides: SeoGuide[] = [
   {
@@ -41,8 +42,8 @@ const allSeoGuides: SeoGuide[] = [
       'Learn how a clear photo of your dog, cat, rabbit, bird, or other pet becomes a recognizable animated desktop companion for Windows or Mac.',
     category: 'Photo to Desktop Pet',
     readingTime: '8 min read',
-    publishedAt,
-    updatedAt: publishedAt,
+    publishedAt: firstWavePublishedAt,
+    updatedAt: firstWavePublishedAt,
     eyebrow: 'Your pet, not a character pack',
     intro:
       'A photo-based desktop pet starts with an animal you already know. The goal is not to choose a mascot from a library; it is to preserve enough of your pet’s face, coloring, shape, and personality that the companion on screen feels familiar.',
@@ -146,8 +147,8 @@ const allSeoGuides: SeoGuide[] = [
       'Compare free desktop pet options for Windows and Mac, including ready-made pets, open-source libraries, AI companions, and a real-dog pet you can try free.',
     category: 'Free Desktop Pets',
     readingTime: '9 min read',
-    publishedAt,
-    updatedAt: publishedAt,
+    publishedAt: firstWavePublishedAt,
+    updatedAt: firstWavePublishedAt,
     eyebrow: 'Free options, compared honestly',
     intro:
       'The best free desktop pet depends on what you want: a collection of characters, an open-source platform, productivity tools, or a pet based on an animal you actually know. This guide separates those jobs instead of pretending one app wins every category.',
@@ -328,8 +329,8 @@ const allSeoGuides: SeoGuide[] = [
       'Download and install a desktop pet on Windows 11 or Windows 10, understand SmartScreen prompts, and choose between free and custom pets.',
     category: 'Windows Guide',
     readingTime: '7 min read',
-    publishedAt,
-    updatedAt: publishedAt,
+    publishedAt: firstWavePublishedAt,
+    updatedAt: firstWavePublishedAt,
     eyebrow: 'Windows 11 and Windows 10',
     intro:
       'A Windows desktop pet runs in a transparent window above ordinary applications. You can install a generic pet collection, use an open-source project, or choose a pet made from your own photo.',
@@ -771,6 +772,9 @@ const allSeoGuides: SeoGuide[] = [
 const unpublishedSeoGuideSlugs = new Set([
   'how-we-turned-kaka-into-a-desktop-pet',
   'how-to-make-a-cat-desktop-pet-from-a-photo',
+  'how-to-get-a-desktop-pet-on-mac',
+  'are-desktop-pets-safe',
+  'shimeji-vs-desktop-pet',
 ]);
 
 // Keep these drafts available for later revision without publishing routes or sitemap entries.
