@@ -22,6 +22,8 @@ const guideVisuals: Record<
     label: string;
     headline: string;
     detail: string;
+    quickLabel: string;
+    quickHeading: string;
     ariaLabel: string;
     accentClass: string;
     petClass: string;
@@ -32,6 +34,8 @@ const guideVisuals: Record<
     label: 'ONE REAL PHOTO',
     headline: 'From pet photo to desktop companion',
     detail: 'Likeness first. Motion second.',
+    quickLabel: 'FROM PHOTO TO PET',
+    quickHeading: 'What matters most is whether your pet still looks familiar.',
     ariaLabel: 'Kaka happily moving as an example of a real dog turned into a desktop pet',
     accentClass: 'bg-coral',
     petClass: 'bottom-[-4%] right-[-12%] h-[66%] w-[62%]',
@@ -41,6 +45,8 @@ const guideVisuals: Record<
     label: 'FREE KAKA',
     headline: 'Meet a real-dog desktop pet',
     detail: 'No account. No payment.',
+    quickLabel: 'PICK YOUR FREE PET',
+    quickHeading: 'Free is useful—but the kind of pet still matters.',
     ariaLabel: 'Kaka, the free DeskBub desktop pet, looking around on screen',
     accentClass: 'bg-mint',
     petClass: 'bottom-0 right-[2%] h-[74%] w-[68%]',
@@ -50,6 +56,8 @@ const guideVisuals: Record<
     label: 'KAKA ON MAC',
     headline: 'A quiet companion above your apps',
     detail: 'For macOS 12 or later.',
+    quickLabel: 'MAC SETUP, SHORT VERSION',
+    quickHeading: 'Choose the pet first, then handle the macOS prompt.',
     ariaLabel: 'Kaka resting above a simulated macOS desktop',
     accentClass: 'bg-[#9fc5eb]',
     petClass: 'bottom-[-3%] left-[28%] h-[68%] w-[68%]',
@@ -59,6 +67,8 @@ const guideVisuals: Record<
     label: 'KAKA ON WINDOWS',
     headline: 'Always visible. Never in the way.',
     detail: 'For Windows 10 and 11.',
+    quickLabel: 'WINDOWS SETUP, SHORT VERSION',
+    quickHeading: 'Download from the source, install, then keep the pet above your apps.',
     ariaLabel: 'Kaka moving happily above a simulated Windows desktop',
     accentClass: 'bg-[#77d8c4]',
     petClass: 'bottom-[-4%] right-[-12%] h-[66%] w-[62%]',
@@ -68,6 +78,8 @@ const guideVisuals: Record<
     label: 'SAFE DOWNLOAD CHECK',
     headline: 'Know what you are installing',
     detail: 'Source · permissions · privacy',
+    quickLabel: 'THE SAFETY CHECK',
+    quickHeading: 'Trust the source before you trust the pet.',
     ariaLabel: 'Kaka resting beside a desktop pet download safety checklist',
     accentClass: 'bg-[#ffd166]',
     petClass: 'bottom-[-4%] right-[-1%] h-[66%] w-[65%]',
@@ -77,6 +89,8 @@ const guideVisuals: Record<
     label: 'YOUR PET, NOT A PACK',
     headline: 'Character mascot or recognizable pet?',
     detail: 'Choose the result you actually want.',
+    quickLabel: 'THE REAL DIFFERENCE',
+    quickHeading: 'Shimeji starts with a character. DeskBub starts with your pet.',
     ariaLabel: 'Kaka, a recognizable real-dog desktop pet, looking around on screen',
     accentClass: 'bg-coral',
     petClass: 'bottom-0 right-[1%] h-[74%] w-[68%]',
@@ -86,6 +100,8 @@ const guideVisuals: Record<
     label: 'THE REAL KAKA',
     headline: 'A real dog became DeskBub’s first pet',
     detail: 'Photo · likeness · transparent motion',
+    quickLabel: 'KAKA IN ONE MINUTE',
+    quickHeading: 'A real photo set the standard for DeskBub’s first pet.',
     ariaLabel: 'Kaka happily moving as DeskBub’s first real-dog desktop pet',
     accentClass: 'bg-coral',
     petClass: 'bottom-0 right-[-2%] h-[72%] w-[70%]',
@@ -95,6 +111,8 @@ const guideVisuals: Record<
     label: 'PHOTO-BASED PET',
     headline: 'Start with an animal you recognize',
     detail: 'Clear markings · clean outline · motion',
+    quickLabel: 'CAT PHOTO CHECK',
+    quickHeading: 'Recognition starts with the markings that make your cat yours.',
     ariaLabel: 'Kaka demonstrating the photo-based DeskBub desktop pet experience',
     accentClass: 'bg-mint',
     petClass: 'bottom-0 right-[2%] h-[74%] w-[68%]',
@@ -276,8 +294,8 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
 
         <div className="mx-auto max-w-4xl px-6 py-14 sm:py-20">
           <section aria-labelledby="quick-answer" className="rounded-3xl border border-mint/20 bg-white p-7 shadow-sm sm:p-9">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-mint-dark">The quick answer</p>
-            <h2 id="quick-answer" className="mt-3 font-display text-3xl font-bold text-text-primary">Start with the result you actually want.</h2>
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-mint-dark">{guideVisuals[guide.visual].quickLabel}</p>
+            <h2 id="quick-answer" className="mt-3 font-display text-3xl font-bold text-text-primary">{guideVisuals[guide.visual].quickHeading}</h2>
             <p className="mt-5 text-lg leading-relaxed text-text-secondary">{guide.quickAnswer}</p>
           </section>
 
