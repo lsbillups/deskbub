@@ -34,7 +34,7 @@ const guideVisuals: Record<
     detail: 'Likeness first. Motion second.',
     ariaLabel: 'Kaka happily moving as an example of a real dog turned into a desktop pet',
     accentClass: 'bg-coral',
-    petClass: 'bottom-0 right-[-2%] h-[72%] w-[70%]',
+    petClass: 'bottom-[-4%] right-[-12%] h-[66%] w-[62%]',
   },
   free: {
     motion: '/media/kaka/kaka-curious.webm',
@@ -61,7 +61,7 @@ const guideVisuals: Record<
     detail: 'For Windows 10 and 11.',
     ariaLabel: 'Kaka moving happily above a simulated Windows desktop',
     accentClass: 'bg-[#77d8c4]',
-    petClass: 'bottom-0 left-[30%] h-[72%] w-[68%]',
+    petClass: 'bottom-[-4%] right-[-12%] h-[66%] w-[62%]',
   },
   safety: {
     motion: '/media/kaka/kaka-relaxed.webm',
