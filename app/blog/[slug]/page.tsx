@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/landing/Footer';
@@ -14,6 +13,99 @@ export const dynamicParams = false;
 
 export function generateStaticParams() {
   return seoGuides.map((guide) => ({ slug: guide.slug }));
+}
+
+const guideVisuals: Record<
+  SeoGuide['visual'],
+  {
+    motion: string;
+    label: string;
+    headline: string;
+    detail: string;
+    ariaLabel: string;
+    accentClass: string;
+    petClass: string;
+  }
+> = {
+  photo: {
+    motion: '/media/kaka/kaka-happy.webm',
+    label: 'ONE REAL PHOTO',
+    headline: 'From pet photo to desktop companion',
+    detail: 'Likeness first. Motion second.',
+    ariaLabel: 'Kaka happily moving as an example of a real dog turned into a desktop pet',
+    accentClass: 'bg-coral',
+    petClass: 'bottom-0 right-[-2%] h-[72%] w-[70%]',
+  },
+  free: {
+    motion: '/media/kaka/kaka-curious.webm',
+    label: 'FREE KAKA',
+    headline: 'Meet a real-dog desktop pet',
+    detail: 'No account. No payment.',
+    ariaLabel: 'Kaka, the free DeskBub desktop pet, looking around on screen',
+    accentClass: 'bg-mint',
+    petClass: 'bottom-0 right-[2%] h-[74%] w-[68%]',
+  },
+  mac: {
+    motion: '/media/kaka/kaka-relaxed.webm',
+    label: 'KAKA ON MAC',
+    headline: 'A quiet companion above your apps',
+    detail: 'For macOS 12 or later.',
+    ariaLabel: 'Kaka resting above a simulated macOS desktop',
+    accentClass: 'bg-[#9fc5eb]',
+    petClass: 'bottom-[-3%] left-[28%] h-[68%] w-[68%]',
+  },
+  windows: {
+    motion: '/media/kaka/kaka-happy.webm',
+    label: 'KAKA ON WINDOWS',
+    headline: 'Always visible. Never in the way.',
+    detail: 'For Windows 10 and 11.',
+    ariaLabel: 'Kaka moving happily above a simulated Windows desktop',
+    accentClass: 'bg-[#77d8c4]',
+    petClass: 'bottom-0 left-[30%] h-[72%] w-[68%]',
+  },
+  safety: {
+    motion: '/media/kaka/kaka-relaxed.webm',
+    label: 'SAFE DOWNLOAD CHECK',
+    headline: 'Know what you are installing',
+    detail: 'Source · permissions · privacy',
+    ariaLabel: 'Kaka resting beside a desktop pet download safety checklist',
+    accentClass: 'bg-[#ffd166]',
+    petClass: 'bottom-[-4%] right-[-1%] h-[66%] w-[65%]',
+  },
+  compare: {
+    motion: '/media/kaka/kaka-curious.webm',
+    label: 'YOUR PET, NOT A PACK',
+    headline: 'Character mascot or recognizable pet?',
+    detail: 'Choose the result you actually want.',
+    ariaLabel: 'Kaka, a recognizable real-dog desktop pet, looking around on screen',
+    accentClass: 'bg-coral',
+    petClass: 'bottom-0 right-[1%] h-[74%] w-[68%]',
+  },
+  kaka: {
+    motion: '/media/kaka/kaka-happy.webm',
+    label: 'THE REAL KAKA',
+    headline: 'A real dog became DeskBub’s first pet',
+    detail: 'Photo · likeness · transparent motion',
+    ariaLabel: 'Kaka happily moving as DeskBub’s first real-dog desktop pet',
+    accentClass: 'bg-coral',
+    petClass: 'bottom-0 right-[-2%] h-[72%] w-[70%]',
+  },
+  cat: {
+    motion: '/media/kaka/kaka-curious.webm',
+    label: 'PHOTO-BASED PET',
+    headline: 'Start with an animal you recognize',
+    detail: 'Clear markings · clean outline · motion',
+    ariaLabel: 'Kaka demonstrating the photo-based DeskBub desktop pet experience',
+    accentClass: 'bg-mint',
+    petClass: 'bottom-0 right-[2%] h-[74%] w-[68%]',
+  },
+};
+
+function formatPublicationDate(date: string) {
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'long',
+    timeZone: 'UTC',
+  }).format(new Date(`${date}T00:00:00Z`));
 }
 
 export async function generateMetadata({ params }: GuidePageProps): Promise<Metadata> {
@@ -35,7 +127,7 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
       type: 'article',
       publishedTime: guide.publishedAt,
       modifiedTime: guide.updatedAt,
-      images: [{ url: '/media/kaka/kaka.jpg', alt: 'Kaka, the real dog behind DeskBub' }],
+      images: [{ url: '/media/kaka/kaka.jpg', alt: guideVisuals[guide.visual].ariaLabel }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -47,66 +139,60 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
 }
 
 function GuideVisual({ guide }: { guide: SeoGuide }) {
-  if (guide.visual === 'photo' || guide.visual === 'kaka') {
-    return (
-      <div className="grid min-h-[380px] grid-cols-2 overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-2xl">
-        <div className="relative min-h-[380px] overflow-hidden">
-          <Image
-            src="/media/kaka/kaka.jpg"
-            alt="Kaka in the real pet photo used as a desktop pet reference"
-            fill
-            sizes="(max-width: 768px) 50vw, 25vw"
-            className="object-cover object-[50%_35%]"
-          />
-          <span className="absolute bottom-4 left-4 rounded-full bg-white/90 px-3 py-1.5 text-xs font-extrabold text-text-primary shadow">
-            REAL PHOTO
-          </span>
-        </div>
-        <div className="relative min-h-[380px] overflow-hidden bg-gradient-to-br from-[#9fc5eb] via-[#d8e4f1] to-[#f3cdbf]">
-          <div className="absolute left-[8%] top-[16%] h-[58%] w-[73%] rounded-xl border border-white/80 bg-white/90 shadow-xl">
-            <div className="flex h-8 items-center gap-1.5 border-b border-gray-100 px-3">
-              <span className="h-2 w-2 rounded-full bg-coral" />
-              <span className="h-2 w-2 rounded-full bg-[#ffd166]" />
-              <span className="h-2 w-2 rounded-full bg-mint" />
-            </div>
-          </div>
-          <video
-            src="/media/kaka/kaka-happy.webm"
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute bottom-2 right-0 z-10 h-[68%] w-[72%] object-contain drop-shadow-[0_14px_18px_rgba(45,52,54,0.28)]"
-            aria-label="Kaka animated as a transparent desktop pet"
-          />
-          <span className="absolute bottom-4 left-4 z-20 rounded-full bg-text-primary px-3 py-1.5 text-xs font-extrabold text-white shadow">
-            DESKTOP PET
-          </span>
-        </div>
-      </div>
-    );
-  }
-
-  const visualCopy = {
-    free: { symbol: '$0', title: 'Try Kaka free', detail: 'No account or payment' },
-    mac: { symbol: 'macOS', title: 'A pet above your Mac apps', detail: 'macOS 12 or later' },
-    windows: { symbol: 'WIN', title: 'A pet on Windows 11', detail: 'Windows 10 and 11' },
-    safety: { symbol: '✓', title: 'Verify before you install', detail: 'Source · permissions · privacy' },
-    compare: { symbol: 'VS', title: 'Character pack or real pet?', detail: 'Choose by the result you want' },
-    cat: { symbol: 'CAT', title: 'Start with your cat photo', detail: 'Markings · outline · motion' },
-  }[guide.visual];
+  const visual = guideVisuals[guide.visual];
 
   return (
-    <div className="relative grid min-h-[380px] place-items-center overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#9fc5eb] via-[#dbeafe] to-[#f8d5c2] p-8 shadow-2xl">
-      <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/45 blur-2xl" />
-      <div className="relative w-full max-w-md rounded-3xl border border-white/80 bg-white/90 p-8 text-center shadow-xl backdrop-blur">
-        <span className="mx-auto grid h-24 w-24 place-items-center rounded-3xl bg-text-primary font-display text-2xl font-extrabold text-white shadow-lg">
-          {visualCopy.symbol}
+    <figure className="relative min-h-[380px] overflow-hidden rounded-[2rem] border border-white/10 bg-[#253034] shadow-2xl">
+      <div className="flex h-11 items-center justify-between border-b border-white/10 bg-black/10 px-5 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white/45">
+        <span className="flex gap-1.5" aria-hidden="true">
+          <span className="h-2.5 w-2.5 rounded-full bg-coral" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#ffd166]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-mint" />
         </span>
-        <p className="mt-7 font-display text-3xl font-bold text-text-primary">{visualCopy.title}</p>
-        <p className="mt-3 font-semibold text-text-secondary">{visualCopy.detail}</p>
+        <span>DeskBub desktop</span>
       </div>
-    </div>
+
+      <div className="absolute left-[7%] top-[18%] h-[52%] w-[67%] overflow-hidden rounded-2xl border border-white/70 bg-[#f7f3eb] shadow-2xl">
+        <div className="flex h-9 items-center gap-2 border-b border-black/5 bg-white px-4">
+          <span className={`h-2.5 w-16 rounded-full ${visual.accentClass}`} />
+          <span className="h-2.5 w-10 rounded-full bg-black/10" />
+        </div>
+        <div className="p-5">
+          <p className="max-w-[72%] font-display text-xl font-extrabold leading-tight text-text-primary sm:text-2xl">
+            {visual.headline}
+          </p>
+          <p className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-text-secondary">
+            {visual.detail}
+          </p>
+          <div className="mt-5 flex gap-2" aria-hidden="true">
+            <span className={`h-2 w-24 rounded-full ${visual.accentClass}`} />
+            <span className="h-2 w-14 rounded-full bg-black/10" />
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute right-[5%] top-[27%] h-[36%] w-[28%] rotate-3 rounded-2xl border border-white/70 bg-[#9fc5eb] shadow-xl" aria-hidden="true">
+        <div className="m-3 h-2 w-12 rounded-full bg-white/75" />
+        <div className="mx-3 mt-4 h-16 rounded-xl bg-white/35" />
+      </div>
+
+      <video
+        src={visual.motion}
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        className={`absolute z-10 object-contain drop-shadow-[0_18px_22px_rgba(0,0,0,0.35)] ${visual.petClass}`}
+        aria-label={visual.ariaLabel}
+      >
+        Your browser does not support the Kaka animation.
+      </video>
+
+      <figcaption className="absolute bottom-5 left-5 z-20 rounded-full bg-white px-4 py-2 text-[10px] font-extrabold uppercase tracking-[0.16em] text-text-primary shadow-lg sm:text-xs">
+        {visual.label}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -177,7 +263,7 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
               <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight text-text-primary sm:text-6xl">{guide.title}</h1>
               <p className="mt-7 max-w-3xl text-xl leading-relaxed text-text-secondary">{guide.intro}</p>
               <div className="mt-7 flex flex-wrap items-center gap-3 text-sm font-semibold text-text-secondary">
-                <time dateTime={guide.publishedAt}>September 9, 2026</time>
+                <time dateTime={guide.publishedAt}>{formatPublicationDate(guide.publishedAt)}</time>
                 <span aria-hidden="true">·</span>
                 <span>{guide.readingTime}</span>
                 <span aria-hidden="true">·</span>

@@ -33,7 +33,7 @@ export type SeoGuide = {
 
 const publishedAt = '2026-09-09';
 
-export const seoGuides: SeoGuide[] = [
+const allSeoGuides: SeoGuide[] = [
   {
     slug: 'how-to-turn-a-pet-photo-into-a-desktop-pet',
     title: 'How to Turn a Pet Photo Into a Desktop Pet',
@@ -137,7 +137,7 @@ export const seoGuides: SeoGuide[] = [
           'Kaka is included free with no account or payment. Creating a pet from your own photo is a separate one-time purchase starting at $1.',
       },
     ],
-    related: ['how-we-turned-kaka-into-a-desktop-pet', 'how-to-make-a-cat-desktop-pet-from-a-photo', 'best-free-desktop-pets'],
+    related: ['best-free-desktop-pets', 'how-to-get-a-desktop-pet-on-mac', 'how-to-get-a-desktop-pet-on-windows-11'],
   },
   {
     slug: 'best-free-desktop-pets',
@@ -767,6 +767,14 @@ export const seoGuides: SeoGuide[] = [
     related: ['how-to-turn-a-pet-photo-into-a-desktop-pet', 'how-we-turned-kaka-into-a-desktop-pet', 'how-to-get-a-desktop-pet-on-mac'],
   },
 ];
+
+const unpublishedSeoGuideSlugs = new Set([
+  'how-we-turned-kaka-into-a-desktop-pet',
+  'how-to-make-a-cat-desktop-pet-from-a-photo',
+]);
+
+// Keep these drafts available for later revision without publishing routes or sitemap entries.
+export const seoGuides = allSeoGuides.filter((guide) => !unpublishedSeoGuideSlugs.has(guide.slug));
 
 export function getSeoGuide(slug: string) {
   return seoGuides.find((guide) => guide.slug === slug);

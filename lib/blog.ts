@@ -10,7 +10,7 @@ export type BlogPostSummary = {
   featured: boolean;
 };
 
-export const blogPosts: BlogPostSummary[] = [
+const allBlogPosts: BlogPostSummary[] = [
   {
     slug: 'how-to-turn-a-pet-photo-into-a-desktop-pet',
     title: 'How to Turn a Pet Photo Into a Desktop Pet',
@@ -142,6 +142,13 @@ export const blogPosts: BlogPostSummary[] = [
     featured: false,
   },
 ];
+
+const unpublishedBlogPostSlugs = new Set([
+  'how-we-turned-kaka-into-a-desktop-pet',
+  'how-to-make-a-cat-desktop-pet-from-a-photo',
+]);
+
+export const blogPosts = allBlogPosts.filter((post) => !unpublishedBlogPostSlugs.has(post.slug));
 
 export function getBlogPost(slug: string) {
   return blogPosts.find((post) => post.slug === slug);
