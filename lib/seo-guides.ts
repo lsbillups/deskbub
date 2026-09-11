@@ -33,6 +33,7 @@ export type SeoGuide = {
 
 const publishedAt = '2026-09-09';
 const firstWavePublishedAt = '2026-09-10';
+const secondWavePublishedAt = '2026-09-11';
 
 const allSeoGuides: SeoGuide[] = [
   {
@@ -245,8 +246,8 @@ const allSeoGuides: SeoGuide[] = [
       'A practical guide to downloading, installing, showing, hiding, and removing a desktop pet on macOS, with free and custom-pet options.',
     category: 'Mac Guide',
     readingTime: '7 min read',
-    publishedAt,
-    updatedAt: publishedAt,
+    publishedAt: secondWavePublishedAt,
+    updatedAt: secondWavePublishedAt,
     eyebrow: 'A practical macOS guide',
     intro:
       'A Mac desktop pet is a small transparent app window that stays visible while you work. The important decisions are where you download it, whether your Mac supports it, and whether you want a ready-made character or your own pet from a photo.',
@@ -409,8 +410,8 @@ const allSeoGuides: SeoGuide[] = [
       'Learn how to judge whether a desktop pet is safe by checking its source, permissions, privacy policy, resource use, and uninstall path.',
     category: 'Safety Guide',
     readingTime: '8 min read',
-    publishedAt,
-    updatedAt: publishedAt,
+    publishedAt: secondWavePublishedAt,
+    updatedAt: secondWavePublishedAt,
     eyebrow: 'A practical download checklist',
     intro:
       'A desktop pet is an application that runs on your computer, so it deserves the same care as any other download. “Desktop pet” does not describe one security model: an official store app, an open-source project, and a repackaged character bundle can carry very different risks.',
@@ -505,8 +506,8 @@ const allSeoGuides: SeoGuide[] = [
       'Compare Shimeji character mascots with desktop pet apps, open-source pet libraries, and custom desktop pets made from a real pet photo.',
     category: 'Comparison',
     readingTime: '8 min read',
-    publishedAt,
-    updatedAt: publishedAt,
+    publishedAt: secondWavePublishedAt,
+    updatedAt: secondWavePublishedAt,
     eyebrow: 'Character pack or your own pet?',
     intro:
       'People often use “Shimeji” and “desktop pet” for similar screen companions, but the terms hide several different products. The useful choice is not which label sounds better; it is whether you want a downloadable character, a tool for your own artwork, or a companion based on your real pet.',
@@ -772,9 +773,6 @@ const allSeoGuides: SeoGuide[] = [
 const unpublishedSeoGuideSlugs = new Set([
   'how-we-turned-kaka-into-a-desktop-pet',
   'how-to-make-a-cat-desktop-pet-from-a-photo',
-  'how-to-get-a-desktop-pet-on-mac',
-  'are-desktop-pets-safe',
-  'shimeji-vs-desktop-pet',
 ]);
 
 // Keep these drafts available for later revision without publishing routes or sitemap entries.

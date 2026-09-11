@@ -45,8 +45,8 @@ const allBlogPosts: BlogPostSummary[] = [
     excerpt:
       'Choose a Mac desktop pet, install it safely, handle macOS security prompts, and decide whether you want a free character or your own pet from a photo.',
     category: 'Mac Guide',
-    publishedAt: '2026-09-09',
-    updatedAt: '2026-09-09',
+    publishedAt: '2026-09-11',
+    updatedAt: '2026-09-11',
     readingTime: '7 min read',
     featured: false,
   },
@@ -71,8 +71,8 @@ const allBlogPosts: BlogPostSummary[] = [
     excerpt:
       'Desktop pets are software, so safety depends on where they come from and what they can access. Use this checklist before installing one.',
     category: 'Safety Guide',
-    publishedAt: '2026-09-09',
-    updatedAt: '2026-09-09',
+    publishedAt: '2026-09-11',
+    updatedAt: '2026-09-11',
     readingTime: '8 min read',
     featured: false,
   },
@@ -84,8 +84,8 @@ const allBlogPosts: BlogPostSummary[] = [
     excerpt:
       'Shimeji is great for downloadable characters. A photo-based desktop pet serves a different goal: keeping your own recognizable pet on screen.',
     category: 'Comparison',
-    publishedAt: '2026-09-09',
-    updatedAt: '2026-09-09',
+    publishedAt: '2026-09-11',
+    updatedAt: '2026-09-11',
     readingTime: '8 min read',
     featured: false,
   },
@@ -146,9 +146,6 @@ const allBlogPosts: BlogPostSummary[] = [
 const unpublishedBlogPostSlugs = new Set([
   'how-we-turned-kaka-into-a-desktop-pet',
   'how-to-make-a-cat-desktop-pet-from-a-photo',
-  'how-to-get-a-desktop-pet-on-mac',
-  'are-desktop-pets-safe',
-  'shimeji-vs-desktop-pet',
 ]);
 
 export const blogPosts = allBlogPosts.filter((post) => !unpublishedBlogPostSlugs.has(post.slug));
