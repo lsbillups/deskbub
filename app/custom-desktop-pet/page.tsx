@@ -27,7 +27,7 @@ export default function CustomDesktopPetPage() {
         <div className="mx-auto max-w-5xl text-center">
           <span className="inline-flex rounded-full bg-coral/10 px-4 py-2 text-sm font-bold text-coral">ONE PHOTO · YOUR ACTUAL PET</span>
           <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl font-extrabold leading-tight text-text-primary sm:text-6xl">Turn One Photo of Your Real Pet Into a Desktop Companion</h1>
-          <p className="mx-auto mt-6 max-w-3xl text-xl leading-relaxed text-text-secondary">Not a character pack: this desktop pet starts with your actual dog, cat, rabbit, bird, or other pet. Custom generation is a one-time paid purchase for Windows and Mac. Try Kaka free first.</p>
+          <p className="mx-auto mt-6 max-w-3xl text-xl leading-relaxed text-text-secondary">This desktop pet starts with a photo of your actual dog, cat, or another pet. Custom generation is a one-time paid purchase for Windows and Mac. <Link href="/free-desktop-pet" className="font-bold text-coral underline decoration-coral/25 underline-offset-4">Try Kaka free first.</Link></p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Upload a Pet Photo</Link>
             <Link href="/pricing" className="rounded-full border-2 border-gray-200 bg-white px-7 py-3 font-bold text-text-primary hover:border-coral/30">Compare Custom Plans</Link>
@@ -58,6 +58,7 @@ export default function CustomDesktopPetPage() {
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">A better starting photo helps</p>
             <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">Make your pet easy to recognize.</h2>
             <ul className="mt-6 space-y-4">{photoTips.map((tip) => <li key={tip} className="flex gap-3 text-text-secondary"><span className="font-bold text-mint-dark">✓</span><span>{tip}</span></li>)}</ul>
+            <Link href="/blog/how-to-turn-a-pet-photo-into-a-desktop-pet" className="mt-6 inline-block font-bold text-coral underline decoration-coral/25 underline-offset-4">See Kaka’s real photo and desktop animation</Link>
           </div>
         </div>
       </section>

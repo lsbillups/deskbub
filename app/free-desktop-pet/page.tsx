@@ -41,7 +41,10 @@ export default function FreeDesktopPetPage() {
             <span className="inline-flex rounded-full bg-mint/15 px-4 py-2 text-sm font-bold text-mint-dark">INCLUDED · NO ACCOUNT OR PAYMENT REQUIRED</span>
             <h1 className="mt-6 font-display text-5xl font-extrabold leading-tight text-text-primary sm:text-6xl">Download Kaka, a Free Desktop Pet</h1>
             <p className="mt-6 text-xl leading-relaxed text-text-secondary">Kaka is the real dog behind DeskBub. Try him free on Windows or Mac, then create a desktop pet from your own pet photo when you want something personal.</p>
-            <Link href="/download" className="mt-8 inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Use Kaka for Free</Link>
+            <div className="mt-8 flex flex-wrap items-center gap-5">
+              <Link href="/download" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Use Kaka for Free</Link>
+              <Link href="/custom-desktop-pet" className="font-bold text-coral underline decoration-coral/25 underline-offset-4">Make a desktop pet from my own photo</Link>
+            </div>
             <p className="mt-4 text-sm text-text-secondary">Available for Windows 10/11 and macOS 12+.</p>
           </div>
           <div className="relative min-h-[480px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#b8d8f8] to-[#f8d5c2] shadow-2xl">

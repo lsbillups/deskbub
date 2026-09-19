@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/landing/Footer';
+import TrackedLink from '@/components/analytics/TrackedLink';
 import { blogPosts } from '@/lib/blog';
 import { getSeoGuide, seoGuides, type SeoGuide } from '@/lib/seo-guides';
 
@@ -299,6 +301,29 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
             <p className="mt-5 text-lg leading-relaxed text-text-secondary">{guide.quickAnswer}</p>
           </section>
 
+          {guide.slug === 'how-to-turn-a-pet-photo-into-a-desktop-pet' && (
+            <section aria-labelledby="kaka-photo-example" className="mt-10 rounded-3xl border border-gray-100 bg-white p-7 shadow-sm sm:p-9">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-coral">A real example</p>
+              <h2 id="kaka-photo-example" className="mt-3 font-display text-3xl font-bold text-text-primary">Kaka, from photo to desktop pet</h2>
+              <p className="mt-4 leading-relaxed text-text-secondary">Kaka is a real dog. His photo shows the face, coloring, and shape we wanted to keep recognizable in the animated pet. Results depend on the source photo and the action you choose.</p>
+              <div className="mt-7 grid gap-4 sm:grid-cols-2">
+                <figure className="overflow-hidden rounded-2xl bg-cream">
+                  <div className="relative aspect-[4/3]">
+                    <Image src="/media/kaka/kaka.jpg" alt="Photo of Kaka, the real dog used as the visual reference" fill sizes="(max-width: 640px) 100vw, 50vw" className="object-cover object-[50%_35%]" />
+                  </div>
+                  <figcaption className="px-5 py-3 text-sm font-semibold text-text-secondary">The real Kaka</figcaption>
+                </figure>
+                <figure className="overflow-hidden rounded-2xl bg-gradient-to-br from-[#b8d8f8] to-[#f8d5c2]">
+                  <div className="relative aspect-[4/3]">
+                    <video src="/media/kaka/kaka-happy.webm" autoPlay loop muted playsInline preload="metadata" className="absolute inset-0 h-full w-full object-contain p-4" aria-label="Kaka moving as a transparent desktop pet" />
+                  </div>
+                  <figcaption className="bg-white px-5 py-3 text-sm font-semibold text-text-secondary">Kaka moving on the desktop</figcaption>
+                </figure>
+              </div>
+              <TrackedLink href="/custom-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'custom-desktop-pet', placement: 'photo-example' }} className="mt-7 inline-block font-bold text-coral underline decoration-coral/25 underline-offset-4">See how to create a desktop pet from your own photo</TrackedLink>
+            </section>
+          )}
+
           <nav aria-label="Article contents" className="mt-10 rounded-3xl bg-text-primary p-7 text-white sm:p-9">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-white/50">In this guide</p>
             <ol className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -400,8 +425,8 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
               Kaka is free with no account or payment. Custom pets start at $1 as a one-time purchase.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <Link href="/free-desktop-pet" className="rounded-full bg-mint px-6 py-3 text-center font-bold text-text-primary hover:bg-white">Download Kaka Free</Link>
-              <Link href="/custom-desktop-pet" className="rounded-full bg-coral px-6 py-3 text-center font-bold text-white hover:bg-coral-dark">Create My Pet From a Photo</Link>
+              <TrackedLink href="/free-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'free-desktop-pet', placement: 'footer' }} className="rounded-full bg-mint px-6 py-3 text-center font-bold text-text-primary hover:bg-white">Download Kaka Free</TrackedLink>
+              <TrackedLink href="/custom-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'custom-desktop-pet', placement: 'footer' }} className="rounded-full bg-coral px-6 py-3 text-center font-bold text-white hover:bg-coral-dark">Create My Pet From a Photo</TrackedLink>
             </div>
           </section>
 

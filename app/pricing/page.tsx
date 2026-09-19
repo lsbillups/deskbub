@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { track } from '@vercel/analytics';
 import Link from 'next/link';
 import Footer from '@/components/landing/Footer';
 
@@ -18,7 +19,10 @@ export default function PricingPage() {
       const response = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId }) });
       const data = await response.json();
       const destination = data.checkoutUrl || data.redirect;
-      if (destination) window.location.assign(destination);
+      if (destination) {
+        track('checkout_opened', { plan: customTiers.find((tier) => tier.productId === productId)?.name ?? 'unknown' });
+        window.location.assign(destination);
+      }
       else window.alert(data.error || 'Something went wrong. Please try again.');
     } catch {
       window.alert('Failed to start checkout. Please try again.');

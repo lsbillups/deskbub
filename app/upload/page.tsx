@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { track } from '@vercel/analytics';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import DropZone from '@/components/upload/DropZone';
@@ -107,6 +108,7 @@ export default function UploadPage() {
   // ── Upload + BG removal (shared by initial & append) ──
   const runBGRemoval = async (filesList: File[]) => {
     setStage('uploading'); setProgress(0); setError(null);
+    track('photo_upload_started', { plan: tier, photos: filesList.length });
     try {
       const supabase = createClient();
       const urls: string[] = [];

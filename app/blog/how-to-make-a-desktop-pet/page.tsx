@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '@/components/landing/Footer';
+import TrackedLink from '@/components/analytics/TrackedLink';
 import { getBlogPost } from '@/lib/blog';
 
 function requireBlogPost(slug: string) {
@@ -62,9 +63,9 @@ const methods = [
   {
     number: '03',
     title: 'Use DeskBub',
-    bestFor: 'Pet owners who want the finished result without managing the production workflow.',
+    bestFor: 'Anyone who wants to try Kaka free, or a pet owner who wants a photo-based result.',
     effort: 'Low',
-    result: 'Your real pet as a Windows or Mac desktop companion.',
+    result: 'Free Kaka or your own pet as a custom Windows or Mac desktop companion.',
     accent: 'bg-coral/10 text-coral',
   },
 ];
@@ -124,7 +125,7 @@ export default function MakeDesktopPetArticle() {
             </div>
             <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight text-text-primary sm:text-6xl">{post.title}</h1>
             <p className="mt-7 max-w-3xl text-xl leading-relaxed text-text-secondary sm:text-2xl">
-              You can make a desktop pet yourself. The right method depends on whether you want to guide an AI, build the whole app, or simply put your own pet on the desktop.
+              You can guide an AI, build the whole app, or use DeskBub to put a pet on your desktop. The right route depends on the result you want and how much you want to make yourself.
             </p>
           </div>
         </header>
@@ -143,7 +144,9 @@ export default function MakeDesktopPetArticle() {
               ))}
             </div>
             <p className="mt-7 leading-relaxed text-text-secondary">
-              If you like making things, start with Codex or a standalone build. If your goal is simply to see your real dog, cat, rabbit, bird, or another pet moving above your apps, skip to the DeskBub method.
+              Want a desktop pet today? <TrackedLink href="/free-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'free-desktop-pet', placement: 'quick-answer' }} className="font-bold text-coral underline decoration-coral/25 underline-offset-4">Try Kaka free on Windows or Mac.</TrackedLink>{' '}
+              Want to see your own pet on screen? <TrackedLink href="/custom-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'custom-desktop-pet', placement: 'quick-answer' }} className="font-bold text-coral underline decoration-coral/25 underline-offset-4">Turn a photo of your dog, cat, or another pet into a custom desktop companion.</TrackedLink>{' '}
+              If you enjoy making things, compare the Codex and standalone build methods below.
             </p>
           </section>
 
@@ -258,6 +261,9 @@ export default function MakeDesktopPetArticle() {
             <p className="mt-6 text-lg leading-relaxed text-text-secondary">
               DeskBub is for the person who wants the result—not another software project. You provide a clear photo of your actual pet, DeskBub turns it into transparent animations, and the desktop app handles the floating window and controls on Windows or Mac.
             </p>
+            <p className="mt-5 text-lg leading-relaxed text-text-secondary">
+              See <Link href="/blog/how-to-turn-a-pet-photo-into-a-desktop-pet" className="font-bold text-coral underline decoration-coral/25 underline-offset-4">how a pet photo becomes a desktop pet</Link>, or compare the options on our <Link href="/custom-desktop-pet" className="font-bold text-coral underline decoration-coral/25 underline-offset-4">custom desktop pet page</Link>. If you want to feel how the app works first, <Link href="/free-desktop-pet" className="font-bold text-coral underline decoration-coral/25 underline-offset-4">try Kaka free</Link>.
+            </p>
 
             <div className="mt-8 grid overflow-hidden rounded-[2rem] border border-gray-100 bg-white shadow-lg md:grid-cols-2">
               <div className="relative min-h-[350px] bg-[#efe8e1]">
@@ -282,8 +288,8 @@ export default function MakeDesktopPetArticle() {
             </ol>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 text-center font-bold text-white shadow-lg shadow-coral/20 transition hover:bg-coral-dark">Turn My Pet Photo into a Desktop Pet</Link>
-              <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 text-center font-bold text-text-primary transition hover:border-mint/50">Try Kaka for Free</Link>
+              <TrackedLink href="/upload" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'upload', placement: 'deskbub-method' }} className="rounded-full bg-coral px-7 py-3.5 text-center font-bold text-white shadow-lg shadow-coral/20 transition hover:bg-coral-dark">Turn My Pet Photo into a Desktop Pet</TrackedLink>
+              <TrackedLink href="/download" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'download', placement: 'deskbub-method' }} className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 text-center font-bold text-text-primary transition hover:border-mint/50">Try Kaka for Free</TrackedLink>
             </div>
           </section>
 
@@ -326,8 +332,8 @@ export default function MakeDesktopPetArticle() {
             <h2 className="mt-4 font-display text-3xl font-bold sm:text-4xl">See what a real desktop pet feels like first.</h2>
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/70">Kaka comes with DeskBub for free. No account or payment required—download the app and meet him on your Windows or Mac desktop.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <Link href="/download" className="rounded-full bg-mint px-7 py-3.5 font-bold text-white transition hover:bg-mint-dark">Try Kaka for Free</Link>
-              <Link href="/upload" className="rounded-full border border-white/20 px-7 py-3.5 font-bold text-white transition hover:bg-white/10">Use My Own Pet</Link>
+              <TrackedLink href="/download" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'download', placement: 'footer' }} className="rounded-full bg-mint px-7 py-3.5 font-bold text-white transition hover:bg-mint-dark">Try Kaka for Free</TrackedLink>
+              <TrackedLink href="/upload" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'upload', placement: 'footer' }} className="rounded-full border border-white/20 px-7 py-3.5 font-bold text-white transition hover:bg-white/10">Use My Own Pet</TrackedLink>
             </div>
           </section>
 

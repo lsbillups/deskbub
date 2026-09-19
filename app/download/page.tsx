@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { track } from '@vercel/analytics';
 import Link from 'next/link';
 import Footer from '@/components/landing/Footer';
 
@@ -42,7 +43,7 @@ export default function DownloadPage() {
           <div className="mt-8 text-6xl">{installer.emoji}</div>
           <h2 className="mt-4 font-display text-2xl font-bold text-text-primary">DeskBub for {installer.label}</h2>
           <p className="mt-2 text-sm text-text-secondary">{installer.requirement} · Latest GitHub release</p>
-          <a href={installer.href} className="mt-7 inline-block rounded-full bg-coral px-8 py-3.5 text-lg font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Download for {installer.label}</a>
+          <a href={installer.href} onClick={() => track('installer_download_click', { platform: os })} className="mt-7 inline-block rounded-full bg-coral px-8 py-3.5 text-lg font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Download for {installer.label}</a>
           <p className="mt-4 text-xs text-text-secondary">The installer is hosted on DeskBub&apos;s public GitHub releases.</p>
         </div>
       </section>

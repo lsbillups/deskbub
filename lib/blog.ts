@@ -20,7 +20,7 @@ const allBlogPosts: BlogPostSummary[] = [
       'See the complete photo-to-desktop workflow, what makes a useful source photo, what the finished pet can do, and where realistic expectations matter.',
     category: 'Photo to Desktop Pet',
     publishedAt: '2026-09-10',
-    updatedAt: '2026-09-10',
+    updatedAt: '2026-09-19',
     readingTime: '8 min read',
     featured: true,
   },
@@ -119,12 +119,12 @@ const allBlogPosts: BlogPostSummary[] = [
     slug: 'how-to-make-a-desktop-pet',
     title: 'How to Make a Desktop Pet on Your Computer (3 Ways)',
     description:
-      'Learn three honest ways to make a desktop pet on Windows or Mac: create one with Codex, build a standalone app, or use DeskBub with your own pet photo.',
+      'Compare creating a desktop pet with Codex, building a standalone app, or using DeskBub to try Kaka free and turn your own pet photo into a custom companion.',
     excerpt:
       'Compare the Codex, do-it-yourself, and DeskBub routes—then choose the one that matches how much you want to build yourself.',
     category: 'Desktop Pet Guide',
     publishedAt: '2026-08-19',
-    updatedAt: '2026-08-19',
+    updatedAt: '2026-09-19',
     readingTime: '9 min read',
     featured: false,
   },

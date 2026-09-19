@@ -44,10 +44,10 @@ const allSeoGuides: SeoGuide[] = [
     category: 'Photo to Desktop Pet',
     readingTime: '8 min read',
     publishedAt: firstWavePublishedAt,
-    updatedAt: firstWavePublishedAt,
+    updatedAt: '2026-09-19',
     eyebrow: 'Your pet, not a character pack',
     intro:
-      'A photo-based desktop pet starts with an animal you already know. The goal is not to choose a mascot from a library; it is to preserve enough of your pet’s face, coloring, shape, and personality that the companion on screen feels familiar.',
+      'Turn a photo of your dog, cat, or another pet into a custom desktop companion. The goal is to preserve enough of your pet’s face, coloring, shape, and personality that the animal on screen feels familiar.',
     quickAnswer:
       'Choose one clear pet photo, use it as the visual reference for the animated actions, review the result, then pair the finished pet with a transparent desktop app. DeskBub handles that workflow for Windows and Mac, while Kaka lets you try the desktop experience free first.',
     keywords: [
