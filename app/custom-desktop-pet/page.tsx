@@ -58,7 +58,6 @@ export default function CustomDesktopPetPage() {
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">A better starting photo helps</p>
             <h2 className="mt-3 font-display text-3xl font-bold text-text-primary sm:text-4xl">Make your pet easy to recognize.</h2>
             <ul className="mt-6 space-y-4">{photoTips.map((tip) => <li key={tip} className="flex gap-3 text-text-secondary"><span className="font-bold text-mint-dark">✓</span><span>{tip}</span></li>)}</ul>
-            <Link href="/blog/how-to-turn-a-pet-photo-into-a-desktop-pet" className="mt-6 inline-block font-bold text-coral underline decoration-coral/25 underline-offset-4">See Kaka’s real photo and desktop animation</Link>
           </div>
         </div>
       </section>
