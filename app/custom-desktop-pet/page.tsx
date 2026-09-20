@@ -27,7 +27,7 @@ export default function CustomDesktopPetPage() {
         <div className="mx-auto max-w-5xl text-center">
           <span className="inline-flex rounded-full bg-coral/10 px-4 py-2 text-sm font-bold text-coral">ONE PHOTO · YOUR ACTUAL PET</span>
           <h1 className="mx-auto mt-6 max-w-4xl font-display text-5xl font-extrabold leading-tight text-text-primary sm:text-6xl">Turn One Photo of Your Real Pet Into a Desktop Companion</h1>
-          <p className="mx-auto mt-6 max-w-3xl text-xl leading-relaxed text-text-secondary">This desktop pet starts with a photo of your actual dog, cat, or another pet. Custom generation is a one-time paid purchase for Windows and Mac. <Link href="/free-desktop-pet" className="font-bold text-coral underline decoration-coral/25 underline-offset-4">Try Kaka free first.</Link></p>
+          <p className="mx-auto mt-6 max-w-3xl text-xl leading-relaxed text-text-secondary">This desktop pet starts with a photo of your actual dog, cat, or another pet. Custom generation is a one-time paid purchase for Windows and Mac.</p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-xl shadow-coral/25 hover:bg-coral-dark">Upload a Pet Photo</Link>
             <Link href="/pricing" className="rounded-full border-2 border-gray-200 bg-white px-7 py-3 font-bold text-text-primary hover:border-coral/30">Compare Custom Plans</Link>
