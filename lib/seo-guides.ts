@@ -407,16 +407,16 @@ const allSeoGuides: SeoGuide[] = [
     slug: 'are-desktop-pets-safe',
     title: 'Are Desktop Pets Safe? What to Check Before You Download',
     description:
-      'Learn how to judge whether a desktop pet is safe by checking its source, permissions, privacy policy, resource use, and uninstall path.',
+      'Use a practical desktop pet safety checklist: verify the download source, understand Windows and Mac warnings, check data use, and know how to uninstall.',
     category: 'Safety Guide',
     readingTime: '8 min read',
     publishedAt: secondWavePublishedAt,
-    updatedAt: secondWavePublishedAt,
-    eyebrow: 'A practical download checklist',
+    updatedAt: '2026-09-20',
+    eyebrow: 'Check the app before you trust it',
     intro:
-      'A desktop pet is an application that runs on your computer, so it deserves the same care as any other download. “Desktop pet” does not describe one security model: an official store app, an open-source project, and a repackaged character bundle can carry very different risks.',
+      'A desktop pet is real software, not just a GIF. It may stay above other windows, start with your computer, connect to the internet, or upload a photo when you create a custom pet. None of that automatically makes it unsafe—but a cute character is not evidence that an installer is trustworthy.',
     quickAnswer:
-      'Desktop pets can be safe when they come from a verifiable publisher, explain their permissions and data use, provide supported installers, and can be removed normally. Avoid unknown mirrors, unexpected permissions, and downloads whose publisher or price does not match the product page.',
+      'A desktop pet can be safe when it comes from an official source, its filename and publisher match the product you chose, its behavior and data use are explained, and you can quit and uninstall it normally. Stop if the download comes from an unknown mirror, asks for an unexpected capability, or does not explain what happens to your data.',
     keywords: [
       'is desktop pet safe',
       'are desktop pets safe',
@@ -427,74 +427,113 @@ const allSeoGuides: SeoGuide[] = [
     visual: 'safety',
     sections: [
       {
-        id: 'source',
-        title: 'Start with the source of the installer',
+        id: 'quick-check',
+        title: 'Use this 60-second desktop pet safety check',
         paragraphs: [
-          'Prefer an official publisher website, Microsoft Store, Steam, or a verified GitHub release linked by the project. Search-result download mirrors may repackage an installer, add unrelated software, or leave old versions online.',
-          'Before opening the file, compare the product name, publisher, platform, filename, and price with the official page. A mismatch is a reason to stop.',
+          'You do not need to reverse-engineer an app before installing it. Start with five checks that catch the most obvious problems. If one answer is unclear, pause and verify it instead of treating the download button as proof of safety.',
         ],
         bullets: [
-          'Use a link controlled by the publisher or an established app store.',
-          'Avoid archives shared through comments, forums, and unknown file hosts.',
-          'Confirm that the installer is for your operating system.',
-          'Keep the download page available while you verify any system prompt.',
+          'Source: did the file come from the publisher, an official store, or the project’s verified release page?',
+          'Identity: do the product name, filename, publisher, operating system, and advertised price match?',
+          'Access: does the app ask only for capabilities that make sense for the features you selected?',
+          'Data: does the product explain what leaves your computer and which companies process it?',
+          'Control: can you hide, quit, disable startup, and uninstall the app using normal controls?',
         ],
       },
       {
-        id: 'warnings',
-        title: 'Understand Windows and macOS warnings',
+        id: 'source',
+        title: 'Download from a source you can verify',
         paragraphs: [
-          'Windows SmartScreen and macOS Gatekeeper may warn about a new or unfamiliar application. That warning is not a guarantee that the file is malicious, and it is not permission to click through without checking.',
-          'Read the exact app name and source. If you did not expect the prompt, downloaded from a mirror, or see a different publisher, cancel the installation and return to the official page.',
-        ],
-      },
-      {
-        id: 'permissions',
-        title: 'Ask what the pet can access',
-        paragraphs: [
-          'A simple desktop pet may need to display a transparent always-on-top window and save basic settings. Other products add microphones, screen awareness, AI chat, plugins, accounts, or cloud sync. Each extra capability changes the privacy questions you should ask.',
-          'A trustworthy product should explain why a permission is needed, whether data leaves the computer, how uploaded photos are handled, and how to delete an account or stored content.',
+          'Prefer the publisher’s website, an established app store, or a release page linked by the project itself. A search-result mirror, forum attachment, or re-uploaded archive can be outdated or different from the file the developer intended to distribute.',
+          'Search position, polished graphics, and the word “free” are not security evidence. Before opening a file, keep the official product page available and compare what you downloaded with what that page promised.',
         ],
         table: {
-          headers: ['Capability', 'Question to ask'],
+          headers: ['Check', 'A reassuring sign', 'A reason to stop'],
           rows: [
-            ['Transparent pet window', 'Does it only display and receive clicks, or inspect other windows?'],
-            ['Microphone or voice chat', 'Is listening optional and visibly controlled?'],
-            ['Pet-photo upload', 'Why is the photo uploaded, where is it processed, and how long is it kept?'],
-            ['Plugins or AI integrations', 'What permissions can extensions receive?'],
+            ['Download location', 'Publisher site, official store, or verified project release', 'Unknown mirror, comment link, or unrelated file host'],
+            ['File identity', 'Expected app name, platform, and file type', 'Misspelled name, wrong platform, or unexpected archive'],
+            ['Offer', 'Price and included features match the product page', 'A surprise payment, bundle, extension, or extra installer'],
+            ['Product history', 'Visible documentation, release notes, or support contact', 'No identifiable publisher or way to ask about the file'],
           ],
         },
       },
       {
-        id: 'performance-uninstall',
-        title: 'Check resource use and the exit path',
+        id: 'system-warnings',
+        title: 'Treat Windows and Mac warnings as a checkpoint',
         paragraphs: [
-          'Safety also includes control. You should be able to hide the pet, stop startup behavior, quit the process, and uninstall it using ordinary operating-system controls.',
-          'Watch CPU, memory, battery use, and unexpected network activity during normal use. A desktop companion should not make your computer noticeably harder to use.',
+          'Windows SmartScreen and macOS Gatekeeper can warn about downloaded or unfamiliar software. A warning is not proof that an app contains a virus, but it is also not a message to dismiss automatically.',
+          'Stop and read the exact alert. Confirm that you intentionally downloaded the app from its official source and that the product name and file match. If the warning names a different app, the source is unclear, or you did not expect an installer to open, cancel and delete the file.',
+        ],
+        steps: [
+          { title: 'Read the alert', body: 'Note the exact app name, publisher information, and reason the operating system is warning you.' },
+          { title: 'Return to the source', body: 'Verify the download page, expected filename, supported operating system, and installation instructions.' },
+          { title: 'Decide independently', body: 'Continue only when the warning matches a file you intentionally obtained from a source you trust.' },
+          { title: 'Stop when details differ', body: 'A mismatched name, unexpected request, or unknown source is enough reason to cancel and investigate.' },
         ],
       },
       {
-        id: 'deskbub-boundary',
-        title: 'The DeskBub free and custom boundary',
+        id: 'access-and-data',
+        title: 'Check what the pet can access—and what leaves your computer',
         paragraphs: [
-          'DeskBub lets you use Kaka without an account or payment. The official download page links the current Windows and macOS installers and lists their system requirements.',
-          'An account is used when you create and pair a custom pet. Pet photos are part of that separate generation workflow, so read the privacy policy before uploading an image you do not have the right to use.',
+          'A simple pet may only need a transparent window, clicks, and a place to save settings. Products that add microphones, screen awareness, AI chat, plugins, accounts, cloud sync, or photo generation raise additional privacy questions.',
+          'Do not assume that the absence of a permission pop-up means a Windows desktop app cannot access data. Read the product documentation and privacy policy, then compare those claims with the features you actually use.',
+        ],
+        table: {
+          headers: ['Capability', 'What to verify'],
+          rows: [
+            ['Transparent pet window', 'Whether it only displays and receives clicks or also analyzes other windows'],
+            ['Start with your computer', 'Whether startup is optional and where you can turn it off'],
+            ['Microphone or screen awareness', 'Why it is needed, when it is active, and whether you can disable it'],
+            ['Pet-photo upload', 'Where the photo is processed and stored, who processes it, and how deletion works'],
+            ['Account or payment', 'Which provider handles identity or payment data and what the pet app receives'],
+          ],
+        },
+      },
+      {
+        id: 'deskbub-boundary',
+        title: 'What DeskBub does with free and custom use',
+        paragraphs: [
+          'Kaka can be downloaded and used without creating an account or making a payment. DeskBub’s official download page links to its public GitHub releases for Windows and macOS.',
+          'The custom-pet workflow is different. DeskBub uses Clerk for authentication, Supabase for pet photos and generated content, Replicate for AI processing, and Creem for payments. DeskBub does not receive your full card number. Its privacy policy says personal data is not sold and that you can request deletion of your account and associated content by contacting support.',
+          'These disclosures describe the current service; they are not a promise that every part of custom generation happens only on your computer. Read the privacy policy before uploading a photo, and upload only an image you own or have permission to use.',
+        ],
+        note:
+          'Use the official DeskBub download page for installers. Use support@deskbub.com for privacy questions or a verified deletion request.',
+      },
+      {
+        id: 'control-and-removal',
+        title: 'Make sure you can stop and remove the pet',
+        paragraphs: [
+          'Safety also means remaining in control after installation. You should be able to hide the pet, quit its process, turn off unwanted startup behavior, and remove the application through the normal Windows or macOS workflow.',
+          'During ordinary use, watch for unexplained CPU, memory, battery, or network activity. A visual companion will use some resources, but it should not make your computer unexpectedly difficult to use. If a pet cannot be closed or removed as documented, stop using it and ask the publisher for support.',
         ],
       },
     ],
     faqs: [
       {
-        question: 'Are all desktop pets safe?',
-        answer: 'No category is automatically safe. Judge the specific publisher, installer source, permissions, privacy policy, updates, and uninstall process.',
+        question: 'Can a desktop pet contain malware?',
+        answer:
+          'Any downloaded executable can be malicious or repackaged, so the category itself is not a guarantee. Use the publisher’s official source or a verified store or release page, and stop when the file identity or behavior does not match what was advertised.',
       },
       {
         question: 'Can a desktop pet see my screen?',
         answer:
-          'Some AI products may offer screen-aware features, while simple pets may only display a transparent window. Check the exact product’s permissions and documentation.',
+          'It depends on the product. Displaying a transparent always-on-top window does not by itself mean an app analyzes your screen, but some AI pets advertise screen-aware features. Check the exact product documentation and data policy instead of assuming every desktop pet behaves the same way.',
       },
       {
-        question: 'Is DeskBub free to try?',
-        answer: 'Yes. Kaka can be used without an account or payment. Photo-based custom generation is a separate paid option.',
+        question: 'Is a SmartScreen or Gatekeeper warning proof of a virus?',
+        answer:
+          'No. An operating-system warning can appear for downloaded or unfamiliar software, but you should not bypass it blindly. Verify the source, product name, filename, publisher information, and installation instructions before deciding whether to continue.',
+      },
+      {
+        question: 'Do I need to upload a photo to use DeskBub?',
+        answer:
+          'Not to use Kaka. Kaka works without an account, payment, or pet-photo upload. Uploading a photo is part of the separate custom-pet workflow and uses the processors described in DeskBub’s privacy policy.',
+      },
+      {
+        question: 'How do I remove a desktop pet?',
+        answer:
+          'Quit the app first, disable any startup option, then use the normal uninstall process for Windows or macOS. If the publisher provides a dedicated uninstaller or removal instructions, follow those instructions rather than deleting random application files.',
       },
     ],
     related: ['best-free-desktop-pets', 'how-to-get-a-desktop-pet-on-windows-11', 'how-to-get-a-desktop-pet-on-mac'],

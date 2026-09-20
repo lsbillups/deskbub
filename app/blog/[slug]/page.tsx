@@ -283,7 +283,15 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
               <h1 className="mt-4 font-display text-4xl font-extrabold leading-tight text-text-primary sm:text-6xl">{guide.title}</h1>
               <p className="mt-7 max-w-3xl text-xl leading-relaxed text-text-secondary">{guide.intro}</p>
               <div className="mt-7 flex flex-wrap items-center gap-3 text-sm font-semibold text-text-secondary">
-                <time dateTime={guide.publishedAt}>{formatPublicationDate(guide.publishedAt)}</time>
+                {guide.slug === 'are-desktop-pets-safe' ? (
+                  <>
+                    <span>Published <time dateTime={guide.publishedAt}>{formatPublicationDate(guide.publishedAt)}</time></span>
+                    <span aria-hidden="true">·</span>
+                    <span>Updated <time dateTime={guide.updatedAt}>{formatPublicationDate(guide.updatedAt)}</time></span>
+                  </>
+                ) : (
+                  <time dateTime={guide.publishedAt}>{formatPublicationDate(guide.publishedAt)}</time>
+                )}
                 <span aria-hidden="true">·</span>
                 <span>{guide.readingTime}</span>
                 <span aria-hidden="true">·</span>
@@ -418,17 +426,48 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
             </aside>
           )}
 
-          <section className="mt-16 rounded-[2rem] bg-text-primary p-8 text-white sm:p-12">
-            <p className="text-sm font-bold uppercase tracking-[0.18em] text-coral">Two clear paths</p>
-            <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Try a free desktop pet—or make one from your pet photo.</h2>
-            <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/70">
-              Kaka is free with no account or payment. Custom pets start at $1 as a one-time purchase.
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <TrackedLink href="/free-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'free-desktop-pet', placement: 'footer' }} className="rounded-full bg-mint px-6 py-3 text-center font-bold text-text-primary hover:bg-white">Download Kaka Free</TrackedLink>
-              <TrackedLink href="/custom-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'custom-desktop-pet', placement: 'footer' }} className="rounded-full bg-coral px-6 py-3 text-center font-bold text-white hover:bg-coral-dark">Create My Pet From a Photo</TrackedLink>
-            </div>
-          </section>
+          {guide.slug === 'are-desktop-pets-safe' && (
+            <aside className="mt-16 rounded-3xl border border-gray-100 bg-white p-7 shadow-sm sm:p-9">
+              <h2 className="font-display text-2xl font-bold text-text-primary">Sources and product details</h2>
+              <p className="mt-3 leading-relaxed text-text-secondary">Use the operating-system guidance for general safety checks and DeskBub’s own pages for current product and data-handling details.</p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                {[
+                  ['Windows desktop apps and privacy', 'https://support.microsoft.com/en-us/windows/privacy/windows-desktop-apps-and-privacy'],
+                  ['Apple: Open apps safely on Mac', 'https://support.apple.com/en-us/102445'],
+                  ['DeskBub privacy policy', '/privacy'],
+                  ['DeskBub official downloads', '/download'],
+                ].map(([label, href]) => (
+                  <a key={href} href={href} className="rounded-full bg-cream px-4 py-2 text-sm font-bold text-text-primary underline decoration-gray-200 underline-offset-4 hover:text-coral">
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </aside>
+          )}
+
+          {guide.slug === 'are-desktop-pets-safe' ? (
+            <section className="mt-16 rounded-[2rem] bg-text-primary p-8 text-white sm:p-12">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-coral">Verify the source</p>
+              <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Get DeskBub from the page we control.</h2>
+              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/70">The official download page links the current Windows and macOS files from DeskBub’s public GitHub releases. Review the privacy policy before using custom generation.</p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <TrackedLink href="/download" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'download', placement: 'footer' }} className="rounded-full bg-mint px-6 py-3 text-center font-bold text-text-primary hover:bg-white">Open Official Downloads</TrackedLink>
+                <TrackedLink href="/privacy" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'privacy', placement: 'footer' }} className="rounded-full border border-white/20 px-6 py-3 text-center font-bold text-white hover:bg-white/10">Read the Privacy Policy</TrackedLink>
+              </div>
+            </section>
+          ) : (
+            <section className="mt-16 rounded-[2rem] bg-text-primary p-8 text-white sm:p-12">
+              <p className="text-sm font-bold uppercase tracking-[0.18em] text-coral">Two clear paths</p>
+              <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Try a free desktop pet—or make one from your pet photo.</h2>
+              <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/70">
+                Kaka is free with no account or payment. Custom pets start at $1 as a one-time purchase.
+              </p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <TrackedLink href="/free-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'free-desktop-pet', placement: 'footer' }} className="rounded-full bg-mint px-6 py-3 text-center font-bold text-text-primary hover:bg-white">Download Kaka Free</TrackedLink>
+                <TrackedLink href="/custom-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'custom-desktop-pet', placement: 'footer' }} className="rounded-full bg-coral px-6 py-3 text-center font-bold text-white hover:bg-coral-dark">Create My Pet From a Photo</TrackedLink>
+              </div>
+            </section>
+          )}
 
           <section className="pt-16">
             <h2 className="font-display text-3xl font-bold text-text-primary">Frequently asked questions</h2>

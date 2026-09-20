@@ -67,12 +67,12 @@ const allBlogPosts: BlogPostSummary[] = [
     slug: 'are-desktop-pets-safe',
     title: 'Are Desktop Pets Safe? What to Check Before You Download',
     description:
-      'Learn how to judge whether a desktop pet is safe by checking its source, permissions, privacy policy, resource use, and uninstall path.',
+      'Use a practical desktop pet safety checklist: verify the download source, understand Windows and Mac warnings, check data use, and know how to uninstall.',
     excerpt:
-      'Desktop pets are software, so safety depends on where they come from and what they can access. Use this checklist before installing one.',
+      'Desktop pets are real software. Check the installer, system warnings, data use, and removal path before deciding what to trust.',
     category: 'Safety Guide',
     publishedAt: '2026-09-11',
-    updatedAt: '2026-09-11',
+    updatedAt: '2026-09-20',
     readingTime: '8 min read',
     featured: false,
   },
