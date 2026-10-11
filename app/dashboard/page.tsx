@@ -11,26 +11,39 @@ export default function DashboardPage() {
   const [tier, setTier] = useState('free');
   const [gensUsed, setGensUsed] = useState(0);
   const [gensMax, setGensMax] = useState(0);
+  const [accountError, setAccountError] = useState<string | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<'none' | 'waiting' | 'confirmed' | 'delayed'>('none');
 
   useEffect(() => {
-    if (user) {
-      let hash = 0;
-      for (let i = 0; i < user.id.length; i++) {
-        hash = ((hash << 5) - hash) + user.id.charCodeAt(i);
-        hash |= 0;
-      }
-      setPairingCode(String(Math.abs(hash) % 1000000).padStart(6, '0'));
-    }
-  }, [user]);
-
-  useEffect(() => {
-    fetch('/api/check-subscription')
-      .then(r => r.json())
-      .then(d => {
+    const returnedFromCheckout = new URLSearchParams(window.location.search).get('upgraded') === 'true';
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    let attempts = 0;
+    if (returnedFromCheckout) setPaymentStatus('waiting');
+    const loadAccount = async () => {
+      attempts++;
+      try {
+        const r = await fetch('/api/check-subscription', { cache: 'no-store' });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error);
+        if (cancelled) return;
         setTier(d.tier === 'plus' ? 'plus' : d.tier === 'basic' ? 'basic' : 'free');
         setGensUsed(d.used || 0);
         setGensMax(d.max || 0);
-      });
+        setPairingCode(d.pairingCode);
+        setAccountError(null);
+        // The return URL is only a signal to recheck. Only the server balance confirms access.
+        if (!returnedFromCheckout) return;
+        if (d.tier !== 'free' && d.max > 0) { setPaymentStatus('confirmed'); return; }
+      } catch (e) {
+        if (cancelled) return;
+        setAccountError(e instanceof Error ? e.message : 'Please retry loading your account.');
+      }
+      if (returnedFromCheckout && attempts < 20) timer = setTimeout(loadAccount, 1500);
+      else if (returnedFromCheckout) setPaymentStatus('delayed');
+    };
+    void loadAccount();
+    return () => { cancelled = true; clearTimeout(timer); };
   }, []);
 
   const gensLeft = Math.max(0, gensMax - gensUsed);
@@ -47,6 +60,9 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Plan Status Card */}
+        {accountError && <p role="alert" className="mt-6 rounded-xl bg-red-50 p-4 text-sm text-red-700">{accountError}</p>}
+        {paymentStatus === 'waiting' && <p role="status" className="mt-6 rounded-xl bg-mint/10 p-4 text-sm text-text-primary">Confirming your purchase. Your generation balance will update here automatically.</p>}
+        {paymentStatus === 'delayed' && <p role="status" className="mt-6 rounded-xl bg-mint/10 p-4 text-sm text-text-primary">Payment confirmation is taking longer than expected. Refresh this page in a moment. If you completed payment, please do not pay again. <Link href="/contact" className="font-semibold underline">Contact us</Link> if your balance still has not updated.</p>}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
           className="mt-8 bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
           <div className="flex items-center justify-between">
@@ -73,12 +89,12 @@ export default function DashboardPage() {
                 className="px-5 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25">
                 📸 Upload Pet Photo
               </Link>
-            ) : (
+            ) : paymentStatus !== 'waiting' && paymentStatus !== 'delayed' ? (
               <Link href="/pricing"
                 className="px-5 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25">
                 ⬆ Upgrade Plan
               </Link>
-            )}
+            ) : null}
             <Link href="/download"
               className="px-5 py-2.5 bg-mint text-white text-sm font-semibold rounded-full hover:bg-mint-dark transition-all shadow-lg shadow-mint/25">
               ⬇ Download DeskBub

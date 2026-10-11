@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { resolveDeskBubAccount } from '@/lib/accounts/identity';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const account = await resolveDeskBubAccount();
+    const userId = account?.userId;
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { videos, pairingCode } = await request.json();
+    const { videos } = await request.json();
+    const pairingCode = account!.pairingCode;
     if (!videos || !Array.isArray(videos)) return NextResponse.json({ error: 'Missing videos' }, { status: 400 });
 
     const supabase = createAdminClient();

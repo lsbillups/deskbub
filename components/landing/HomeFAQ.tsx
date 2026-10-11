@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const faqs = [
   ['Does Kaka cost anything?', 'No. Kaka includes five animated actions and can be used for as long as you like. No account or payment is required.'],
-  ['Can I use a pet other than a dog?', 'Yes. Upload a clear photo of your cat, rabbit, bird, dog, or another pet. Custom pets are a one-time purchase starting at $1.'],
+  ['Can I use a pet other than a dog?', 'Yes. Upload a clear photo of your cat, rabbit, bird, dog, or another pet. Custom pets are a one-time purchase starting at $2.99.'],
   ['Does DeskBub work on Windows and Mac?', 'DeskBub is available for Windows 10/11 and macOS 12 or later.'],
   ['Can Kaka remind me to take breaks?', 'Yes. You can set water and stretch reminders, pause them anytime, or test them from the DeskBub controls.'],
   ['Does the pet cover my work?', 'You can drag your pet, adjust its size and opacity, or hide it instantly from the app controls.'],

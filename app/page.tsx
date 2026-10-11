@@ -9,7 +9,7 @@ import Footer from '@/components/landing/Footer';
 export const metadata: Metadata = {
   title: { absolute: 'Free Desktop Pet & Custom Pet From Photo | DeskBub' },
   description:
-    'Download a free desktop pet for Windows or Mac, or turn one photo of your real pet into a custom desktop companion. Custom pets start at $1.',
+    'Download a free desktop pet for Windows or Mac, or turn one photo of your real pet into a custom desktop companion. Custom pets start at $2.99.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Free Desktop Pet & Custom Pet From Photo | DeskBub',

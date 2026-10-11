@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useUser } from '@clerk/nextjs';
+import { useState, useEffect } from 'react';
 import { track } from '@vercel/analytics';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -18,14 +17,8 @@ const petActions: Record<PetType, { label: string; actions: string[] }> = {
 };
 
 export default function UploadPage() {
-  const { user } = useUser();
   const router = useRouter();
-  const pairingCode = useMemo(() => {
-    if (!user) return null;
-    let hash = 0;
-    for (let i = 0; i < user.id.length; i++) { hash = ((hash << 5) - hash) + user.id.charCodeAt(i); hash |= 0; }
-    return String(Math.abs(hash) % 1000000).padStart(6, '0');
-  }, [user]);
+  const [pairingCode, setPairingCode] = useState<string | null>(null);
 
   const [tier, setTier] = useState('free');
   const [gensUsed, setGensUsed] = useState(0);
@@ -56,6 +49,7 @@ export default function UploadPage() {
     fetch('/api/check-subscription').then(r => r.json()).then(d => {
       setTier(d.tier === 'plus' ? 'plus' : d.tier === 'basic' ? 'basic' : 'free');
       setGensUsed(d.used || 0); setGensMax(d.max || 0);
+      setPairingCode(d.pairingCode);
     });
   }, []);
 

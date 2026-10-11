@@ -31,7 +31,7 @@ export default function Hero() {
             </Link>
           </div>
 
-          <p className="mt-4 text-sm font-medium text-text-secondary">Kaka is free. Custom pets start at $1 with a one-time purchase—no subscription.</p>
+          <p className="mt-4 text-sm font-medium text-text-secondary">Kaka is free. Custom pets start at $2.99 with a one-time purchase—no subscription.</p>
           <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-text-secondary">
             <span>✓ Cats, dogs &amp; other pets</span>
             <span>✓ Windows &amp; macOS</span>

@@ -3,7 +3,7 @@ import Link from 'next/link';
 const paths = [
   {
     eyebrow: 'MAKE IT YOURS',
-    priceLabel: 'FROM $1',
+    priceLabel: 'FROM $2.99',
     priceClass: 'text-coral',
     title: 'Create a pet from my photo',
     description: 'Choose this path when you want the companion on your desktop to be your own pet.',
@@ -36,7 +36,7 @@ export default function ProductChoice() {
         <div className="text-center">
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-coral">Two clear paths</p>
           <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Start free—or make the pet yours.</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/65">Kaka is free with no account or payment. Custom pets use your own photo and start at $1.</p>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/65">Kaka is free with no account or payment. Custom pets use your own photo and start at $2.99.</p>
         </div>
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {[...paths].reverse().map((path) => (

@@ -4,28 +4,31 @@ import { useState } from 'react';
 import { track } from '@vercel/analytics';
 import Link from 'next/link';
 import Footer from '@/components/landing/Footer';
+import { BASIC_PRICE, PLUS_PRICE, type Plan } from '@/lib/pricing';
 
 const customTiers = [
-  { name: 'Custom Basic', eyebrow: 'ONE ACTION', price: '$1', productId: 'prod_6tpK7rYSe4qOn0Gkwu5orH', description: 'Create one animated action for your own pet.', features: ['Upload one pet photo', 'One AI-generated animation', 'Transparent desktop pet', 'Pair with Windows or Mac', 'Keep and use it forever'], cta: 'Create 1 Custom Action — $1' },
-  { name: 'Custom Plus', eyebrow: 'BEST VALUE', price: '$4.99', productId: 'prod_3plVm23uj3TPfXW0XpdaMo', description: 'Generate more options and keep your five favorites.', features: ['Upload 1–5 pet photos', 'Generate up to 8 animated clips', 'Keep your favorite 5', 'Choose different actions', 'Windows and macOS'], cta: 'Create a Full Custom Pet — $4.99' },
+  { name: 'Custom Basic', eyebrow: 'ONE ACTION', price: BASIC_PRICE, plan: 'basic' as Plan, description: 'Create one animated action for your own pet.', features: ['Upload one pet photo', 'One AI-generated animation', 'Transparent desktop pet', 'Pair with Windows or Mac', 'Keep and use it forever'], cta: `Create 1 Custom Action — ${BASIC_PRICE}` },
+  { name: 'Custom Plus', eyebrow: 'BEST VALUE', price: PLUS_PRICE, plan: 'plus' as Plan, description: 'Generate more options and keep your five favorites.', features: ['Upload 1–5 pet photos', 'Generate up to 8 animated clips', 'Keep your favorite 5', 'Choose different actions', 'Windows and macOS'], cta: `Create a Full Custom Pet — ${PLUS_PRICE}` },
 ];
 
 export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  const handleCheckout = async (productId: string) => {
-    setLoading(productId);
+  const handleCheckout = async (plan: Plan) => {
+    setLoading(plan);
+    setCheckoutError(null);
     try {
-      const response = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ productId }) });
+      const response = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan }) });
       const data = await response.json();
       const destination = data.checkoutUrl || data.redirect;
       if (destination) {
-        track('checkout_opened', { plan: customTiers.find((tier) => tier.productId === productId)?.name ?? 'unknown' });
+        track('checkout_opened', { plan });
         window.location.assign(destination);
       }
-      else window.alert(data.error || 'Something went wrong. Please try again.');
+      else setCheckoutError(data.error || 'Something went wrong. Please try again.');
     } catch {
-      window.alert('Failed to start checkout. Please try again.');
+      setCheckoutError('Failed to start checkout. Please try again.');
     } finally {
       setLoading(null);
     }
@@ -58,11 +61,12 @@ export default function PricingPage() {
               <p className="mt-3 min-h-12 text-text-secondary">{tier.description}</p>
               <div className="mt-6"><span className="font-display text-5xl font-extrabold text-text-primary">{tier.price}</span><span className="ml-2 text-sm text-text-secondary">one-time</span></div>
               <ul className="mt-7 flex-1 space-y-3 text-sm text-text-secondary">{tier.features.map((feature) => <li key={feature} className="flex gap-2"><span className="font-bold text-mint-dark">✓</span>{feature}</li>)}</ul>
-              <button type="button" disabled={loading === tier.productId} onClick={() => handleCheckout(tier.productId)} className={`mt-8 cursor-pointer rounded-full px-5 py-3 text-sm font-bold text-white transition disabled:cursor-wait disabled:opacity-60 ${index === 1 ? 'bg-coral hover:bg-coral-dark' : 'bg-text-primary hover:bg-black'}`}>{loading === tier.productId ? 'Redirecting…' : tier.cta}</button>
+              <button type="button" disabled={loading !== null} onClick={() => handleCheckout(tier.plan)} className={`mt-8 cursor-pointer rounded-full px-5 py-3 text-sm font-bold text-white transition disabled:cursor-wait disabled:opacity-60 ${index === 1 ? 'bg-coral hover:bg-coral-dark' : 'bg-text-primary hover:bg-black'}`}>{loading === tier.plan ? 'Redirecting…' : tier.cta}</button>
             </article>
           ))}
         </div>
         <p className="mt-10 text-center text-sm font-medium text-text-secondary">One-time payment. No subscription.</p>
+        {checkoutError && <p role="alert" className="mx-auto mt-4 max-w-xl rounded-xl bg-red-50 p-4 text-center text-sm text-red-700">{checkoutError}</p>}
       </section>
       <Footer />
     </main>

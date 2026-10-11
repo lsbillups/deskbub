@@ -460,7 +460,7 @@ export default async function SeoGuidePage({ params }: GuidePageProps) {
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-coral">Two clear paths</p>
               <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Try a free desktop pet—or make one from your pet photo.</h2>
               <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/70">
-                Kaka is free with no account or payment. Custom pets start at $1 as a one-time purchase.
+                Kaka is free with no account or payment. Custom pets start at $2.99 as a one-time purchase.
               </p>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <TrackedLink href="/free-desktop-pet" eventName="blog_cta_click" eventProperties={{ article: guide.slug, destination: 'free-desktop-pet', placement: 'footer' }} className="rounded-full bg-mint px-6 py-3 text-center font-bold text-text-primary hover:bg-white">Download Kaka Free</TrackedLink>

@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { auth } from '@clerk/nextjs/server';
+import { resolveDeskBubAccount } from '@/lib/accounts/identity';
 import Replicate from 'replicate';
 
 export async function POST(request: NextRequest) {
   try {
     // 1. Auth check
-    const { userId } = await auth();
+    const account = await resolveDeskBubAccount();
+    const userId = account?.userId;
     if (!userId) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }

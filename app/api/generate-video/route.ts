@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { resolveDeskBubAccount } from '@/lib/accounts/identity';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { screenPrompt } from '@/lib/creem/moderation';
 import Replicate from 'replicate';
@@ -37,7 +37,8 @@ function getActionPrompt(petType: string, action: number): string {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = await auth();
+    const account = await resolveDeskBubAccount();
+    const userId = account?.userId;
     if (!userId) {
       return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
     }

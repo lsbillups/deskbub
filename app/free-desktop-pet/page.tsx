@@ -83,7 +83,7 @@ export default function FreeDesktopPetPage() {
           <div className="mt-8 space-y-4">{faqs.map(([q, a]) => <details key={q} className="rounded-2xl border border-gray-100 bg-cream px-6 py-4"><summary className="cursor-pointer font-bold text-text-primary">{q}</summary><p className="mt-3 leading-relaxed text-text-secondary">{a}</p></details>)}</div>
           <div className="mt-12 rounded-3xl bg-text-primary p-8 text-center text-white sm:p-10">
             <h2 className="font-display text-3xl font-bold">Love having Kaka around?</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/70">Put your own pet on your desktop next. Custom pets start at $1 with no subscription.</p>
+            <p className="mx-auto mt-3 max-w-xl text-white/70">Put your own pet on your desktop next. Custom pets start at $2.99 with no subscription.</p>
             <Link href="/upload" className="mt-6 inline-block rounded-full bg-coral px-6 py-3 font-bold text-white">Upload a Pet Photo</Link>
           </div>
         </div>

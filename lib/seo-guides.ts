@@ -136,7 +136,7 @@ const allSeoGuides: SeoGuide[] = [
       {
         question: 'Is a custom desktop pet free?',
         answer:
-          'Kaka is included free with no account or payment. Creating a pet from your own photo is a separate one-time purchase starting at $1.',
+          'Kaka is included free with no account or payment. Creating a pet from your own photo is a separate one-time purchase starting at $2.99.',
       },
     ],
     related: ['best-free-desktop-pets', 'how-to-get-a-desktop-pet-on-mac', 'how-to-get-a-desktop-pet-on-windows-11'],
@@ -198,7 +198,7 @@ const allSeoGuides: SeoGuide[] = [
         title: 'Check what “free” includes',
         paragraphs: [
           'Free can mean a complete app, an open-source project, a demo, a sample pet, or a free download with paid items inside. Those are all valid models, but they are not interchangeable.',
-          'DeskBub includes Kaka at no cost and does not require an account or payment to use him. Custom generation from your own photo is separate and starts at $1 as a one-time purchase.',
+          'DeskBub includes Kaka at no cost and does not require an account or payment to use him. Custom generation from your own photo is separate and starts at $2.99 as a one-time purchase.',
         ],
         note:
           'Be suspicious of a download page that hides the publisher, operating-system requirements, price boundaries, or uninstall instructions.',
@@ -381,7 +381,7 @@ const allSeoGuides: SeoGuide[] = [
         title: 'Understand the free and custom paths',
         paragraphs: [
           'DeskBub includes Kaka free. You can install the Windows app and use him without creating an account or entering payment details.',
-          'Creating a desktop pet from your own photo is optional and paid. Custom pets start at $1 as a one-time purchase and use a pairing code to replace Kaka in the desktop app.',
+          'Creating a desktop pet from your own photo is optional and paid. Custom pets start at $2.99 as a one-time purchase and use a pairing code to replace Kaka in the desktop app.',
         ],
         note: 'Free Kaka is a complete starting experience. “Free” does not mean that custom photo generation is free.',
       },
@@ -685,7 +685,7 @@ const allSeoGuides: SeoGuide[] = [
         title: 'Why Kaka is included free',
         paragraphs: [
           'A custom desktop pet is difficult to understand from a promise alone. Kaka lets people test installation, motion, controls, and everyday fit before deciding whether their own pet belongs on screen.',
-          'No account or payment is required for Kaka. A custom pet from your own photo is a separate one-time purchase starting at $1.',
+          'No account or payment is required for Kaka. A custom pet from your own photo is a separate one-time purchase starting at $2.99.',
         ],
         note: 'Try Kaka free. If the experience feels right, make the next desktop pet your own.',
       },

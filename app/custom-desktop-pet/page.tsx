@@ -5,11 +5,11 @@ import Footer from '@/components/landing/Footer';
 
 export const metadata: Metadata = {
   title: 'Custom Desktop Pet From Your Pet Photo',
-  description: 'Create an animated desktop companion from a real pet photo. Custom desktop pets for Windows and Mac start at $1 with no subscription.',
+  description: 'Create an animated desktop companion from a real pet photo. Custom desktop pets for Windows and Mac start at $2.99 with no subscription.',
   alternates: { canonical: '/custom-desktop-pet' },
   openGraph: {
     title: 'Custom Desktop Pet From Your Pet Photo | DeskBub',
-    description: 'Create a Windows or Mac desktop companion from one real pet photo. One-time pricing starts at $1.',
+    description: 'Create a Windows or Mac desktop companion from one real pet photo. One-time pricing starts at $2.99.',
     url: 'https://deskbub.com/custom-desktop-pet',
   },
 };
@@ -64,7 +64,7 @@ export default function CustomDesktopPetPage() {
 
       <section className="bg-text-primary px-6 py-20 text-white">
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="font-display text-3xl font-bold sm:text-4xl">Custom generation starts at $1.</h2>
+          <h2 className="font-display text-3xl font-bold sm:text-4xl">Custom generation starts at $2.99.</h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-white/70">Choose one action with Basic, or generate more options and keep your five favorites with Plus. One-time payment, no subscription.</p>
           <Link href="/upload" className="mt-8 inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white hover:bg-coral-dark">Upload a Pet Photo</Link>
         </div>

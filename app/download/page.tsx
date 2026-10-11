@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { track } from '@vercel/analytics';
 import Link from 'next/link';
@@ -18,12 +18,28 @@ export default function DownloadPage() {
   const [os, setOs] = useState<OperatingSystem>('windows');
   const [copied, setCopied] = useState(false);
   const installer = installers[os];
-  const pairingCode = useMemo(() => {
-    if (!user) return null;
-    let hash = 0;
-    for (let index = 0; index < user.id.length; index += 1) { hash = ((hash << 5) - hash) + user.id.charCodeAt(index); hash |= 0; }
-    return String(Math.abs(hash) % 1000000).padStart(6, '0');
-  }, [user]);
+  const userId = user?.id;
+  const [pairing, setPairing] = useState<{ owner: string; code: string } | null>(null);
+  const pairingCode = pairing && pairing.owner === userId ? pairing.code : null;
+
+  useEffect(() => {
+    let cancelled = false;
+    setPairing(null);
+    setCopied(false);
+    if (!isSignedIn || !userId) return;
+    fetch('/api/check-subscription', { cache: 'no-store' })
+      .then(async response => {
+        if (!response.ok) throw new Error('Pairing code unavailable');
+        return response.json();
+      })
+      .then(data => {
+        if (!cancelled && typeof data.pairingCode === 'string' && /^[0-9]{6}$/.test(data.pairingCode)) {
+          setPairing({ owner: userId, code: data.pairingCode });
+        }
+      })
+      .catch(() => { if (!cancelled) setPairing(null); });
+    return () => { cancelled = true; };
+  }, [isSignedIn, userId]);
 
   const copyPairingCode = async () => {
     if (!pairingCode) return;
