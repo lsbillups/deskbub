@@ -111,15 +111,22 @@ export async function listGenerations() {
   try {
     const account = await resolveDeskBubAccount();
     if (!account) return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
-    const { data, error } = await createAdminClient().from('deskbub_animation_jobs').select('id,kind,payload')
-      .eq('user_id', account.userId).or('status.eq.pending,status.eq.uncertain,and(status.eq.succeeded,acknowledged_at.is.null)')
-      .order('created_at', { ascending: true }).limit(50);
+    const { data, error } = await createAdminClient().from('deskbub_animation_jobs')
+      .select('id,kind,payload,status,state,created_at,acknowledged_at')
+      .eq('user_id', account.userId).order('created_at', { ascending: false }).limit(100);
     if (error) throw new Error('Jobs unavailable');
-    return NextResponse.json({ jobs: (data || []).map((job) => ({ id: job.id, kind: job.kind,
+    const all = (data || []).sort((a, b) => a.created_at.localeCompare(b.created_at) || a.id.localeCompare(b.id));
+    const recoverable = all.filter(job => ['pending', 'uncertain'].includes(job.status) || (job.status === 'succeeded' && !job.acknowledged_at));
+    // Batch reservation has one transaction/created_at. Count delivered siblings
+    // without driving or charging those completed outputs again.
+    const batchDates = new Set(recoverable.filter(job => job.kind === 'video').map(job => job.created_at));
+    return NextResponse.json({ jobs: recoverable.map((job) => ({ id: job.id, kind: job.kind, status: job.status, phase: job.state?.phase,
       requestBody: job.kind === 'image' ? { imageUrl: job.payload.imageUrl } : {
         imageUrl: job.payload.imageUrl, petType: job.payload.pet_type, action: job.payload.action_index,
         actionId: job.payload.action_id, actionLabel: job.payload.action_label, actionCatalogVersion: job.payload.catalog_version,
       },
-    })) });
+    })), videoJobs: all.filter(job => job.kind === 'video' && batchDates.has(job.created_at)).map(job => ({
+      id: job.id, status: job.status, phase: job.state?.phase, actionLabel: job.payload.action_label, imageUrl: job.payload.imageUrl,
+    })), usedImageUrls: all.filter(job => job.kind === 'video').map(job => job.payload.imageUrl) });
   } catch { return NextResponse.json({ error: 'Saved generations are temporarily unavailable.' }, { status: 503 }); }
 }

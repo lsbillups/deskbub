@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { track } from '@vercel/analytics';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import DropZone from '@/components/upload/DropZone';
+import GenerationProgress from '@/components/upload/GenerationProgress';
 import { motion, AnimatePresence } from 'framer-motion';
 import { petActions, actionRequest, type PetType } from '@/lib/generation/actions';
 import { runGeneration, runVideoBatch, resumePendingGenerations, acknowledgeGeneration } from '@/lib/generation/client';
+import { progressCounts, type BatchProgress } from '@/lib/generation/progress';
 
 type Stage = 'select' | 'preview' | 'uploading' | 'processing' | 'done' | 'append' | 'appendActions' | 'finalized';
 
@@ -37,6 +39,19 @@ export default function UploadPage() {
   const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false);
   const generationBusy = useRef(false);
   const photoBusy = useRef(false);
+  const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
+  const batchProgressRef = useRef<BatchProgress | null>(null);
+  const updateBatchProgress = useCallback((value: BatchProgress) => {
+    batchProgressRef.current = value.items.length ? value : null;
+    setBatchProgress(value.items.length ? value : null);
+  }, []);
+  const finishBatchPresentation = useCallback(() => {
+    if (batchProgressRef.current && progressCounts(batchProgressRef.current).unfinished === 0) {
+      const { completed, total, failed } = progressCounts(batchProgressRef.current);
+      if (failed) setError(`${completed} of ${total} videos completed. ${failed} could not finish. Your completed videos are saved; no automatic new generation was made.`);
+      batchProgressRef.current = null; setBatchProgress(null);
+    }
+  }, []);
 
   const MAX_ACTIONS = tier === 'plus' ? 5 : 1;
   const FINAL = 5;
@@ -44,14 +59,14 @@ export default function UploadPage() {
   const gensLeft = Math.max(0, gensMax - gensUsed);
   const totalVideos = videoUrls.length;
 
-  const refreshSub = () => {
-    fetch('/api/check-subscription').then(async r => {
+  const refreshSub = useCallback(async () => {
+    await fetch('/api/check-subscription', { cache: 'no-store' }).then(async r => {
       if (!r.ok) throw new Error('Your generation balance could not be refreshed. Please refresh before continuing.');
       const d = await r.json();
       if (!Number.isSafeInteger(d.used) || !Number.isSafeInteger(d.max)) throw new Error('Your generation balance could not be loaded.');
       setGensUsed(d.used); setGensMax(d.max);
     }).catch(err => setError(err instanceof Error ? err.message : 'Your generation balance could not be refreshed.'));
-  };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -83,6 +98,7 @@ export default function UploadPage() {
       generationBusy.current = true; setIsGenerating(true);
       const urls: string[] = [], labels: string[] = [], photos: string[] = [];
       let alreadyFinalized = false;
+      let recoveryChecked = false;
       {
         const response = await fetch('/api/animation-selection');
         if (!response.ok) throw new Error('Your saved pets could not be loaded. Please refresh before continuing.');
@@ -97,9 +113,8 @@ export default function UploadPage() {
             setStage(data.status === 'finalized' ? 'finalized' : 'done');
           }
         }
-        if (!canceled) setAccountStatus('ready');
       }
-      await resumePendingGenerations(async ({ endpoint, result }) => {
+      try { await resumePendingGenerations(async ({ endpoint, result }) => {
         if (canceled) return;
         // A lost acknowledgement must not restore discarded candidates or unlock
         // a selection that was already confirmed in another tab.
@@ -108,26 +123,36 @@ export default function UploadPage() {
           return;
         }
         if (endpoint === '/api/generate-pet' && result.processedUrl) {
-          photos.push(result.processedUrl); setProcessedUrls([...photos]);
-          setChecked(petActions.dog.actions.map(() => photos.map(() => false)));
-          setAppendActions(photos.map(() => 0)); setStage(urls.length ? 'appendActions' : 'done');
-          // Keep the photo recoverable until a video made from it is saved.
+          if (!photos.includes(result.processedUrl)) photos.push(result.processedUrl);
         }
         if (result.videoUrl) {
           if (!urls.includes(result.videoUrl)) { urls.push(result.videoUrl); labels.push(result.actionLabel || 'Pet animation'); }
-          setVideoUrls([...urls]); setVideoLabels([...labels]); setKeepFlags(urls.map((_, i) => i < 5)); setStage('done');
-          const sync = await fetch('/api/sync-pet-data', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          if (tier === 'basic') { const sync = await fetch('/api/sync-pet-data', { method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pairingCode, finalize: tier === 'basic', videos: urls.map((url, i) => ({ url, label: labels[i] })) }) });
           if (!sync.ok) throw new Error('Your video is saved. Desktop sync will resume after refresh.');
-          if (tier === 'basic') setStage('finalized');
+          }
+          await refreshSub();
         }
         if (result.videoUrl) await acknowledgeGeneration(result.jobId);
-      });
+      }, value => { if (!canceled) { updateBatchProgress(value); if (value.items.length) setAccountStatus('ready'); } });
+        recoveryChecked = true;
+      }
+      finally {
+        if (!canceled) {
+          setVideoUrls([...urls]); setVideoLabels([...labels]); setKeepFlags(urls.map((_, i) => i < 5));
+          if (urls.length) {
+            setProcessedUrls([]); setStage(alreadyFinalized || tier === 'basic' ? 'finalized' : 'done');
+          } else if (photos.length) {
+            setProcessedUrls(photos); setChecked(petActions.dog.actions.map(() => photos.map(() => false))); setStage('done');
+          }
+          if (recoveryChecked || batchProgressRef.current) setAccountStatus('ready');
+        }
+      }
     };
-    restore().catch(err => { if (!canceled) { setError(err instanceof Error ? err.message : 'Saved tasks could not be restored.'); if (!selectionLoaded) setAccountStatus('error'); } })
-      .finally(() => { if (!canceled) { generationBusy.current = false; setIsGenerating(false); refreshSub(); } });
+    restore().catch(err => { if (!canceled) { setError(err instanceof Error ? err.message : 'Saved tasks could not be restored.'); if (!selectionLoaded || !batchProgressRef.current) setAccountStatus('error'); } })
+      .finally(() => { if (!canceled) { generationBusy.current = false; setIsGenerating(false); finishBatchPresentation(); void refreshSub(); } });
     return () => { canceled = true; };
-  }, [pairingCode, tier, restoreAttempt]);
+  }, [pairingCode, tier, restoreAttempt, finishBatchPresentation, refreshSub, updateBatchProgress]);
 
   const syncToDB = async (urls: string[], labels: string[], finalize = false) => {
     const response = await fetch('/api/sync-pet-data', {
@@ -215,22 +240,21 @@ export default function UploadPage() {
       pairs.push({ ai: 0, pi: 0 });
     }
     setIsGenerating(true); setError(null);
+    const urls: string[] = [...videoUrls]; const labels: string[] = [...videoLabels];
     try {
-      const urls: string[] = [...videoUrls]; const labels: string[] = [...videoLabels];
       await runVideoBatch(pairs.map(({ ai, pi }) => ({ imageUrl: processedUrls[pi], ...actionRequest(petType, ai) })), async data => {
         if (!data.videoUrl) throw new Error('The generated video is unavailable.');
         if (!urls.includes(data.videoUrl)) { urls.push(data.videoUrl); labels.push(data.actionLabel || 'Pet animation'); }
-        setVideoUrls([...urls]); setVideoLabels([...labels]); setKeepFlags(urls.map(() => true));
-        await syncToDB([...urls], [...labels], tier === 'basic');
+        if (tier === 'basic') await syncToDB([...urls], [...labels], true);
         await acknowledgeGeneration(data.jobId);
-        if (tier === 'basic') setStage('finalized');
-      });
-      setVideoUrls(urls); setVideoLabels(labels);
-      setKeepFlags(Array(urls.length).fill(true));
-      await syncToDB(urls, labels, tier === 'basic');
-      refreshSub();
+        await refreshSub();
+      }, updateBatchProgress);
     } catch (err) { setError(err instanceof Error ? err.message : 'Generation failed.'); }
-    finally { generationBusy.current = false; setIsGenerating(false); refreshSub(); }
+    finally {
+      setVideoUrls(urls); setVideoLabels(labels); setKeepFlags(Array(urls.length).fill(true));
+      if (urls.length) { setProcessedUrls([]); setStage(tier === 'basic' ? 'finalized' : 'done'); }
+      generationBusy.current = false; setIsGenerating(false); finishBatchPresentation(); void refreshSub();
+    }
   };
 
   // ═══════════════════════════════════════════════
@@ -264,9 +288,10 @@ export default function UploadPage() {
     if (processedUrls.length === 0 || generationBusy.current) return;
     generationBusy.current = true;
     const genCount = Math.min(processedUrls.length, gensLeft, MAX_TOTAL - totalVideos);
+    if (genCount <= 0) { generationBusy.current = false; return; }
     setIsGenerating(true); setError(null);
+    const newUrls: string[] = []; const newLabels: string[] = [];
     try {
-      const newUrls: string[] = []; const newLabels: string[] = [];
       const requests = Array.from({ length: genCount }, (_, k) => {
         const ai = appendActions[k] ?? 0;
         const pi = Math.min(k, processedUrls.length - 1);
@@ -277,22 +302,19 @@ export default function UploadPage() {
         if (!videoUrls.includes(data.videoUrl) && !newUrls.includes(data.videoUrl)) {
           newUrls.push(data.videoUrl); newLabels.push(data.actionLabel || 'Pet animation');
         }
-        const savedUrls = [...videoUrls, ...newUrls], savedLabels = [...videoLabels, ...newLabels];
-        setVideoUrls(savedUrls); setVideoLabels(savedLabels); setKeepFlags(savedUrls.map((_, i) => i < FINAL));
-        await syncToDB(savedUrls, savedLabels);
         await acknowledgeGeneration(data.jobId);
-      });
-      // APPEND to existing videos
+        await refreshSub();
+      }, updateBatchProgress);
+    } catch (err) { setError(err instanceof Error ? err.message : 'Append failed.'); }
+    finally {
       const allUrls = [...videoUrls, ...newUrls];
       const allLabels = [...videoLabels, ...newLabels];
       setVideoUrls(allUrls); setVideoLabels(allLabels);
       setKeepFlags(allUrls.map((_, i) => i < FINAL ? true : false));
       setFiles([]); setPreviewUrls([]); setProcessedUrls([]);
-      await syncToDB(allUrls, allLabels);
-      refreshSub();
       setStage('done');
-    } catch (err) { setError(err instanceof Error ? err.message : 'Append failed.'); }
-    finally { generationBusy.current = false; setIsGenerating(false); refreshSub(); }
+      generationBusy.current = false; setIsGenerating(false); finishBatchPresentation(); void refreshSub();
+    }
   };
 
   // ═══════════════════════════════════════════════
@@ -368,7 +390,7 @@ export default function UploadPage() {
               ? `Plus — Step 1: pick up to 5 actions · Step 2: add more videos if needed · Step 3: pick your ${FINAL} favorites`
               : tier === 'basic' ? 'Basic — 1 default action' : 'Choose a custom pet option to generate animations'}
           </p>
-          {(tier === 'plus' || tier === 'basic') && <p className="text-xs text-mint mt-1">{gensLeft} generations left · {totalVideos} videos so far</p>}
+          {(tier === 'plus' || tier === 'basic') && <p className="text-sm text-text-secondary mt-2">{gensLeft} generations left{batchProgress ? ` · ${progressCounts(batchProgress).unfinished} in this batch` : ` · ${totalVideos} videos so far`}</p>}
           {tier === 'free' && <p className="text-xs text-text-secondary/60 mt-1">Upload your photo first; choose a one-time custom pet option when you&apos;re ready to generate.</p>}
         </div>
 
@@ -384,6 +406,11 @@ export default function UploadPage() {
         )}
 
         <AnimatePresence mode="wait">
+
+          {batchProgress ? (
+            <GenerationProgress key="batch-progress" progress={batchProgress} working={isGenerating} error={error}
+              onResume={() => { if (!generationBusy.current) { setError(null); setRestoreAttempt(attempt => attempt + 1); } }} />
+          ) : <>
 
           {/* ═══════════════════════ FINALIZED ═══════════════════════ */}
           {stage === 'finalized' ? (
@@ -726,6 +753,7 @@ export default function UploadPage() {
               )}
             </motion.div>
           )}
+          </>}
         </AnimatePresence>
 
         {/* ═══════════════════════ FINALIZE CONFIRMATION DIALOG ═══════════════════════ */}

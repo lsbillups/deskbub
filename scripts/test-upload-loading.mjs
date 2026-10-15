@@ -10,6 +10,8 @@ const overrides={
  '@vercel/analytics':{track:noop},
  '@/lib/supabase/client':{createClient:()=>{throw Error('No storage during loading render');}},
  '@/components/upload/DropZone':{__esModule:true,default:()=>React.createElement('div',null,'Upload controls')},
+ '@/components/upload/GenerationProgress':{__esModule:true,default:()=>React.createElement('div',null,'Batch progress')},
+ '@/lib/generation/progress':{progressCounts:()=>({unfinished:0})},
  '@/lib/generation/actions':{petActions:{},actionRequest:noop},
  '@/lib/generation/client':{runGeneration:noop,runVideoBatch:noop,resumePendingGenerations:noop,acknowledgeGeneration:noop},
 };

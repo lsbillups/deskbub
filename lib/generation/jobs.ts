@@ -19,11 +19,11 @@ export type MediaProvider = Pick<PetMediaService, 'create' | 'get' | 'file'> & P
 export function jobResponse(job: Job) {
   if (job.status === 'succeeded') return { status: 200, body: { success: true, jobId: job.id, ...job.result } };
   if (job.status === 'failed' || job.status === 'uncertain') return { status: 409, body: {
-    jobId: job.id, error: job.status === 'uncertain'
+    jobId: job.id, status: job.status, error: job.status === 'uncertain'
       ? 'This generation needs support review before another attempt. Your saved task has been preserved.'
       : 'Processing failed. No automatic new generation was made.',
   } };
-  return { status: 202, body: { jobId: job.id, status: 'processing', retryAfterMs: 5000 } };
+  return { status: 202, body: { jobId: job.id, status: 'processing', phase: job.state.phase, retryAfterMs: 5000 } };
 }
 
 // One resumable step per request. A persisted *_submitting phase without an ID

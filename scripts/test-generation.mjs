@@ -5,3 +5,7 @@ await import('./test-generation-sync.mjs');
 await import('./test-animation-selection.mjs');
 await import('./test-generation-batches.mjs');
 await import('./test-upload-loading.mjs');
+await import('./test-batch-presentation.mjs');
+await import('./test-progress-recovery.mjs');
+await import('./test-upload-recovery-page.mjs');
+await import('./test-generation-inventory.mjs');
