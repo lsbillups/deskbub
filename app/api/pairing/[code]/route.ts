@@ -14,17 +14,18 @@ export async function GET(
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('pet_data')
-      .select('video_url, processed_url, action_label, processed_url')
+      .select('video_url, processed_url, action_label')
       .eq('pairing_code', code)
       .order('created_at', { ascending: false });
 
-    if (error || !data || data.length === 0) {
+    if (error) return NextResponse.json({ error: 'Saved pets are temporarily unavailable.' }, { status: 503 });
+    if (!data || data.length === 0) {
       return NextResponse.json({ error: 'No pet found for this code.' }, { status: 404 });
     }
 
     const videos = data
-      .filter((d: any) => d.video_url)
-      .map((d: any) => ({ url: d.video_url, label: d.action_label || 'Pet action', imageUrl: d.processed_url || '' }));
+      .filter(d => d.video_url)
+      .map(d => ({ url: d.video_url, label: d.action_label || 'Pet action', imageUrl: d.processed_url || '' }));
 
     return NextResponse.json({
       videos: videos.length > 0 ? videos : null,

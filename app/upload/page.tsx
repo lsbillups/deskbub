@@ -1,20 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { track } from '@vercel/analytics';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import DropZone from '@/components/upload/DropZone';
 import { motion, AnimatePresence } from 'framer-motion';
+import { petActions, actionRequest, type PetType } from '@/lib/generation/actions';
+import { runGeneration, runVideoBatch, resumePendingGenerations, acknowledgeGeneration } from '@/lib/generation/client';
 
 type Stage = 'select' | 'preview' | 'uploading' | 'processing' | 'done' | 'append' | 'appendActions' | 'finalized';
-type PetType = 'dog' | 'cat' | 'other';
-
-const petActions: Record<PetType, { label: string; actions: string[] }> = {
-  dog: { label: '🐶 Dog', actions: ['Panting & tongue out', 'Head tilting curiously', 'Tail wagging excitedly', 'Lying down relaxed', 'Sitting looking up'] },
-  cat: { label: '🐱 Cat', actions: ['Licking paw & grooming', 'Stretching & arching back', 'Curling up sleepy', 'Tail swishing slowly', 'Pouncing playfully'] },
-  other: { label: '🐾 Other Pet', actions: ['Casual walk exploring', 'Looking around curiously', 'Sitting calmly', 'Head tilting cute', 'Nibbling delicately'] },
-};
 
 export default function UploadPage() {
   const router = useRouter();
@@ -35,8 +30,13 @@ export default function UploadPage() {
   const [appendActions, setAppendActions] = useState<number[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [accountStatus, setAccountStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [accountAttempt, setAccountAttempt] = useState(0);
+  const [restoreAttempt, setRestoreAttempt] = useState(0);
   const [progress, setProgress] = useState(0);
   const [showFinalizeConfirm, setShowFinalizeConfirm] = useState(false);
+  const generationBusy = useRef(false);
+  const photoBusy = useRef(false);
 
   const MAX_ACTIONS = tier === 'plus' ? 5 : 1;
   const FINAL = 5;
@@ -44,38 +44,97 @@ export default function UploadPage() {
   const gensLeft = Math.max(0, gensMax - gensUsed);
   const totalVideos = videoUrls.length;
 
-  // ── Fetch subscription ──
-  useEffect(() => {
-    fetch('/api/check-subscription').then(r => r.json()).then(d => {
-      setTier(d.tier === 'plus' ? 'plus' : d.tier === 'basic' ? 'basic' : 'free');
-      setGensUsed(d.used || 0); setGensMax(d.max || 0);
-      setPairingCode(d.pairingCode);
-    });
-  }, []);
-
-  // ── Auto-load old videos (Plus only) ──
-  useEffect(() => {
-    if (!pairingCode || tier !== 'plus') return;
-    fetch(`/api/pairing/${pairingCode}`).then(r => r.json()).then(d => {
-      if (d.videos && d.videos.length > 0) {
-        setVideoUrls(d.videos.map((v: any) => v.url));
-        setVideoLabels(d.videos.map((v: any) => v.label));
-        setStage('finalized');
-      }
-    }).catch(() => {});
-  }, [pairingCode, tier]);
-
-  const syncToDB = async (urls: string[], labels: string[]) => {
-    await fetch('/api/sync-pet-data', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pairingCode, videos: urls.map((u, i) => ({ url: u, label: labels[i] })) }),
-    }).catch(() => {});
+  const refreshSub = () => {
+    fetch('/api/check-subscription').then(async r => {
+      if (!r.ok) throw new Error('Your generation balance could not be refreshed. Please refresh before continuing.');
+      const d = await r.json();
+      if (!Number.isSafeInteger(d.used) || !Number.isSafeInteger(d.max)) throw new Error('Your generation balance could not be loaded.');
+      setGensUsed(d.used); setGensMax(d.max);
+    }).catch(err => setError(err instanceof Error ? err.message : 'Your generation balance could not be refreshed.'));
   };
 
-  const refreshSub = () => {
-    fetch('/api/check-subscription').then(r => r.json()).then(d => {
-      setGensUsed(d.used || 0); setGensMax(d.max || 0);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/check-subscription', { signal: controller.signal }).then(async response => {
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Your account could not be loaded. Please try again.');
+      if (!['free', 'basic', 'plus'].includes(data.tier) || !Number.isSafeInteger(data.used) || !Number.isSafeInteger(data.max) ||
+          typeof data.pairingCode !== 'string' || !/^\d{6}$/.test(data.pairingCode)) throw new Error('Your account could not be loaded. Please try again.');
+      return data;
+    }).then(data => {
+      if (controller.signal.aborted) return;
+      setTier(data.tier); setGensUsed(data.used); setGensMax(data.max); setPairingCode(data.pairingCode);
+      if (data.tier === 'free') setAccountStatus('ready');
+      else setRestoreAttempt(attempt => attempt + 1);
+    }).catch(err => {
+      if (controller.signal.aborted) return;
+      setError(err instanceof Error ? err.message : 'Your account could not be loaded. Please try again.');
+      setAccountStatus('error');
     });
+    return () => controller.abort();
+  }, [accountAttempt]);
+
+  // Restore saved outputs and resume the same pending jobs after a refresh.
+  useEffect(() => {
+    if (!pairingCode || !['basic', 'plus'].includes(tier)) return;
+    let canceled = false;
+    let selectionLoaded = false;
+    const restore = async () => {
+      generationBusy.current = true; setIsGenerating(true);
+      const urls: string[] = [], labels: string[] = [], photos: string[] = [];
+      let alreadyFinalized = false;
+      {
+        const response = await fetch('/api/animation-selection');
+        if (!response.ok) throw new Error('Your saved pets could not be loaded. Please refresh before continuing.');
+        const data = await response.json();
+        if (!Array.isArray(data.videos) || !['draft', 'finalized'].includes(data.status)) throw new Error('Your saved pets could not be loaded. Please try again.');
+        selectionLoaded = true;
+        alreadyFinalized = data.status === 'finalized';
+        if (response.ok && Array.isArray(data.videos)) {
+          for (const video of data.videos) { urls.push(video.url); labels.push(video.label); }
+          if (!canceled && urls.length) {
+            setVideoUrls([...urls]); setVideoLabels([...labels]); setKeepFlags(urls.map((_, i) => i < 5));
+            setStage(data.status === 'finalized' ? 'finalized' : 'done');
+          }
+        }
+        if (!canceled) setAccountStatus('ready');
+      }
+      await resumePendingGenerations(async ({ endpoint, result }) => {
+        if (canceled) return;
+        // A lost acknowledgement must not restore discarded candidates or unlock
+        // a selection that was already confirmed in another tab.
+        if (alreadyFinalized) {
+          await acknowledgeGeneration(result.jobId);
+          return;
+        }
+        if (endpoint === '/api/generate-pet' && result.processedUrl) {
+          photos.push(result.processedUrl); setProcessedUrls([...photos]);
+          setChecked(petActions.dog.actions.map(() => photos.map(() => false)));
+          setAppendActions(photos.map(() => 0)); setStage(urls.length ? 'appendActions' : 'done');
+          // Keep the photo recoverable until a video made from it is saved.
+        }
+        if (result.videoUrl) {
+          if (!urls.includes(result.videoUrl)) { urls.push(result.videoUrl); labels.push(result.actionLabel || 'Pet animation'); }
+          setVideoUrls([...urls]); setVideoLabels([...labels]); setKeepFlags(urls.map((_, i) => i < 5)); setStage('done');
+          const sync = await fetch('/api/sync-pet-data', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pairingCode, finalize: tier === 'basic', videos: urls.map((url, i) => ({ url, label: labels[i] })) }) });
+          if (!sync.ok) throw new Error('Your video is saved. Desktop sync will resume after refresh.');
+          if (tier === 'basic') setStage('finalized');
+        }
+        if (result.videoUrl) await acknowledgeGeneration(result.jobId);
+      });
+    };
+    restore().catch(err => { if (!canceled) { setError(err instanceof Error ? err.message : 'Saved tasks could not be restored.'); if (!selectionLoaded) setAccountStatus('error'); } })
+      .finally(() => { if (!canceled) { generationBusy.current = false; setIsGenerating(false); refreshSub(); } });
+    return () => { canceled = true; };
+  }, [pairingCode, tier, restoreAttempt]);
+
+  const syncToDB = async (urls: string[], labels: string[], finalize = false) => {
+    const response = await fetch('/api/sync-pet-data', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pairingCode, finalize, videos: urls.map((u, i) => ({ url: u, label: labels[i] })) }),
+    });
+    if (!response.ok) throw new Error('Your videos are saved, but desktop sync could not finish. Resume the saved task instead of generating again.');
   };
 
   // ── Init checked matrix (Plus only) ──
@@ -101,31 +160,37 @@ export default function UploadPage() {
 
   // ── Upload + BG removal (shared by initial & append) ──
   const runBGRemoval = async (filesList: File[]) => {
+    if (photoBusy.current) return null;
+    photoBusy.current = true;
     setStage('uploading'); setProgress(0); setError(null);
     track('photo_upload_started', { plan: tier, photos: filesList.length });
+    const urls: string[] = [];
     try {
       const supabase = createClient();
-      const urls: string[] = [];
       for (let i = 0; i < filesList.length; i++) {
         const f = filesList[i];
-        const fn = `${Date.now()}-${f.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-        const { data: up, error: ue } = await supabase.storage.from('pet-photos').upload(fn, f, { cacheControl: '3600', upsert: false });
+        const authorization = await fetch('/api/upload-photo', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contentType: f.type, size: f.size }) });
+        const upload = await authorization.json();
+        if (!authorization.ok) throw new Error(upload.error || 'Photo upload could not be prepared.');
+        const { error: ue } = await supabase.storage.from('pet-photos').uploadToSignedUrl(upload.path, upload.token, f, { cacheControl: '3600', contentType: f.type });
         if (ue) throw new Error(`Upload failed: ${f.name}`);
-        const { data: urlData } = supabase.storage.from('pet-photos').getPublicUrl(up.path);
         setProgress(Math.round(((i + 1) / filesList.length) * 50));
         setStage('processing');
-        const res = await fetch('/api/generate-pet', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageUrl: urlData.publicUrl }) });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'BG removal failed.');
+        const data = await runGeneration('/api/generate-pet', { imageUrl: upload.publicUrl });
+        if (!data.processedUrl) throw new Error('The processed photo is unavailable.');
         urls.push(data.processedUrl);
+        setProcessedUrls([...urls]);
+        if (tier === 'plus') setChecked(petActions[petType].actions.map(() => urls.map(() => false)));
+        // Image delivery is finalized by the database after video completion.
       }
       setProcessedUrls(urls); setProgress(100);
       return urls;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error.');
-      setStage('preview');
+      setStage(urls.length ? 'done' : 'preview');
       return null;
-    }
+    } finally { photoBusy.current = false; }
   };
 
   // ── Initial BG removal ──
@@ -140,6 +205,8 @@ export default function UploadPage() {
 
   // ── Generate videos (shared) ──
   const handleGenerate = async () => {
+    if (generationBusy.current) return;
+    generationBusy.current = true;
     const pairs: { ai: number; pi: number }[] = [];
     if (tier === 'plus') {
       checked.forEach((row, ai) => row.forEach((v, pi) => { if (v) pairs.push({ ai, pi }); }));
@@ -149,23 +216,21 @@ export default function UploadPage() {
     }
     setIsGenerating(true); setError(null);
     try {
-      const urls: string[] = []; const labels: string[] = [];
-      for (let k = 0; k < pairs.length; k++) {
-        const { ai, pi } = pairs[k];
-        const res = await fetch('/api/generate-video', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageUrl: processedUrls[pi], petType, action: ai, actionLabel: petActions[petType].actions[ai] }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Generation failed.');
-        urls.push(data.videoUrl); labels.push(petActions[petType].actions[ai]);
-      }
+      const urls: string[] = [...videoUrls]; const labels: string[] = [...videoLabels];
+      await runVideoBatch(pairs.map(({ ai, pi }) => ({ imageUrl: processedUrls[pi], ...actionRequest(petType, ai) })), async data => {
+        if (!data.videoUrl) throw new Error('The generated video is unavailable.');
+        if (!urls.includes(data.videoUrl)) { urls.push(data.videoUrl); labels.push(data.actionLabel || 'Pet animation'); }
+        setVideoUrls([...urls]); setVideoLabels([...labels]); setKeepFlags(urls.map(() => true));
+        await syncToDB([...urls], [...labels], tier === 'basic');
+        await acknowledgeGeneration(data.jobId);
+        if (tier === 'basic') setStage('finalized');
+      });
       setVideoUrls(urls); setVideoLabels(labels);
       setKeepFlags(Array(urls.length).fill(true));
-      await syncToDB(urls, labels);
+      await syncToDB(urls, labels, tier === 'basic');
       refreshSub();
     } catch (err) { setError(err instanceof Error ? err.message : 'Generation failed.'); }
-    finally { setIsGenerating(false); }
+    finally { generationBusy.current = false; setIsGenerating(false); refreshSub(); }
   };
 
   // ═══════════════════════════════════════════════
@@ -196,22 +261,27 @@ export default function UploadPage() {
   };
 
   const handleAppendGenerate = async () => {
-    if (processedUrls.length === 0) return;
+    if (processedUrls.length === 0 || generationBusy.current) return;
+    generationBusy.current = true;
     const genCount = Math.min(processedUrls.length, gensLeft, MAX_TOTAL - totalVideos);
     setIsGenerating(true); setError(null);
     try {
       const newUrls: string[] = []; const newLabels: string[] = [];
-      for (let k = 0; k < genCount; k++) {
+      const requests = Array.from({ length: genCount }, (_, k) => {
         const ai = appendActions[k] ?? 0;
         const pi = Math.min(k, processedUrls.length - 1);
-        const res = await fetch('/api/generate-video', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ imageUrl: processedUrls[pi], petType, action: ai, actionLabel: petActions[petType].actions[ai] }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Append failed.');
-        newUrls.push(data.videoUrl); newLabels.push(petActions[petType].actions[ai]);
-      }
+        return { imageUrl: processedUrls[pi], ...actionRequest(petType, ai) };
+      });
+      await runVideoBatch(requests, async data => {
+        if (!data.videoUrl) throw new Error('The generated video is unavailable.');
+        if (!videoUrls.includes(data.videoUrl) && !newUrls.includes(data.videoUrl)) {
+          newUrls.push(data.videoUrl); newLabels.push(data.actionLabel || 'Pet animation');
+        }
+        const savedUrls = [...videoUrls, ...newUrls], savedLabels = [...videoLabels, ...newLabels];
+        setVideoUrls(savedUrls); setVideoLabels(savedLabels); setKeepFlags(savedUrls.map((_, i) => i < FINAL));
+        await syncToDB(savedUrls, savedLabels);
+        await acknowledgeGeneration(data.jobId);
+      });
       // APPEND to existing videos
       const allUrls = [...videoUrls, ...newUrls];
       const allLabels = [...videoLabels, ...newLabels];
@@ -222,7 +292,7 @@ export default function UploadPage() {
       refreshSub();
       setStage('done');
     } catch (err) { setError(err instanceof Error ? err.message : 'Append failed.'); }
-    finally { setIsGenerating(false); }
+    finally { generationBusy.current = false; setIsGenerating(false); refreshSub(); }
   };
 
   // ═══════════════════════════════════════════════
@@ -234,20 +304,24 @@ export default function UploadPage() {
   };
 
   const handleFinalizeConfirm = async () => {
-    setShowFinalizeConfirm(false);
-    const finalUrls: string[] = []; const finalLabels: string[] = [];
-    videoUrls.forEach((url, i) => {
-      if (totalVideos <= FINAL || keepFlags[i]) {
-        finalUrls.push(url); finalLabels.push(videoLabels[i]);
-      }
-    });
-    // If more than 5 videos, only keep selected ones
-    const keptUrls = finalUrls.slice(0, FINAL);
-    const keptLabels = finalLabels.slice(0, FINAL);
-    await syncToDB(keptUrls, keptLabels);
-    setVideoUrls(keptUrls); setVideoLabels(keptLabels);
-    setKeepFlags(Array(keptUrls.length).fill(true));
-    setStage('finalized');
+    if (generationBusy.current) return;
+    generationBusy.current = true; setIsGenerating(true); setError(null);
+    try {
+      setShowFinalizeConfirm(false);
+      const finalUrls: string[] = []; const finalLabels: string[] = [];
+      videoUrls.forEach((url, i) => {
+        if (totalVideos <= FINAL || keepFlags[i]) {
+          finalUrls.push(url); finalLabels.push(videoLabels[i]);
+        }
+      });
+      const keptUrls = finalUrls.slice(0, FINAL);
+      const keptLabels = finalLabels.slice(0, FINAL);
+      await syncToDB(keptUrls, keptLabels, true);
+      setVideoUrls(keptUrls); setVideoLabels(keptLabels);
+      setKeepFlags(Array(keptUrls.length).fill(true));
+      setStage('finalized');
+    } catch (err) { setError(err instanceof Error ? err.message : 'Your selection could not be confirmed. Please try saving again.'); }
+    finally { generationBusy.current = false; setIsGenerating(false); }
   };
 
   // ── Reset ──
@@ -260,6 +334,23 @@ export default function UploadPage() {
 
   const keepCount = keepFlags.filter(v => v).length;
   const checkedCount = checked.flat().filter(v => v).length;
+
+  // This must be visible in the first HTML response, before hydration or account
+  // requests finish. An unknown or failed account is never treated as Free.
+  if (accountStatus !== 'ready') {
+    return (
+      <main className="min-h-screen bg-cream pt-24 pb-16 px-6">
+        <div className="max-w-xl mx-auto text-center">
+          <h1 className="text-3xl sm:text-4xl font-display font-bold text-text-primary">Create Your Desktop Pet</h1>
+          <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-8" role={accountStatus === 'error' ? 'alert' : 'status'}>
+            <p className="text-text-secondary">{accountStatus === 'error' ? error : 'Loading your account and saved pets…'}</p>
+            {accountStatus === 'error' && <button onClick={() => { setAccountStatus('loading'); setError(null); setAccountAttempt(attempt => attempt + 1); }}
+              className="mt-5 rounded-full border border-coral px-5 py-2.5 font-semibold text-text-primary hover:bg-cream cursor-pointer">Try loading again</button>}
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   // ═══════════════════════════════════════════════
   // RENDER
@@ -281,6 +372,17 @@ export default function UploadPage() {
           {tier === 'free' && <p className="text-xs text-text-secondary/60 mt-1">Upload your photo first; choose a one-time custom pet option when you&apos;re ready to generate.</p>}
         </div>
 
+        {(stage === 'select' || stage === 'preview' || stage === 'append') && (
+          <p className="text-sm text-text-secondary text-center mb-6">
+            Choose a clear photo where your pet stands out from the background, with paws visible where possible.
+          </p>
+        )}
+        {tier === 'plus' && (petType === 'dog' || petType === 'cat') && (stage === 'done' || stage === 'appendActions') && (
+          <p className="text-sm text-text-secondary text-center mb-6">
+            For tail actions, choose a photo with the tail clearly visible. If it is hidden, choose another action.
+          </p>
+        )}
+
         <AnimatePresence mode="wait">
 
           {/* ═══════════════════════ FINALIZED ═══════════════════════ */}
@@ -292,7 +394,7 @@ export default function UploadPage() {
                 </span>
               </motion.div>
 
-              {tier === 'plus' && <p className="text-text-secondary text-sm mb-6">These {FINAL} videos are locked and cannot be changed.</p>}
+              {tier === 'plus' && <p className="text-text-secondary text-sm mb-6">{totalVideos === 1 ? 'This video is' : `These ${totalVideos} videos are`} locked and cannot be changed.</p>}
 
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 mb-8">
                 {videoUrls.map((url, i) => (
@@ -378,7 +480,7 @@ export default function UploadPage() {
 
                   <div className="flex justify-center gap-3 mb-4">
                     {(Object.keys(petActions) as PetType[]).map(t => (
-                      <button key={t} onClick={() => setPetType(t)}
+                      <button key={t} onClick={() => { setPetType(t); setChecked(petActions[t].actions.map(() => Array(processedUrls.length).fill(false))); setAppendActions(processedUrls.map(() => 0)); }}
                         className={`px-4 py-2 rounded-full font-semibold text-xs cursor-pointer ${petType === t ? 'bg-coral text-white shadow-lg' : 'bg-white border'}`}>
                         {petActions[t].label}
                       </button>
@@ -431,7 +533,7 @@ export default function UploadPage() {
                   {/* Pet type selector */}
                   <div className="flex justify-center gap-3 mb-4">
                     {(Object.keys(petActions) as PetType[]).map(t => (
-                      <button key={t} onClick={() => setPetType(t)}
+                      <button key={t} onClick={() => { setPetType(t); setChecked(petActions[t].actions.map(() => Array(processedUrls.length).fill(false))); setAppendActions(processedUrls.map(() => 0)); }}
                         className={`px-4 py-2 rounded-full font-semibold text-xs cursor-pointer ${petType === t ? 'bg-coral text-white shadow-lg shadow-coral/25' : 'bg-white border border-gray-200 text-text-secondary hover:border-coral/30'}`}>
                         {petActions[t].label}
                       </button>
@@ -454,7 +556,7 @@ export default function UploadPage() {
                                 <td className="py-3 pr-4 font-medium text-text-primary text-sm">{action}</td>
                                 {processedUrls.map((_, pi) => (
                                   <td key={pi} className="text-center px-3 py-3">
-                                    <button onClick={() => toggleCheck(ai, pi)}
+                                    <button onClick={() => toggleCheck(ai, pi)} aria-label={`${action}, photo ${pi + 1}`} aria-pressed={checked[ai]?.[pi] || false}
                                       className={`w-10 h-10 rounded-xl text-lg font-bold cursor-pointer ${checked[ai]?.[pi] ? 'bg-coral text-white shadow-md' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'}`}>
                                       {checked[ai]?.[pi] ? '✓' : ''}
                                     </button>
@@ -483,6 +585,7 @@ export default function UploadPage() {
               {videoUrls.length > 0 && (
                 <div className="mb-8">
                   <p className="text-center text-mint font-semibold mb-3">{totalVideos} Video{totalVideos !== 1 ? 's' : ''} Generated</p>
+                  {isGenerating && <p role="status" className="text-center text-sm text-text-secondary mb-4">Finishing your saved actions. Your completed videos are safe.</p>}
 
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                     {videoUrls.map((url, i) => (
@@ -493,7 +596,7 @@ export default function UploadPage() {
                           <a href={url} download className="text-coral underline text-xs" target="_blank" rel="noopener">Download</a>
                           {totalVideos > FINAL && (
                             <label className="flex items-center gap-2 text-sm text-white/80 cursor-pointer font-semibold select-none">
-                              <input type="checkbox" checked={keepFlags[i] || false}
+                              <input type="checkbox" checked={keepFlags[i] || false} disabled={isGenerating}
                                 onChange={() => {
                                   const f = [...keepFlags]; f[i] = !f[i];
                                   if (f.filter(v => v).length <= FINAL || !f[i]) setKeepFlags(f);
@@ -512,7 +615,7 @@ export default function UploadPage() {
 
                     {/* Add More Videos */}
                     {totalVideos < MAX_TOTAL && gensLeft > 0 && (
-                      <button onClick={handleStartAppend}
+                      <button onClick={handleStartAppend} disabled={isGenerating}
                         className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 transition-all text-sm cursor-pointer">
                         ➕ Add More Videos ({gensLeft} left · {totalVideos}/{MAX_TOTAL})
                       </button>
@@ -520,7 +623,7 @@ export default function UploadPage() {
 
                     {/* Finalize */}
                     {totalVideos > FINAL && (
-                      <button onClick={handleFinalizeClick} disabled={keepCount !== FINAL}
+                      <button onClick={handleFinalizeClick} disabled={isGenerating || keepCount !== FINAL}
                         className="px-6 py-3 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all disabled:opacity-50 text-sm cursor-pointer">
                         ✅ Finalize {keepCount}/{FINAL} Videos
                       </button>
@@ -528,7 +631,7 @@ export default function UploadPage() {
 
                     {/* Confirm when exactly FINAL */}
                     {totalVideos > 0 && totalVideos <= FINAL && (
-                      <button onClick={handleFinalizeClick}
+                      <button onClick={handleFinalizeClick} disabled={isGenerating}
                         className="px-6 py-3 bg-mint text-white font-semibold rounded-full hover:bg-mint-dark transition-all text-sm cursor-pointer">
                         ✅ Confirm & Lock Videos
                       </button>
@@ -539,7 +642,7 @@ export default function UploadPage() {
                   {/* ── Download guide ── */}
                   {videoUrls.length > 0 && (
                   <div className="mt-8 bg-gradient-to-b from-mint/5 to-white rounded-2xl border border-mint/20 p-6 text-center">
-                    <h3 className="font-display font-bold text-text-primary text-lg mb-4">📥 How to see your pet on your desktop</h3>
+                    <h3 className="font-display font-bold text-text-primary text-lg mb-4">📥 After confirming your videos</h3>
                     <div className="grid sm:grid-cols-3 gap-4 text-left">
                       <div className="flex items-start gap-3">
                         <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">1</span>
@@ -547,7 +650,7 @@ export default function UploadPage() {
                       </div>
                       <div className="flex items-start gap-3">
                         <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">2</span>
-                        <div><p className="text-sm font-semibold text-text-primary">Enter Pairing Code</p><p className="text-xs text-text-secondary mt-0.5">Open the app and enter the code below</p></div>
+                        <div><p className="text-sm font-semibold text-text-primary">Enter Pairing Code</p><p className="text-xs text-text-secondary mt-0.5">Your code appears after you confirm your videos</p></div>
                       </div>
                       <div className="flex items-start gap-3">
                         <span className="text-2xl shrink-0 w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center">3</span>
@@ -560,13 +663,7 @@ export default function UploadPage() {
                   </div>
                   )}
 
-                  {pairingCode && (
-                    <div className="mt-6 p-4 bg-mint/5 rounded-xl border border-mint/20 text-center">
-                      <p className="text-sm font-semibold text-mint mb-1">🔗 Your Pairing Code</p>
-                      <code className="text-3xl font-mono font-bold tracking-[0.3em] text-coral select-all">{pairingCode}</code>
-                      <p className="text-xs text-text-secondary/60 mt-1">Enter this code in the DeskBub desktop app to sync your pet.</p>
-                    </div>
-                  )}
+                  <p className="mt-6 text-sm text-text-secondary text-center">Your candidate videos are saved. Confirm your selection above to sync them to the desktop app.</p>
                 </div>
               )}
 

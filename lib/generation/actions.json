@@ -1,0 +1,107 @@
+[
+  {
+    "id": "dog-pant",
+    "pet": "dog",
+    "index": 0,
+    "label": "Panting & tongue out",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe dog pants gently with its tongue visible, with soft breathing and only small natural head movements. Its body remains in its starting pose."
+  },
+  {
+    "id": "dog-tilt",
+    "pet": "dog",
+    "index": 1,
+    "label": "Curious head tilt",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe dog slowly tilts its head a small amount to one side, pauses, then returns to its starting head position. Its body stays steady and its ears retain their original shape."
+  },
+  {
+    "id": "dog-walk",
+    "pet": "dog",
+    "index": 2,
+    "label": "Walking in place",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe dog performs a slow, natural four-legged walking cycle in place, with alternating paw lifts and placements and gentle body bobbing. Keep the body centered without turning or traveling across the frame. Repeat this one walking action at a steady pace."
+  },
+  {
+    "id": "dog-tail",
+    "pet": "dog",
+    "index": 3,
+    "label": "Gentle tail wag",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe dog gently wags the tail already visible in the reference from side to side. Its body stays steady, with no bouncing. Preserve the visible tail's length and shape."
+  },
+  {
+    "id": "dog-lie",
+    "pet": "dog",
+    "index": 4,
+    "label": "Lying down relaxed",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe dog gently lowers its body into a relaxed lying position, then rests with soft breathing and a relaxed expression."
+  },
+  {
+    "id": "cat-groom",
+    "pet": "cat",
+    "index": 0,
+    "label": "Paw grooming",
+    "prompt": "The cat gently grooms one visible front paw while remaining in its original resting pose. Its torso, hips, and hind legs stay in place. It bends its neck and lowers its muzzle toward the paw, which moves only slightly to meet it. The tongue makes two or three short strokes on the back of the paw. It pauses and gently lifts its head again.\n\nPreserve the cat's face, coat markings, proportions, and visible tail shape and position. Keep the whole cat centered at a constant scale with clear margins. Fixed camera.\n\nThe cat remains isolated against the same flat chroma-key green (#12FD10). Every background pixel, including the area beneath the cat, stays the same solid green throughout. The background is completely textureless and shadowless."
+  },
+  {
+    "id": "cat-stretch",
+    "pet": "cat",
+    "index": 1,
+    "label": "Stretching",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe cat performs one slow natural stretch, extending its front legs and gently arching its back, then relaxes toward its starting pose."
+  },
+  {
+    "id": "cat-walk",
+    "pet": "cat",
+    "index": 2,
+    "label": "Walking in place",
+    "prompt": "Starting from its current pose, the cat makes only the brief posture adjustment needed to bring all four paws beneath its body. With its torso nearly horizontal, it promptly begins a slow four-legged walking cycle in place. The front and hind paws take short alternating steps, lifting just clear and returning beneath the shoulders and hips. Small coordinated weight shifts pass through the shoulders and pelvis. Continue the stepping action while the body stays centered and faces the same general direction.\n\nPreserve the cat's face, coat markings, natural body proportions, and visible tail length and markings. Keep tail motion small and inside the frame, and keep an unseen tail out of view. Keep the whole cat centered at a constant scale with clear margins. Fixed camera.\n\nThe cat stays isolated against flat chroma-key green (#12FD10). All background pixels, including the area beneath the cat, remain the same solid green throughout. The background is completely textureless and shadowless."
+  },
+  {
+    "id": "cat-tail",
+    "pet": "cat",
+    "index": 3,
+    "label": "Slow tail swish",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe cat slowly swishes the tail already visible in the reference from side to side, keeping the rest of its body relaxed and steady. Preserve the visible tail's length and shape."
+  },
+  {
+    "id": "cat-rest",
+    "pet": "cat",
+    "index": 4,
+    "label": "Curled-up rest",
+    "prompt": "Starting from its current pose, the cat makes a small, smooth settling movement into a compact curled resting position. As needed, it bends its legs and lowers its chest and abdomen together, drawing the front paws beneath the chest and folding the hind legs close beside the belly. Its back forms a gentle curve as the body settles, and its head lowers last toward the front paws. Once settled, the cat rests quietly with subtle breathing.\n\nPreserve the cat's face, coat markings, natural body proportions, and visible tail length and markings. Keep tail motion small and inside the frame, and keep an unseen tail out of view. Keep the whole cat centered at a constant scale with clear margins. Fixed camera.\n\nThe cat stays isolated against flat chroma-key green (#12FD10). All background pixels, including the area beneath the cat, remain the same solid green throughout. The background is completely textureless and shadowless."
+  },
+  {
+    "id": "other-walk",
+    "pet": "other",
+    "index": 0,
+    "label": "Casual walk exploring",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe pet makes a few slow natural steps in place, with a curious expression, while remaining centered."
+  },
+  {
+    "id": "other-look",
+    "pet": "other",
+    "index": 1,
+    "label": "Looking around curiously",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe pet makes small curious head movements to either side, then returns its gaze toward the starting direction. Its body stays steady."
+  },
+  {
+    "id": "other-sit",
+    "pet": "other",
+    "index": 2,
+    "label": "Sitting calmly",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe pet settles into its species-appropriate resting seated posture and stays calm with gentle breathing."
+  },
+  {
+    "id": "other-tilt",
+    "pet": "other",
+    "index": 3,
+    "label": "Head tilting cute",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe pet slowly makes one small head tilt, blinks gently, and returns to its starting head position."
+  },
+  {
+    "id": "other-nibble",
+    "pet": "other",
+    "index": 4,
+    "label": "Nibbling delicately",
+    "prompt": "Animate only the pet shown in the reference image. Preserve its face, coat color and markings, ear shape, body proportions, and worn accessories. Keep its original facing direction and the visibility of its body parts; parts hidden in the reference remain hidden rather than being revealed or redesigned. Keep non-pet objects from the reference out of the scene.\n\nUse a locked camera with constant framing and subject scale. Keep all visible parts of the pet inside the frame with clear margins. Throughout every frame, the entire area around and beneath the pet is a flat, uniform chroma key green background. The pet is isolated directly against this green field, with no visible floor, ground surface, horizon, cast shadow, scenery, props, or additional animals.\n\nThe pet makes small natural nibbling or chewing movements appropriate to its species, with the body steady. Keep the mouth area free of added food, bowls, or hands."
+  }
+]

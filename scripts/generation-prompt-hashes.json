@@ -1,0 +1,77 @@
+[
+  {
+    "pet": "dog",
+    "index": 0,
+    "sha256": "e92a15d9aa72d620a4956250763481562fab9fe135cb06cbaded06d83cbe3984"
+  },
+  {
+    "pet": "dog",
+    "index": 1,
+    "sha256": "4ae18e0caae79efd8d0430e5a6dee0dd955e6f5e849bc1ce05a8284daa1de69a"
+  },
+  {
+    "pet": "dog",
+    "index": 2,
+    "sha256": "1a81261aea4b417626b15d4863dc29e58ee3c3de75b41df06d4668a72bdaed56"
+  },
+  {
+    "pet": "dog",
+    "index": 3,
+    "sha256": "fcea5ac513cff6b9e016b06fa8de90ae57ec565bf6ba0bd4e405fd85b7f060f9"
+  },
+  {
+    "pet": "dog",
+    "index": 4,
+    "sha256": "9270cd42e5783ec062c6dd257957f569f13e028d50558d328b3f063f8de38e3f"
+  },
+  {
+    "pet": "cat",
+    "index": 0,
+    "sha256": "3e4baeccf5b72f0976acd0089cce52b630fc73203246240de7a0d77a0fec2627"
+  },
+  {
+    "pet": "cat",
+    "index": 1,
+    "sha256": "ffa1042d2e009a95e3b1f749e121ec040a8c500492375d5277d287616fc7613b"
+  },
+  {
+    "pet": "cat",
+    "index": 2,
+    "sha256": "cc690cf882ac628f9ff4664fc83d97021cad76c8eafa78c46517ee60848b32fe"
+  },
+  {
+    "pet": "cat",
+    "index": 3,
+    "sha256": "c4b9a82f3eceef4b09401e6ef6c80546eef58c9a6cbd26126ef7778069a81176"
+  },
+  {
+    "pet": "cat",
+    "index": 4,
+    "sha256": "bddf77e2f5260f547e9ff5f83ae85b897fd41167287ea59d045ecb9c1582a44c"
+  },
+  {
+    "pet": "other",
+    "index": 0,
+    "sha256": "1db499d9b238e4c97e49fc49c5c3675f74ed75b00888dc3276b8ac8429e42b25"
+  },
+  {
+    "pet": "other",
+    "index": 1,
+    "sha256": "14d7cadf82f14384b35f7273522e6dfc6cba53b6b33c8109cd2d68b11a6409c8"
+  },
+  {
+    "pet": "other",
+    "index": 2,
+    "sha256": "9aedf299a2ca50ca3b762b70bd68f7edda1c3955b488daac44007a4bbd6ac10a"
+  },
+  {
+    "pet": "other",
+    "index": 3,
+    "sha256": "4c6ba590a7cf34b6b3599090f47bb2ce057fce107bf49277dbe3010a97230b6b"
+  },
+  {
+    "pet": "other",
+    "index": 4,
+    "sha256": "02c47b0de004a80fc86b27e45421592a18ddae56b71686bf9d6b0419768a274f"
+  }
+]
