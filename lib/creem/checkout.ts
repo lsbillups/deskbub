@@ -7,7 +7,8 @@ type CheckoutRpc = (name: string, args: Record<string, string | number>) =>
   PromiseLike<{ data: unknown; error: unknown }>;
 
 export async function createTrackedCheckout(userId: string, plan: Plan, rpc: CheckoutRpc,
-  env: NodeJS.ProcessEnv = process.env, request: typeof fetch = fetch, requestId = randomUUID()) {
+  env: NodeJS.ProcessEnv = process.env, request: typeof fetch = fetch, requestId = randomUUID(), returnPath = '/dashboard?upgraded=true') {
+  if (!['/dashboard?upgraded=true', '/custom-desktop-pet?upgraded=true#custom-create'].includes(returnPath)) throw new Error('Invalid checkout return path');
   assertCheckoutAllowed(env);
   const productId = productForPlan(plan, env);
   const key = env.CREEM_API_KEY;
@@ -34,7 +35,7 @@ export async function createTrackedCheckout(userId: string, plan: Plan, rpc: Che
   const response = await request(base + '/v1/checkouts', {
     method: 'POST', headers: { 'x-api-key': key, 'Content-Type': 'application/json' },
     body: JSON.stringify({ product_id: productId, request_id: requestId,
-      success_url: new URL('/dashboard?upgraded=true', appUrl).href, metadata: { userId } }),
+      success_url: new URL(returnPath, appUrl).href, metadata: { userId } }),
     signal: AbortSignal.timeout(15000),
   });
   const data = await response.json();

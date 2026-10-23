@@ -27,7 +27,7 @@ export default function Features() {
             </article>
           ))}
         </div>
-        <div className="mt-12 text-center"><Link href="/upload" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Create My Desktop Pet</Link></div>
+        <div className="mt-12 text-center"><Link href="/custom-desktop-pet#custom-create" className="inline-block rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Create My Desktop Pet</Link></div>
       </div>
     </section>
   );

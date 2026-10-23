@@ -38,8 +38,9 @@ const client=loader()('lib/generation/client.ts');
 function loadJsx(file,overrides){const m={exports:{}};const js=ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;vm.runInThisContext(`(function(require,module,exports){${js}\n})`)(id=>overrides[id]||require(id),m,m.exports);return m.exports.default;}
 const helpers=loader()('lib/generation/progress.ts');
 const Progress=loadJsx('components/upload/GenerationProgress.tsx',{'@/lib/generation/progress':helpers});
-const Page=loadJsx('app/upload/page.tsx',{
- react:fakeReact,'next/navigation':{useRouter:()=>({push(){}})},'@vercel/analytics':{track(){}},'framer-motion':{motion,AnimatePresence:({children})=>children},
+const Page=loadJsx('components/custom/CustomPetWorkspace.tsx',{
+ '@/components/custom/PhotoPreviewEditor':{__esModule:true,default:()=>null},
+ '@/lib/custom-draft':{clearCustomDraft:async()=>{}},react:fakeReact,'next/navigation':{useRouter:()=>({push(){}})},'@vercel/analytics':{track(){}},'framer-motion':{motion,AnimatePresence:({children})=>children},
  '@/lib/supabase/client':{createClient(){throw Error('No uploads in recovery test');}},'@/components/upload/DropZone':{__esModule:true,default:()=>React.createElement('div',null,'Photo upload controls')},
  '@/components/upload/GenerationProgress':{__esModule:true,default:Progress},'@/lib/generation/actions':loader()('lib/generation/actions.ts'),'@/lib/generation/client':client,'@/lib/generation/progress':helpers,
 });

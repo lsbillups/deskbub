@@ -41,7 +41,7 @@ export default function Navbar() {
           ) : (
             <SignInButton mode="modal"><button className="cursor-pointer rounded-full px-3.5 py-2 text-sm font-semibold text-text-secondary transition hover:bg-white hover:text-text-primary">Sign In</button></SignInButton>
           )}
-          <Link href="/upload" className="ml-2 rounded-full bg-coral px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-coral/20 transition hover:bg-coral-dark">Create My Pet</Link>
+          <Link href="/custom-desktop-pet#custom-create" className="ml-2 rounded-full bg-coral px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-coral/20 transition hover:bg-coral-dark">Create My Pet</Link>
         </div>
 
         <button
@@ -67,7 +67,7 @@ export default function Navbar() {
             ) : (
               <SignInButton mode="modal"><button onClick={closeMenu} className="w-full cursor-pointer rounded-xl px-4 py-3 text-left font-semibold text-text-primary hover:bg-white">Sign In</button></SignInButton>
             )}
-            <Link href="/upload" onClick={closeMenu} className="mt-2 rounded-full bg-coral px-5 py-3 text-center font-bold text-white">Create My Pet</Link>
+            <Link href="/custom-desktop-pet#custom-create" onClick={closeMenu} className="mt-2 rounded-full bg-coral px-5 py-3 text-center font-bold text-white">Create My Pet</Link>
           </div>
         </div>
       )}

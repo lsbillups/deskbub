@@ -4,11 +4,17 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import PetVideos from '@/components/custom/PetDashboard';
+import type { PetVideo } from '@/lib/dashboard';
+import { ShareStatus } from '@/components/share/ShareBasic';
 
-export default function DashboardPage() {
+function DashboardSession() {
   const { user } = useUser();
   const [pairingCode, setPairingCode] = useState<string | null>(null);
   const [tier, setTier] = useState('free');
+  const [videos, setVideos] = useState<PetVideo[]>([]);
+  const [finalized, setFinalized] = useState(false);
+  const [staging, setStaging] = useState(false);
   const [gensUsed, setGensUsed] = useState(0);
   const [gensMax, setGensMax] = useState(0);
   const [accountError, setAccountError] = useState<string | null>(null);
@@ -19,22 +25,25 @@ export default function DashboardPage() {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout>;
     let attempts = 0;
-    if (returnedFromCheckout) setPaymentStatus('waiting');
+    
     const loadAccount = async () => {
       attempts++;
       try {
-        const r = await fetch('/api/check-subscription', { cache: 'no-store' });
+        const r = await fetch('/api/dashboard', { cache: 'no-store' });
         const d = await r.json();
         if (!r.ok) throw new Error(d.error);
+        if (!Array.isArray(d.videos) || typeof d.finalized !== 'boolean' || !/^\d{6}$/.test(d.pairingCode)) throw new Error('Your saved pets could not be loaded.');
         if (cancelled) return;
         setTier(d.tier === 'plus' ? 'plus' : d.tier === 'basic' ? 'basic' : 'free');
         setGensUsed(d.used || 0);
         setGensMax(d.max || 0);
         setPairingCode(d.pairingCode);
+        setVideos(d.videos); setFinalized(d.finalized); setStaging(d.staging);
         setAccountError(null);
         // The return URL is only a signal to recheck. Only the server balance confirms access.
         if (!returnedFromCheckout) return;
         if (d.tier !== 'free' && d.max > 0) { setPaymentStatus('confirmed'); return; }
+        setPaymentStatus('waiting');
       } catch (e) {
         if (cancelled) return;
         setAccountError(e instanceof Error ? e.message : 'Please retry loading your account.');
@@ -78,16 +87,16 @@ export default function DashboardPage() {
             </div>
             <div className="text-right">
               {gensMax === 0 && <p className="text-sm text-text-secondary">No generations yet</p>}
-              {gensMax > 0 && gensLeft === 0 && <p className="text-sm text-coral font-medium">All used — share or upgrade!</p>}
+              {finalized && <p className="text-sm text-mint font-medium">Pet confirmed</p>}
             </div>
           </div>
 
           {/* Quick actions */}
           <div className="mt-5 flex gap-3 flex-wrap">
-            {gensLeft > 0 ? (
-              <Link href="/upload"
+            {videos.length > 0 || gensLeft > 0 ? (
+              <Link href="/custom-desktop-pet#custom-create"
                 className="px-5 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral-dark transition-all shadow-lg shadow-coral/25">
-                📸 Upload Pet Photo
+                {finalized ? '🐾 View My Pet' : videos.length > 0 ? '📸 Continue My Pet' : '📸 Upload Pet Photo'}
               </Link>
             ) : paymentStatus !== 'waiting' && paymentStatus !== 'delayed' ? (
               <Link href="/pricing"
@@ -102,6 +111,10 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
+        {videos.length > 0 && <PetVideos key={user?.id || 'anonymous'} videos={videos} finalized={finalized} />}
+
+        <ShareStatus />
+
         {/* Pairing Code */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="mt-6 bg-mint/5 rounded-2xl border border-mint/20 p-6 text-center">
@@ -110,7 +123,7 @@ export default function DashboardPage() {
             {pairingCode || '------'}
           </code>
           <p className="text-xs text-text-secondary/60 mt-2">
-            Enter this code in the DeskBub desktop app to sync your pet.
+            {staging ? 'Local test code · use the test app only.' : 'Enter this code in the DeskBub desktop app to sync your pet.'}
           </p>
         </motion.div>
 
@@ -119,7 +132,7 @@ export default function DashboardPage() {
           className="mt-6 text-center">
           <p className="text-text-secondary text-sm">
             New to DeskBub?{' '}
-            <Link href="/upload" className="text-coral font-semibold hover:underline">
+            <Link href="/custom-desktop-pet#custom-create" className="text-coral font-semibold hover:underline">
               Upload a photo to get started
             </Link>
             {' '}or{' '}
@@ -132,4 +145,11 @@ export default function DashboardPage() {
       </div>
     </main>
   );
+}
+
+export default function DashboardPage() {
+  const { user, isLoaded } = useUser();
+  if (!isLoaded) return <main className="min-h-screen bg-cream pt-24 px-6"><p role="status" className="text-center text-text-secondary">Loading your account…</p></main>;
+  if (!user) return <main className="min-h-screen bg-cream pt-24 px-6 text-center"><Link href="/sign-in?redirect_url=%2Fdashboard">Sign in to see your pets</Link></main>;
+  return <DashboardSession key={user.id} />;
 }

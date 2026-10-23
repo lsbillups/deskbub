@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import assert from 'node:assert/strict';
+const ffprobe = path.resolve('../../deskbub-content/ffmpeg/bin/ffprobe.exe');
+const ffmpeg = path.resolve('../../deskbub-content/ffmpeg/bin/ffmpeg.exe');
+const code = fs.readFileSync('lib/share-compose.ts','utf8');
+const share = /SHARE_VIDEO\s*=\s*'([^']+)'/.exec(code)?.[1];
+assert.ok(share, 'Social sharing must select a concrete video asset');
+const probe = file => JSON.parse(execFileSync(ffprobe, ['-v','error','-select_streams','v:0','-show_entries','stream=width,height,sample_aspect_ratio,codec_name,pix_fmt,duration','-of','json',file], {encoding:'utf8',windowsHide:true})).streams[0];
+const videoPath = path.join('public',share), video = probe(videoPath);
+assert.equal(video.width*16, video.height*9,
+  'The social clip must fit a 9:16 Reel without auto-cropping Kaka off the right side');
+assert.equal(video.sample_aspect_ratio, '1:1');
+assert.equal(video.codec_name, 'h264');
+assert.equal(video.pix_fmt, 'yuv420p');
+const desktopPath='public/media/custom-desktop-demo/kaka-windows-clear-v2.mp4';
+const desktop=probe(desktopPath);
+assert.equal(desktop.width,1280,'Desktop demo must retain its existing landscape asset');
+assert.equal(desktop.height,716);
+assert.ok(Math.abs(Number(video.duration)-Number(desktop.duration))<0.05,'Preserve the complete original demonstration');
+execFileSync(ffmpeg,['-hide_banner','-loglevel','error','-i',videoPath,'-f','null','-'],{windowsHide:true});
+console.log(JSON.stringify({shareVideo:share,portraitWithoutReelCrop:true,squarePixels:true,completeVideoDecodes:true,desktopDemoUnchanged:true,modelCalls:0}));

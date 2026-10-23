@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url),ts=require('typescript'),React=require('react'),{renderToStaticMarkup}=require('react-dom/server');
+const module={exports:{}},source=fs.readFileSync('components/custom/PetDashboard.tsx','utf8');
+const js=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText;
+vm.runInThisContext(`(function(require,module,exports){${js}\n})`)(id=>id==='./PetDashboard.module.css'?{}:require(id),module,module.exports);
+const videos=[{url:'https://example.invalid/one.webm',downloadUrl:'https://example.invalid/one.webm',label:'Walking in place',status:'draft'},{url:'https://example.invalid/two.webm',downloadUrl:'https://example.invalid/two.webm',label:'Lying down relaxed',status:'draft'}];
+let html=renderToStaticMarkup(React.createElement(module.exports.default,{videos,finalized:false}));
+assert.equal((html.match(/<video /g)||[]).length,2);assert.match(html,/Walking in place/);assert.match(html,/Lying down relaxed/);assert.match(html,/Not confirmed yet/);assert.match(html,/Download video/);assert.doesNotMatch(html,/autoPlay|autoplay|Your plan|Source photo|Bring your pet|Awaiting confirmation/);
+html=renderToStaticMarkup(React.createElement(module.exports.default,{videos,finalized:true}));assert.doesNotMatch(html,/Not confirmed yet/);
+const page=fs.readFileSync('app/dashboard/page.tsx','utf8');for(const original of ['max-w-2xl mx-auto','Welcome','Your Pairing Code','bg-mint/5','bg-coral text-white'])assert.ok(page.includes(original),original);
+assert.ok(page.indexOf('<PetVideos')>page.indexOf('{/* Quick actions */}'));assert.ok(page.indexOf('<PetVideos')<page.indexOf('{/* Pairing Code */}'));
+assert.doesNotMatch(page,/href="\/upload"|Your desktop pets|generations remaining|This creation is complete and locked/);
+console.log(JSON.stringify({passed:true,originalDashboardLayoutPreserved:true,onlyCompactVideoGalleryAdded:true,twoVideoPreviews:true,noAutoplay:true,draftHintOnlyOnce:true,creationLinksUseCustom:true,paidCalls:0}));

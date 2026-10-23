@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {loader} from './generation-test-loader.mjs';
+const {isLocalSandboxStorage,storageImageUrl}=loader()('lib/generation/media.ts');
+const {buildPetDashboard}=loader()('lib/dashboard.ts');
+const origin='http://127.0.0.1:15421',video=origin+'/storage/v1/object/public/pet-photos/user/final.webm';
+Object.assign(process.env,{VERCEL_ENV:'preview',DESKBUB_DATA_ENVIRONMENT:'sandbox',NEXT_PUBLIC_SUPABASE_URL:origin,DESKBUB_SANDBOX_SUPABASE_URL:origin,DESKBUB_PRODUCTION_SUPABASE_URL:'https://production.invalid'});
+assert.equal(isLocalSandboxStorage(new URL(video)),true);
+assert.equal(storageImageUrl(video),video);
+for(const value of ['http://127.0.0.1:54321/storage/v1/object/public/pet-photos/u/a.png','http://127.0.0.1:15422/storage/v1/object/public/pet-photos/u/a.png','http://localhost:15421/storage/v1/object/public/pet-photos/u/a.png','http://127.0.0.1:15421/not-storage/a.png','http://user:pass@127.0.0.1:15421/storage/v1/object/public/pet-photos/u/a.png'])assert.throws(()=>storageImageUrl(value));
+const input={subscription:{tier:'basic',generations_used:1,max_generations:1},collection:{status:'finalized',videos:[{url:video,label:'Saved action'}]},jobs:[],legacy:[],pairingCode:'123456',storageOrigin:origin,staging:true,truncated:false};
+assert.equal(buildPetDashboard(input).videos[0].url,video);
+assert.equal(buildPetDashboard({...input,staging:false}).videos.length,0);
+process.env.VERCEL_ENV='production';assert.equal(isLocalSandboxStorage(new URL(video)),false);assert.throws(()=>storageImageUrl(video));
+console.log(JSON.stringify({passed:true,newLocalStoragePort:true,exactConfiguredOriginRequired:true,credentialsRejected:true,productionHTTPRejected:true,savedDashboardVideoVisible:true,externalCalls:0}));

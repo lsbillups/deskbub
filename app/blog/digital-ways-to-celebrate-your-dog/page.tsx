@@ -205,7 +205,7 @@ export default function CelebrateYourDogArticle() {
                     </p>
                     <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                       <Link href="/download" className="rounded-full bg-mint px-6 py-3 text-center font-bold text-white transition hover:bg-mint-dark">Try Kaka for Free</Link>
-                      <Link href="/upload" className="rounded-full bg-coral px-6 py-3 text-center font-bold text-white transition hover:bg-coral-dark">Use My Own Dog Photo</Link>
+                      <Link href="/custom-desktop-pet#custom-create" className="rounded-full bg-coral px-6 py-3 text-center font-bold text-white transition hover:bg-coral-dark">Use My Own Dog Photo</Link>
                     </div>
                   </div>
                 )}
@@ -233,7 +233,7 @@ export default function CelebrateYourDogArticle() {
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/70">No account or payment required. Download DeskBub for Windows or Mac and see what a real desktop companion feels like before using your own photo.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/download" className="rounded-full bg-mint px-7 py-3.5 font-bold text-white transition hover:bg-mint-dark">Try Kaka for Free</Link>
-              <Link href="/upload" className="rounded-full border border-white/20 px-7 py-3.5 font-bold text-white transition hover:bg-white/10">Use My Own Dog</Link>
+              <Link href="/custom-desktop-pet#custom-create" className="rounded-full border border-white/20 px-7 py-3.5 font-bold text-white transition hover:bg-white/10">Use My Own Dog</Link>
             </div>
           </section>
 

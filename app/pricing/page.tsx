@@ -5,9 +5,10 @@ import { track } from '@vercel/analytics';
 import Link from 'next/link';
 import Footer from '@/components/landing/Footer';
 import { BASIC_PRICE, PLUS_PRICE, type Plan } from '@/lib/pricing';
+import KakaPhotoShowcase from '@/components/landing/KakaPhotoShowcase';
 
 const customTiers = [
-  { name: 'Custom Basic', eyebrow: 'ONE ACTION', price: BASIC_PRICE, plan: 'basic' as Plan, description: 'Create one animated action for your own pet.', features: ['Upload one pet photo', 'One AI-generated animation', 'Transparent desktop pet', 'Pair with Windows or Mac', 'Keep and use it forever'], cta: `Create 1 Custom Action — ${BASIC_PRICE}` },
+  { name: 'Custom Basic', eyebrow: 'ONE ACTION', price: BASIC_PRICE, plan: 'basic' as Plan, description: 'Create one animated action for your own pet.', features: ['Upload one pet photo', '1 generation · 1 default action', 'Keep one final animation', 'Transparent desktop pet', 'Pair with Windows or Mac'], cta: `Create 1 Custom Action — ${BASIC_PRICE}` },
   { name: 'Custom Plus', eyebrow: 'BEST VALUE', price: PLUS_PRICE, plan: 'plus' as Plan, description: 'Generate more options and keep your five favorites.', features: ['Upload 1–5 pet photos', 'Generate up to 8 animated clips', 'Keep your favorite 5', 'Choose different actions', 'Windows and macOS'], cta: `Create a Full Custom Pet — ${PLUS_PRICE}` },
 ];
 
@@ -19,7 +20,7 @@ export default function PricingPage() {
     setLoading(plan);
     setCheckoutError(null);
     try {
-      const response = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan }) });
+      const response = await fetch('/api/create-checkout-session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan, returnTo: 'custom' }) });
       const data = await response.json();
       const destination = data.checkoutUrl || data.redirect;
       if (destination) {
@@ -42,7 +43,7 @@ export default function PricingPage() {
         <p className="mx-auto mt-5 max-w-2xl text-xl leading-relaxed text-text-secondary">Kaka comes with DeskBub at no cost. Creating a custom pet is a one-time purchase—no subscription.</p>
       </section>
 
-      <section className="px-6 pb-20">
+      <section id="pricing-plans" className="scroll-mt-24 px-6 pb-20">
         <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-3">
           <article className="flex flex-col rounded-3xl border-2 border-mint/40 bg-white p-8 shadow-sm">
             <span className="text-xs font-extrabold tracking-[0.18em] text-mint-dark">$0 · NO ACCOUNT OR PAYMENT</span>
@@ -51,6 +52,7 @@ export default function PricingPage() {
             <div className="mt-6 font-display text-5xl font-extrabold text-text-primary">$0</div>
             <ul className="mt-7 flex-1 space-y-3 text-sm text-text-secondary">{['Five animated Kaka actions', 'Water and stretch reminders', 'Instant Show/Hide controls', 'Windows and macOS', 'No account or payment required'].map((feature) => <li key={feature} className="flex gap-2"><span className="font-bold text-mint-dark">✓</span>{feature}</li>)}</ul>
             <Link href="/download" className="mt-8 rounded-full border-2 border-mint bg-white px-5 py-3 text-center font-bold text-mint-dark transition hover:bg-mint hover:text-white">Use Kaka for Free</Link>
+            <Link href="/free-desktop-pet#share-basic" className="mt-4 text-center text-sm font-semibold text-[#a82d39] underline underline-offset-4">Share DeskBub. Get your own pet free.</Link>
           </article>
 
           {customTiers.map((tier, index) => (
@@ -66,7 +68,20 @@ export default function PricingPage() {
           ))}
         </div>
         <p className="mt-10 text-center text-sm font-medium text-text-secondary">One-time payment. No subscription.</p>
+        <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-text-secondary">Kaka’s five included animations are ready-made. Basic creates one default action from your own photo; Plus gives you up to eight generations to choose your five favorites.</p>
+        <p className="mt-5 text-center text-sm"><a href="#pricing-examples" className="font-semibold text-[#a82d39] underline underline-offset-4">See the photo-to-animation example</a><span className="px-3 text-text-secondary">·</span><a href="#desktop-demo" className="font-semibold text-[#a82d39] underline underline-offset-4">Watch the desktop demo</a></p>
         {checkoutError && <p role="alert" className="mx-auto mt-4 max-w-xl rounded-xl bg-red-50 p-4 text-center text-sm text-red-700">{checkoutError}</p>}
+      </section>
+      <KakaPhotoShowcase id="pricing-examples" mode="compact" showCtas={false} title="From a real photo to a desktop companion" description="Explore Kaka’s original photos and animations. These are brand examples; custom results vary by photo and action." />
+      <section id="desktop-demo" className="scroll-mt-24 bg-white px-6 py-16">
+        <div className="mx-auto max-w-4xl text-center">
+          <h2 className="font-display text-3xl font-bold text-text-primary sm:text-4xl">See Kaka on a real desktop</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-text-secondary">See how a desktop companion appears above your open apps. Move Kaka, change his size and opacity, or hide him when you need a clear screen.</p>
+          <figure className="mt-8">
+            <video controls playsInline muted preload="none" poster="/media/custom-desktop-demo/kaka-windows-clear-v2-poster.jpg" className="w-full rounded-2xl" aria-label="Kaka desktop dog beside an example spreadsheet on Windows"><source src="/media/custom-desktop-demo/kaka-windows-clear-v2.mp4" type="video/mp4" /></video>
+            <figcaption className="mt-3 text-sm text-text-secondary">Actual Windows recording · example spreadsheet · earlier app version · audio removed.</figcaption>
+          </figure>
+        </div>
       </section>
       <Footer />
     </main>

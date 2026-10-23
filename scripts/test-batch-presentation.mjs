@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),ts=require('typescript');
-const source=fs.readFileSync('app/upload/page.tsx','utf8');
+const source=fs.readFileSync('components/custom/CustomPetWorkspace.tsx','utf8');
 const chunk=source.match(/const handleGenerate = async \(\) => \{[\s\S]*?\n  \};/)[0];
 const js=ts.transpileModule(chunk,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText;
 let release;const gate=new Promise(r=>{release=r;});const changes=[];let observedFirst=false;

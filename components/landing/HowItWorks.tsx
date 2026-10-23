@@ -26,7 +26,7 @@ export default function HowItWorks() {
           ))}
         </div>
         <div className="mt-10 flex flex-col items-center justify-center gap-3 text-center sm:flex-row">
-          <Link href="/upload" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Start with My Pet Photo</Link>
+          <Link href="/custom-desktop-pet#custom-create" className="rounded-full bg-coral px-7 py-3.5 font-bold text-white shadow-lg shadow-coral/20 hover:bg-coral-dark">Start with My Pet Photo</Link>
           <Link href="/download" className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 font-bold text-text-primary hover:border-mint/50">I&apos;d Rather Try Kaka for Free</Link>
         </div>
         <p className="mt-6 text-center text-sm text-text-secondary">

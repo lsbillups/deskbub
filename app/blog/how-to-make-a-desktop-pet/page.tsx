@@ -288,7 +288,7 @@ export default function MakeDesktopPetArticle() {
             </ol>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <TrackedLink href="/upload" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'upload', placement: 'deskbub-method' }} className="rounded-full bg-coral px-7 py-3.5 text-center font-bold text-white shadow-lg shadow-coral/20 transition hover:bg-coral-dark">Turn My Pet Photo into a Desktop Pet</TrackedLink>
+              <TrackedLink href="/custom-desktop-pet#custom-create" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'custom', placement: 'deskbub-method' }} className="rounded-full bg-coral px-7 py-3.5 text-center font-bold text-white shadow-lg shadow-coral/20 transition hover:bg-coral-dark">Turn My Pet Photo into a Desktop Pet</TrackedLink>
               <TrackedLink href="/download" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'download', placement: 'deskbub-method' }} className="rounded-full border-2 border-text-primary/10 bg-white px-7 py-3 text-center font-bold text-text-primary transition hover:border-mint/50">Try Kaka for Free</TrackedLink>
             </div>
           </section>
@@ -333,7 +333,7 @@ export default function MakeDesktopPetArticle() {
             <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-white/70">Kaka comes with DeskBub for free. No account or payment required—download the app and meet him on your Windows or Mac desktop.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
               <TrackedLink href="/download" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'download', placement: 'footer' }} className="rounded-full bg-mint px-7 py-3.5 font-bold text-white transition hover:bg-mint-dark">Try Kaka for Free</TrackedLink>
-              <TrackedLink href="/upload" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'upload', placement: 'footer' }} className="rounded-full border border-white/20 px-7 py-3.5 font-bold text-white transition hover:bg-white/10">Use My Own Pet</TrackedLink>
+              <TrackedLink href="/custom-desktop-pet#custom-create" eventName="blog_cta_click" eventProperties={{ article: post.slug, destination: 'custom', placement: 'footer' }} className="rounded-full border border-white/20 px-7 py-3.5 font-bold text-white transition hover:bg-white/10">Use My Own Pet</TrackedLink>
             </div>
           </section>
 

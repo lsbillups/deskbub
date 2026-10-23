@@ -38,7 +38,7 @@ export default function RootLayout({
         <body className="min-h-full flex flex-col font-sans">
           <Navbar />
           {children}
-          <Analytics />
+          {process.env.VERCEL_ENV === 'production' && <Analytics />}
         </body>
       </html>
     </ClerkProvider>

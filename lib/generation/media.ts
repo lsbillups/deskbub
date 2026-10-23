@@ -3,7 +3,7 @@ import sharp from 'sharp';
 export function isLocalSandboxStorage(url: URL): boolean {
   return process.env.VERCEL_ENV !== 'production' && process.env.DESKBUB_DATA_ENVIRONMENT === 'sandbox' &&
     url.origin === process.env.NEXT_PUBLIC_SUPABASE_URL && url.origin === process.env.DESKBUB_SANDBOX_SUPABASE_URL &&
-    url.origin !== process.env.DESKBUB_PRODUCTION_SUPABASE_URL && url.origin === 'http://127.0.0.1:54321';
+    url.origin !== process.env.DESKBUB_PRODUCTION_SUPABASE_URL && ['http://127.0.0.1:54321', 'http://127.0.0.1:15421'].includes(url.origin);
 }
 
 export async function imageDataUri(bytes: Buffer): Promise<string> {

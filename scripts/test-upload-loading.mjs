@@ -3,9 +3,11 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),ts=require('typescript'),React=require('react'),{renderToStaticMarkup}=require('react-dom/server');
-const source=fs.readFileSync('app/upload/page.tsx','utf8');
+const source=fs.readFileSync('components/custom/CustomPetWorkspace.tsx','utf8');
 const noop=()=>{};
 const overrides={
+ '@/components/custom/PhotoPreviewEditor':{__esModule:true,default:()=>null},
+ '@/lib/custom-draft':{clearCustomDraft:async()=>{}},
  'next/navigation':{useRouter:()=>({push:noop})},
  '@vercel/analytics':{track:noop},
  '@/lib/supabase/client':{createClient:()=>{throw Error('No storage during loading render');}},
