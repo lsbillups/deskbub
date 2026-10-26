@@ -13,6 +13,9 @@ export default function Footer() {
           <Link href="/" className="flex items-center gap-2 font-display text-xl font-extrabold"><span>🐾</span> DeskBub</Link>
           <p className="mt-4 max-w-sm leading-relaxed text-white/65">Meet Kaka on your desktop—or bring your own pet to life on Windows and Mac.</p>
           <p className="mt-6 text-sm text-white/40">&copy; {new Date().getFullYear()} DeskBub</p>
+          <p className="mt-3 text-sm text-white/70">
+            <a href="https://www.showmysites.com" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">ShowMySites</a>
+          </p>
         </div>
         {groups.map((group) => (
           <div key={group.title}>
