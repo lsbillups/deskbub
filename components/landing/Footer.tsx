@@ -15,6 +15,8 @@ export default function Footer() {
           <p className="mt-6 text-sm text-white/40">&copy; {new Date().getFullYear()} DeskBub</p>
           <p className="mt-3 text-sm text-white/70">
             <a href="https://www.showmysites.com" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">ShowMySites</a>
+            <span aria-hidden="true" className="mx-2">·</span>
+            <a href="https://twelve.tools" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Twelve Tools</a>
           </p>
         </div>
         {groups.map((group) => (
