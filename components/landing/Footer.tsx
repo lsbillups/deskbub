@@ -18,11 +18,18 @@ export default function Footer() {
             <span aria-hidden="true" className="mx-2">·</span>
             <a href="https://twelve.tools" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Twelve Tools</a>
           </p>
-          <a href="https://launchzone.co/tools/deskbub" target="_blank" rel="noopener noreferrer" className="mt-4 inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <a href="https://launchzone.co/tools/deskbub" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
             {/* Keep the directory's original badge URL for its verification. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="https://launchzone.co/badges/classic-dark.svg" alt="Featured on LaunchZone" width="150" height="48" />
           </a>
+          <a href="https://toolrain.com/item/deskbub" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            {/* Keep the directory's original badge URL for its verification. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://toolrain.com/badges/badge-listed-dark.svg" alt="Listed on ToolRain" style={{ height: '60px', width: 'auto' }} />
+          </a>
+          </div>
         </div>
         {groups.map((group) => (
           <div key={group.title}>
