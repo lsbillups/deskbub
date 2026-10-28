@@ -18,6 +18,11 @@ export default function Footer() {
             <span aria-hidden="true" className="mx-2">·</span>
             <a href="https://twelve.tools" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Twelve Tools</a>
           </p>
+          <a href="https://launchzone.co/tools/deskbub" target="_blank" rel="noopener noreferrer" className="mt-4 inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            {/* Keep the directory's original badge URL for its verification. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://launchzone.co/badges/classic-dark.svg" alt="Featured on LaunchZone" width="150" height="48" />
+          </a>
         </div>
         {groups.map((group) => (
           <div key={group.title}>
