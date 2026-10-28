@@ -29,6 +29,11 @@ export default function Footer() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="https://toolrain.com/badges/badge-listed-dark.svg" alt="Listed on ToolRain" style={{ height: '60px', width: 'auto' }} />
           </a>
+          <a href="https://domainrank.app" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            {/* Keep the directory's original badge URL for its verification. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://domainrank.app/api/badge/deskbub.com?style=small&theme=dark" alt="deskbub.com Domain Rating" width="249" height="40" />
+          </a>
           </div>
         </div>
         {groups.map((group) => (
