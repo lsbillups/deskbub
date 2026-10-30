@@ -39,6 +39,11 @@ export default function Footer() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=dark" alt="Fazier badge" width="120" />
           </a>
+          <a href="https://sellwithboost.com" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+            {/* Keep the directory's original badge URL for its verification. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="https://sellwithboost.com/badge/listing-dark.svg" alt="Listed on Sell With boost" style={{ height: '40px', width: 'auto' }} />
+          </a>
           </div>
         </div>
         {groups.map((group) => (
