@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 const groups = [
   { title: 'Product', links: [['Meet Kaka', '/free-desktop-pet'], ['Custom Pet', '/custom-desktop-pet'], ['Pricing', '/pricing'], ['Download', '/download']] },
-  { title: 'Resources', links: [['Blog', '/blog'], ['How It Works', '/#how-it-works'], ['Contact', '/contact'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Refunds', '/refund']] },
+  { title: 'Resources', links: [['Blog', '/blog'], ['How It Works', '/#how-it-works'], ['Paws At You', 'https://pawsatyou.net/'], ['Contact', '/contact'], ['Privacy', '/privacy'], ['Terms', '/terms'], ['Refunds', '/refund']] },
 ];
 
 export default function Footer() {
@@ -24,7 +24,7 @@ export default function Footer() {
         {groups.map((group) => (
           <div key={group.title}>
             <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-white/45">{group.title}</h2>
-            <ul className="mt-4 space-y-3 text-sm text-white/70">{group.links.map(([label, href]) => <li key={href}><Link href={href} className="transition hover:text-white">{label}</Link></li>)}</ul>
+            <ul className="mt-4 space-y-3 text-sm text-white/70">{group.links.map(([label, href]) => <li key={href}><Link href={href} {...(href.startsWith('https://') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="transition hover:text-white">{label}</Link></li>)}</ul>
           </div>
         ))}
       </div>
