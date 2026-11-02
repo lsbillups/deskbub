@@ -17,34 +17,9 @@ export default function Footer() {
             <a href="https://www.showmysites.com" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">ShowMySites</a>
             <span aria-hidden="true" className="mx-2">·</span>
             <a href="https://twelve.tools" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Twelve Tools</a>
+            <span aria-hidden="true" className="mx-2">·</span>
+            <a href="https://aihustle.tools/" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">AI Hustle</a>
           </p>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-          <a href="https://launchzone.co/tools/deskbub" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            {/* Keep the directory's original badge URL for its verification. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://launchzone.co/badges/classic-dark.svg" alt="Featured on LaunchZone" width="150" height="48" />
-          </a>
-          <a href="https://toolrain.com/item/deskbub" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            {/* Keep the directory's original badge URL for its verification. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://toolrain.com/badges/badge-listed-dark.svg" alt="Listed on ToolRain" style={{ height: '60px', width: 'auto' }} />
-          </a>
-          <a href="https://domainrank.app" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            {/* Keep the directory's original badge URL for its verification. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://domainrank.app/api/badge/deskbub.com?style=small&theme=dark" alt="deskbub.com Domain Rating" width="249" height="40" />
-          </a>
-          <a href="https://fazier.com/launches/deskbub" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            {/* Keep the directory's original badge URL for its verification. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=dark" alt="Fazier badge" width="120" />
-          </a>
-          <a href="https://sellwithboost.com" target="_blank" rel="noopener noreferrer" className="inline-block rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-            {/* Keep the directory's original badge URL for its verification. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="https://sellwithboost.com/badge/listing-dark.svg" alt="Listed on Sell With boost" style={{ height: '40px', width: 'auto' }} />
-          </a>
-          </div>
         </div>
         {groups.map((group) => (
           <div key={group.title}>
@@ -52,6 +27,33 @@ export default function Footer() {
             <ul className="mt-4 space-y-3 text-sm text-white/70">{group.links.map(([label, href]) => <li key={href}><Link href={href} className="transition hover:text-white">{label}</Link></li>)}</ul>
           </div>
         ))}
+      </div>
+      <div aria-label="Directory listings" role="group" className="mx-auto mt-8 grid max-w-6xl grid-cols-2 items-center gap-x-4 gap-y-4 border-t border-white/10 pt-6 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4">
+        <a href="https://launchzone.co/tools/deskbub" target="_blank" rel="noopener noreferrer" className="flex h-12 min-w-0 items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          {/* Keep the directory's original badge URL for its verification. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://launchzone.co/badges/classic-dark.svg" alt="Featured on LaunchZone" width="150" height="48" className="h-auto max-h-10 w-auto max-w-full" />
+        </a>
+        <a href="https://toolrain.com/item/deskbub" target="_blank" rel="noopener noreferrer" className="flex h-12 min-w-0 items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          {/* Keep the directory's original badge URL for its verification. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://toolrain.com/badges/badge-listed-dark.svg" alt="Listed on ToolRain" className="h-auto max-h-10 w-auto max-w-full" />
+        </a>
+        <a href="https://domainrank.app" target="_blank" rel="noopener noreferrer" className="flex h-12 min-w-0 items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          {/* Keep the directory's original badge URL for its verification. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://domainrank.app/api/badge/deskbub.com?style=small&theme=dark" alt="deskbub.com Domain Rating" width="249" height="40" className="h-auto max-h-10 w-auto max-w-full" />
+        </a>
+        <a href="https://fazier.com/launches/deskbub" target="_blank" rel="noopener noreferrer" className="flex h-12 min-w-0 items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          {/* Keep the directory's original badge URL for its verification. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://fazier.com/api/v1//public/badges/launch_badges.svg?badge_type=launched&theme=dark" alt="Fazier badge" width="120" className="h-auto max-h-10 w-auto max-w-full" />
+        </a>
+        <a href="https://sellwithboost.com" target="_blank" rel="noopener noreferrer" className="flex h-12 min-w-0 items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          {/* Keep the directory's original badge URL for its verification. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://sellwithboost.com/badge/listing-dark.svg" alt="Listed on Sell With boost" className="h-auto max-h-10 w-auto max-w-full" />
+        </a>
       </div>
     </footer>
   );
