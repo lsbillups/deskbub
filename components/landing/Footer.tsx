@@ -54,6 +54,11 @@ export default function Footer() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="https://sellwithboost.com/badge/listing-dark.svg" alt="Listed on Sell With boost" className="h-auto max-h-10 w-auto max-w-full" />
         </a>
+        <a href="https://findly.tools/deskbub?utm_source=deskbub" target="_blank" rel="noopener noreferrer" className="flex h-12 min-w-0 items-center justify-center rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+          {/* Keep the directory's original badge URL for its verification. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="https://findly.tools/badges/findly-tools-badge-dark.svg" alt="Featured on Findly.tools" width="175" height="55" className="h-auto max-h-10 w-auto max-w-full" />
+        </a>
       </div>
     </footer>
   );
