@@ -19,6 +19,8 @@ export default function Footer() {
             <a href="https://twelve.tools" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Twelve Tools</a>
             <span aria-hidden="true" className="mx-2">·</span>
             <a href="https://aihustle.tools/" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">AI Hustle</a>
+            <span aria-hidden="true" className="mx-2">·</span>
+            <a href="https://launchtory.com/projects/deskbub" target="_blank" rel="noopener" className="transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">Launchtory</a>
           </p>
         </div>
         {groups.map((group) => (
